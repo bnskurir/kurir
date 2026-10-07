@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduCourier Pro - Android Frame Edition</title>
+    <title>EduCourier Pro - Native Android Frame</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,31 +11,21 @@
     <link rel="manifest" href="manifest.json">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        .fade-in { animation: fadeIn 0.25s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-6 overflow-hidden">
-
-    <!-- DESKTOP MODE TOGGLE BAR -->
-    <div class="hidden md:flex items-center justify-between w-full max-w-[420px] mb-3 px-2 text-white shrink-0">
-        <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
-            <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> Mode: Android Frame View
-        </div>
-        <button onclick="toggleDeviceFrame()" id="frameToggleBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-lg border border-slate-700 transition">
-            <i class="fa-solid fa-expand mr-1"></i> Fullscreen / Frame
-        </button>
-<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-4">
+<body class="bg-slate-950 text-slate-800 antialiased min-h-screen flex items-center justify-center p-0 md:p-6 overflow-hidden">
 
     <!-- ANDROID PHONE FRAME WRAPPER (FIXED LAYOUT) -->
-    <div id="deviceFrame" class="w-full md:w-[420px] md:h-[850px] bg-slate-50 md:rounded-[40px] md:border-[10px] md:border-slate-800 md:shadow-2xl flex flex-col overflow-hidden relative shrink-0 transition-all duration-300">
+    <div id="deviceFrame" class="w-full md:w-[420px] md:h-[860px] bg-slate-50 md:rounded-[44px] md:border-[10px] md:border-slate-800 md:shadow-2xl flex flex-col overflow-hidden relative shrink-0 transition-all duration-300">
         
         <!-- ANDROID NOTCH / STATUS BAR -->
         <div class="bg-indigo-900 text-white px-4 py-2 text-xs flex justify-between items-center select-none shrink-0 z-50">
-            <span id="statusBarTime" class="font-bold text-[11px]">03:05</span>
+            <span id="statusBarTime" class="font-bold text-[11px]">03:58</span>
             <div class="w-20 h-3 bg-slate-950 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-1.5 hidden md:block"></div>
             <div class="flex items-center gap-2 text-[11px]">
                 <i class="fa-solid fa-signal"></i>
@@ -45,14 +35,14 @@
         </div>
 
     <!-- ================= LOGIN SCREEN / MODAL ================= -->
-    <div id="loginScreen" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div id="loginScreen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl w-full p-6 space-y-5 fade-in border border-slate-100 my-auto">
             <div class="text-center space-y-2">
                 <div class="inline-flex bg-indigo-600 text-white p-3 rounded-2xl shadow-lg shadow-indigo-200 text-2xl font-bold mb-1">
                     <i class="fa-solid fa-box-open"></i>
                 </div>
                 <h1 class="font-bold text-2xl text-slate-900">EduCourier Pro</h1>
-                <p class="text-xs text-slate-500">Aplikasi Kurir & Logistik Kampus (Firebase Cloud)</p>
+                <p class="text-xs text-slate-500">Sistem Logistik Kampus (Firebase bns-kurir)</p>
             </div>
 
             <form onsubmit="handleFirebaseLogin(event)" class="space-y-3.5">
@@ -87,6 +77,10 @@
                 <button type="button" onclick="instantLoginRecipient()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-bolt"></i> Instant Login Khusus Penerima
                 </button>
+                <!-- Tombol Install PWA -->
+                <button type="button" id="btnInstallPwa" onclick="installPwaApp()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition border border-slate-200 flex items-center justify-center gap-2 hidden">
+                    <i class="fa-solid fa-mobile-screen"></i> Install Aplikasi ke Perangkat
+                </button>
             </div>
         </div>
     </div>
@@ -100,7 +94,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-sm leading-tight">EduCourier Pro</h1>
-                    <p class="text-[10px] text-indigo-200" id="headerSubtitle">Cloud Connected</p>
+                    <p class="text-[10px] text-indigo-200" id="headerSubtitle">Cloud Synchronized</p>
                 </div>
             </div>
             
@@ -403,7 +397,7 @@
     <!-- Firebase SDK Imports & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Firebase references
@@ -434,6 +428,7 @@
         let chartsInstance = {};
         let courierActiveTab = 'queue';
         let liveSyncInterval = null;
+        let deferredPrompt = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             updateStatusBarClock();
@@ -451,9 +446,34 @@
 
             // PWA Service Worker Registration
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
+                navigator.serviceWorker.register('sw.js').then(() => {
+                    console.log("Service Worker registered successfully.");
+                }).catch((err) => {
+                    console.warn("Service Worker registration failed:", err);
+                });
             }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const installBtn = document.getElementById('btnInstallPwa');
+                if(installBtn) installBtn.classList.remove('hidden');
+            });
         });
+
+        window.installPwaApp = async function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast("Aplikasi berhasil diinstal!");
+                }
+                deferredPrompt = null;
+                document.getElementById('btnInstallPwa').classList.add('hidden');
+            } else {
+                showToast("Aplikasi sudah terinstal atau browser tidak mendukung.", "warning");
+            }
+        };
 
         function updateStatusBarClock() {
             const now = new Date();
@@ -461,10 +481,6 @@
             const el = document.getElementById('statusBarTime');
             if(el) el.innerText = timeStr;
         }
-
-        window.toggleDeviceFrame = function() {
-            // Function retained for compatibility if called elsewhere
-        };
 
         function determineRoleByEmail(email) {
             const lower = email.toLowerCase();
@@ -555,7 +571,6 @@
             initFirebaseListeners();
             initMockDataIfNeeded();
             renderAll();
-            showToast("Live Sync Active: Terhubung dengan latensi rendah.");
         }
 
         function simulateManualLogin(email, role) {
@@ -635,7 +650,7 @@
                 if(appState.currentUser) {
                     renderAll();
                 }
-            }, 500);
+            }, 600);
         }
 
         window.switchRole = function(role) {
@@ -644,7 +659,6 @@
             if(target) target.classList.remove('hidden');
             
             updateAndroidBottomNav(role);
-            logAudit("Navigasi", "Berpindah ke role: " + role.toUpperCase());
             if(role === 'admin') {
                 updateCharts();
             }
@@ -652,61 +666,37 @@
 
         function updateAndroidBottomNav(currentRole) {
             const nav = document.getElementById('androidBottomNav');
-            let items = [];
-
-            if (currentRole === 'officer') {
-                items = [{ role: 'officer', icon: 'fa-plus-circle', label: 'Entri' }];
-            } else if (currentRole === 'courier') {
-                items = [{ role: 'courier', icon: 'fa-truck-fast', label: 'Kurir' }];
-            } else if (currentRole === 'recipient') {
-                items = [{ role: 'recipient', icon: 'fa-box', label: 'Penerima' }];
-            } else if (currentRole === 'admin') {
-                items = [
-                    { role: 'admin', icon: 'fa-chart-pie', label: 'Overview' },
-                    { role: 'admin', icon: 'fa-boxes-stacked', label: 'Paket' },
-                    { role: 'admin', icon: 'fa-users', label: 'Anggota' },
-                    { role: 'admin', icon: 'fa-shield-halved', label: 'Log' }
-                ];
-            } else {
-                items = [
-                    { role: 'officer', icon: 'fa-plus-circle', label: 'Entri' },
-                    { role: 'courier', icon: 'fa-truck-fast', label: 'Kurir' },
-                    { role: 'recipient', icon: 'fa-box', label: 'Penerima' }
-                ];
-            }
-
             nav.innerHTML = '';
-            items.forEach(item => {
-                const isActive = currentRole === item.role;
-                if (currentRole === 'admin' && item.role === 'admin') {
-                    // For admin subtabs, render tab switches
-                    nav.innerHTML = `
-                        <button onclick="switchAdminTab('overview')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-indigo-600 bg-indigo-50 font-bold">
-                            <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
-                            <span class="text-[10px]">Stats</span>
-                        </button>
-                        <button onclick="switchAdminTab('packages')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
-                            <i class="fa-solid fa-boxes-stacked text-base mb-0.5"></i>
-                            <span class="text-[10px]">Paket</span>
-                        </button>
-                        <button onclick="switchAdminTab('members')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
-                            <i class="fa-solid fa-users text-base mb-0.5"></i>
-                            <span class="text-[10px]">Anggota</span>
-                        </button>
-                        <button onclick="switchAdminTab('audit')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
-                            <i class="fa-solid fa-shield-halved text-base mb-0.5"></i>
-                            <span class="text-[10px]">Log</span>
-                        </button>
-                    `;
-                } else {
-                    nav.innerHTML += `
-                        <button onclick="switchRole('${item.role}')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${isActive ? 'text-indigo-600 bg-indigo-50 font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'}">
-                            <i class="fa-solid ${item.icon} text-base mb-0.5"></i>
-                            <span class="text-[10px]">${item.label}</span>
-                        </button>
-                    `;
-                }
-            });
+
+            if (currentRole === 'admin') {
+                nav.innerHTML = `
+                    <button onclick="switchAdminTab('overview')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-indigo-600 bg-indigo-50 font-bold">
+                        <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
+                        <span class="text-[10px]">Stats</span>
+                    </button>
+                    <button onclick="switchAdminTab('packages')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
+                        <i class="fa-solid fa-boxes-stacked text-base mb-0.5"></i>
+                        <span class="text-[10px]">Paket</span>
+                    </button>
+                    <button onclick="switchAdminTab('members')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
+                        <i class="fa-solid fa-users text-base mb-0.5"></i>
+                        <span class="text-[10px]">Anggota</span>
+                    </button>
+                    <button onclick="switchAdminTab('audit')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
+                        <i class="fa-solid fa-shield-halved text-base mb-0.5"></i>
+                        <span class="text-[10px]">Log</span>
+                    </button>
+                `;
+            } else {
+                let roleNameMap = { 'officer': 'Entri Paket', 'courier': 'Kurir Tugas', 'recipient': 'Portal Penerima' };
+                let roleIconMap = { 'officer': 'fa-plus-circle', 'courier': 'fa-truck-fast', 'recipient': 'fa-box' };
+                nav.innerHTML = `
+                    <div class="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-indigo-600 bg-indigo-50 font-bold select-none">
+                        <i class="fa-solid ${roleIconMap[currentRole] || 'fa-user'} text-base mb-0.5"></i>
+                        <span class="text-[10px] uppercase">${roleNameMap[currentRole] || currentRole}</span>
+                    </div>
+                `;
+            }
         }
 
         window.showToast = function(message, type = 'success') {
@@ -718,7 +708,7 @@
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(() => toast.remove(), 250);
             }, 3000);
         };
 
