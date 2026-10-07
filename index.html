@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="manifest.json">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
@@ -20,17 +21,17 @@
 <body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-6">
 
     <!-- DESKTOP MODE TOGGLE BAR -->
-    <div class="hidden md:flex items-center justify-between w-full max-w-md mb-3 px-2 text-white">
+    <div class="hidden md:flex items-center justify-between w-full max-w-[420px] mb-3 px-2 text-white">
         <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
-            <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> Mode Tampilan: Android Frame View
+            <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> Mode: Android Frame View
         </div>
         <button onclick="toggleDeviceFrame()" id="frameToggleBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-lg border border-slate-700 transition">
             <i class="fa-solid fa-expand mr-1"></i> Fullscreen / Frame
         </button>
     </div>
 
-    <!-- ANDROID PHONE FRAME WRAPPER -->
-    <div id="deviceFrame" class="w-full md:max-w-[420px] md:h-[850px] bg-slate-50 md:rounded-[40px] md:border-[10px] md:border-slate-800 md:shadow-2xl flex flex-col overflow-hidden relative transition-all duration-300">
+    <!-- ANDROID PHONE FRAME WRAPPER (FIXED LAYOUT) -->
+    <div id="deviceFrame" class="w-full md:w-[420px] md:h-[850px] bg-slate-50 md:rounded-[40px] md:border-[10px] md:border-slate-800 md:shadow-2xl flex flex-col overflow-hidden relative shrink-0 transition-all duration-300">
         
         <!-- ANDROID NOTCH / STATUS BAR -->
         <div class="bg-indigo-900 text-white px-4 py-2 text-xs flex justify-between items-center select-none shrink-0 z-50">
@@ -67,7 +68,7 @@
 
                 <div id="loginHintBox" class="bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 text-[11px] text-indigo-700 flex items-start gap-2">
                     <i class="fa-solid fa-circle-info mt-0.5"></i>
-                    <span><strong>Info:</strong> Masuk sesuai email terdaftar (Petugas / Kurir / Admin / Penerima). Role terdeteksi otomatis.</span>
+                    <span><strong>Info:</strong> Masuk sesuai email terdaftar. Role (Petugas / Kurir / Admin / Penerima) terdeteksi otomatis.</span>
                 </div>
 
                 <div class="flex gap-2 pt-1">
@@ -447,6 +448,11 @@
                 console.warn("Firebase initialization warning:", err);
                 document.getElementById('firebaseAuthStatus').innerText = "Live Simulated Mode Active";
             }
+
+            // PWA Service Worker Registration
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            }
         });
 
         function updateStatusBarClock() {
@@ -459,12 +465,12 @@
         window.toggleDeviceFrame = function() {
             const frame = document.getElementById('deviceFrame');
             const btn = document.getElementById('frameToggleBtn');
-            if(frame.classList.contains('md:max-w-[420px]')) {
-                frame.classList.remove('md:max-w-[420px]', 'md:h-[850px]', 'md:rounded-[40px]', 'md:border-[10px]');
+            if(frame.classList.contains('md:w-[420px]')) {
+                frame.classList.remove('md:w-[420px]', 'md:h-[850px]', 'md:rounded-[40px]', 'md:border-[10px]');
                 frame.classList.add('w-full', 'max-w-7xl', 'h-[90vh]', 'rounded-2xl', 'border', 'border-slate-700');
                 btn.innerHTML = `<i class="fa-solid fa-compress mr-1"></i> Frame Android`;
             } else {
-                frame.classList.add('md:max-w-[420px]', 'md:h-[850px]', 'md:rounded-[40px]', 'md:border-[10px]');
+                frame.classList.add('md:w-[420px]', 'md:h-[850px]', 'md:rounded-[40px]', 'md:border-[10px]');
                 frame.classList.remove('w-full', 'max-w-7xl', 'h-[90vh]', 'rounded-2xl', 'border', 'border-slate-700');
                 btn.innerHTML = `<i class="fa-solid fa-expand mr-1"></i> Fullscreen / Frame`;
             }
@@ -639,7 +645,7 @@
                 if(appState.currentUser) {
                     renderAll();
                 }
-            }, 1000);
+            }, 500);
         }
 
         window.switchRole = function(role) {
