@@ -10,17 +10,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="manifest.json">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f172a; }
-        .fade-in { animation: fadeIn 0.25s ease-in-out forwards; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .fade-in { animation: fadeIn 0.2s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0 m-0 overflow-x-hidden">
+<body class="text-slate-800 antialiased">
 
-    <div id="appContainer" class="w-full max-w-[430px] h-screen sm:h-[860px] sm:rounded-[40px] sm:border-[8px] sm:border-slate-800 bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
+    <div id="appContainer" class="w-full max-w-[430px] h-[860px] max-h-[100vh] sm:rounded-[40px] sm:border-[8px] sm:border-slate-800 bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
 
         <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -76,7 +76,6 @@
                     </div>
                 </div>
 
-                <!-- MANUAL FIREBASE CONFIG INPUT -->
                 <div class="bg-indigo-50/60 border border-indigo-200 rounded-xl p-3 space-y-2 text-left">
                     <div class="flex justify-between items-center cursor-pointer" onclick="toggleFirebaseConfigBox()">
                         <p class="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5"><i class="fa-solid fa-database text-indigo-600"></i> Pengaturan Firebase Manual:</p>
@@ -92,7 +91,7 @@
                             <input type="text" id="inputProjectId" placeholder="Masukkan Project ID..." class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-[10px] bg-white outline-none font-mono">
                         </div>
                         <button type="button" onclick="saveCustomFirebaseConfig()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-[10px] transition shadow-sm">
-                            <i class="fa-solid fa-rotate mr-1"></i> Terapkan & Hubungkan
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan & Hubungkan
                         </button>
                     </div>
                 </div>
@@ -104,9 +103,6 @@
                     </div>
                     <button type="button" id="btnRequestPush" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs transition border border-indigo-200 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-bell text-indigo-600"></i> Aktifkan Web Push Notification
-                    </button>
-                    <button type="button" id="btnInstallPwa" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition border border-slate-200 flex items-center justify-center gap-2 hidden mt-1">
-                        <i class="fa-solid fa-mobile-screen text-indigo-600"></i> Install Aplikasi (PWA)
                     </button>
                 </div>
             </div>
@@ -143,11 +139,9 @@
             <section id="view-officer" class="role-view space-y-4">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
                     <div class="flex flex-col pb-3 border-b border-slate-100 gap-2">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                                <i class="fa-solid fa-circle-plus text-indigo-600 text-lg"></i> Entri Paket Masuk
-                            </h2>
-                        </div>
+                        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-plus text-indigo-600 text-lg"></i> Entri Paket Masuk
+                        </h2>
                         <div class="flex bg-slate-100 p-1 rounded-xl">
                             <button type="button" id="tabExternal" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-truck-fast text-indigo-500"></i> Eksternal</button>
                             <button type="button" id="tabInternal" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-school text-emerald-600"></i> Internal</button>
@@ -358,7 +352,7 @@
                     <div class="flex justify-between items-center gap-2">
                         <div>
                             <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-users text-indigo-600"></i> Kelola Anggota Sistem</h3>
-                            <p class="text-[10px] text-slate-500">Tambah, Edit, & Hapus Anggota.</p>
+                            <p class="text-[10px] text-slate-500">Tambah, Edit, Reset, & Hapus Anggota.</p>
                         </div>
                         <button type="button" id="btnAddMemberModal" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1">
                             <i class="fa-solid fa-user-plus"></i> Tambah
@@ -399,7 +393,6 @@
         let app = null;
         let db = null;
         let auth = null;
-        let deferredPrompt = null;
         let courierActiveTab = 'queue';
         let recipientTab = 'incoming';
         const chartsInstance = {};
@@ -423,7 +416,6 @@
             ]
         };
 
-        // --- HOISTED GLOBAL HELPER FUNCTIONS ---
         window.determineRoleByEmail = function(email) {
             const lower = (email || '').toLowerCase();
             if (lower === 'aufah@bns.edu') return 'admin';
@@ -494,19 +486,6 @@
             const loginScreenEl = document.getElementById('loginScreen');
             if(loginScreenEl) loginScreenEl.classList.remove('hidden');
             window.showToast("Anda telah keluar dari sistem.", "warning");
-        };
-
-        window.installPwaApp = async function() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') window.showToast("Aplikasi berhasil diinstal!");
-                deferredPrompt = null;
-                const btnInstall = document.getElementById('btnInstallPwa');
-                if(btnInstall) btnInstall.classList.add('hidden');
-            } else {
-                window.showToast("Aplikasi sudah terinstal atau browser tidak mendukung.", "warning");
-            }
         };
 
         window.showToast = function(message, type = 'success') {
@@ -894,7 +873,9 @@
                         </div>
                         <p class="text-slate-500"><i class="fa-solid fa-envelope mr-1 text-slate-400"></i> ${mem.email}</p>
                         <div class="flex justify-end gap-1.5 pt-2 border-t border-slate-200">
-                            <button type="button" onclick="deleteMember('${mem.firebaseId}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-trash"></i> Hapus</button>
+                            <button type="button" onclick="openEditMemberModal('${mem.firebaseId}')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            <button type="button" onclick="openResetPasswordModal('${mem.firebaseId}', '${mem.email}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-key"></i> Reset</button>
+                            <button type="button" onclick="deleteMember('${mem.firebaseId}')" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-trash"></i> Hapus</button>
                         </div>
                     </div>
                 `;
@@ -920,6 +901,10 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Email (Akun Login)</label>
                             <input type="email" id="newMemEmail" required placeholder="email@bns.edu" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Password</label>
+                            <input type="password" id="newMemPass" required placeholder="Minimal 6 karakter" minlength="6" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Peran / Role</label>
@@ -975,160 +960,108 @@
             window.renderAdminMembers();
         }
 
-        window.deleteMember = async function(memFirebaseId) {
-            if(confirm("Hapus akun anggota ini dari database cloud?")) {
-                const mem = appState.members.find(m => m.firebaseId === memFirebaseId);
-                if(db && memFirebaseId) {
-                    try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', memFirebaseId)); } catch(e) {}
-                }
-                appState.members = appState.members.filter(m => m.firebaseId !== memFirebaseId);
-                window.logAudit("Admin", "Hapus anggota", mem ? mem.email : memFirebaseId);
-                window.showToast("Anggota dihapus.");
-                window.renderAdminMembers();
-            }
-        };
+        window.openEditMemberModal = function(memFirebaseId) {
+            const mem = appState.members.find(m => m.firebaseId === memFirebaseId);
+            if(!mem) return;
 
-        window.renderAdminPackages = function() {
-            const filterInput = document.getElementById('adminFilterPkg');
-            const filter = filterInput ? filterInput.value.toLowerCase() : '';
-            const container = document.getElementById('adminPackageListContainer');
-            if(!container) return;
+            const modal = document.getElementById('globalModal');
+            const box = document.getElementById('modalContentBox');
+            if(!modal || !box) return;
 
-            container.innerHTML = '';
-            let filtered = appState.packages.filter(p => p.id.toLowerCase().includes(filter) || p.recipientName.toLowerCase().includes(filter));
-
-            if(filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">Tidak ada data paket.</div>`;
-                return;
-            }
-
-            filtered.forEach(pkg => {
-                container.innerHTML += `
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 text-xs">
-                        <div class="flex justify-between items-start">
-                            <span class="font-bold text-indigo-600"><i class="fa-solid fa-barcode mr-1"></i>${pkg.id}</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${pkg.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${pkg.status}</span>
+            box.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-pen-to-square text-indigo-600"></i> Edit Anggota</h3>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
+                    </div>
+                    <form id="editMemberForm" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" id="editMemName" required value="${mem.name}" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
                         </div>
                         <div>
-                            <p class="font-bold text-slate-900">${pkg.recipientName} (${pkg.recipientRole})</p>
-                            <p class="text-slate-500">Tujuan: ${pkg.destination}</p>
+                            <label class="block font-bold text-slate-700 mb-1">Email</label>
+                            <input type="email" id="editMemEmail" required value="${mem.email}" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
                         </div>
-                        <div class="flex justify-end gap-1.5 pt-1 border-t">
-                            <button type="button" onclick="deletePackage('${pkg.firebaseId}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-trash"></i> Hapus</button>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Peran / Role</label>
+                            <select id="editMemRole" class="w-full px-3 py-1.5 border rounded-xl bg-white outline-none font-semibold">
+                                <option value="recipient" ${mem.role === 'recipient' ? 'selected' : ''}>Penerima (Recipient)</option>
+                                <option value="officer" ${mem.role === 'officer' ? 'selected' : ''}>Petugas (Officer)</option>
+                                <option value="courier" ${mem.role === 'courier' ? 'selected' : ''}>Kurir (Courier)</option>
+                                <option value="admin" ${mem.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
                         </div>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold">Batal</button>
+                            <button type="submit" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+
+            const editForm = document.getElementById('editMemberForm');
+            if(editForm) {
+                editForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('editMemName').value;
+                    const email = document.getElementById('editMemEmail').value;
+                    const role = document.getElementById('editMemRole').value;
+                    let roleLabelMap = { 'officer': 'Petugas', 'courier': 'Kurir', 'recipient': 'Penerima', 'admin': 'Admin' };
+
+                    mem.name = name;
+                    mem.email = email;
+                    mem.role = role;
+                    mem.roleLabel = roleLabelMap[role] || 'User';
+
+                    if(db && memFirebaseId) {
+                        try {
+                            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', memFirebaseId), { name, email, role, roleLabel: mem.roleLabel });
+                        } catch(err) {}
+                    }
+
+                    window.logAudit("Admin", "Edit anggota", email);
+                    window.showToast("Data anggota diperbarui!");
+                    closeModal();
+                    window.renderAdminMembers();
+                });
+            }
+        };
+
+        window.openResetPasswordModal = function(memFirebaseId, email) {
+            const modal = document.getElementById('globalModal');
+            const box = document.getElementById('modalContentBox');
+            if(!modal || !box) return;
+
+            box.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-key text-amber-600"></i> Reset Password</h3>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
                     </div>
-                `;
-            });
-        };
-
-        window.deletePackage = async function(pkgFirebaseId) {
-            if(confirm("Hapus data paket ini dari database cloud?")) {
-                if(db && pkgFirebaseId) {
-                    try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkgFirebaseId)); } catch(e) {}
-                }
-                appState.packages = appState.packages.filter(p => p.firebaseId !== pkgFirebaseId);
-                window.logAudit("Admin", "Hapus paket", pkgFirebaseId);
-                window.showToast("Paket dihapus.");
-                renderAll();
-            }
-        };
-
-        window.renderAuditLogs = function() {
-            const filterInput = document.getElementById('adminFilterAudit');
-            const filter = filterInput ? filterInput.value.toLowerCase() : '';
-            const container = document.getElementById('auditLogListContainer');
-            if(!container) return;
-
-            container.innerHTML = '';
-            let filtered = appState.auditLogs.filter(l => l.action.toLowerCase().includes(filter) || l.role.toLowerCase().includes(filter));
-
-            if(filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">Tidak ada log aktivitas.</div>`;
-                return;
-            }
-
-            filtered.forEach(log => {
-                container.innerHTML += `
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 space-y-1 text-xs">
-                        <div class="flex justify-between text-[10px] text-slate-400 font-medium">
-                            <span><i class="fa-regular fa-clock mr-1"></i>${log.time}</span>
-                            <span class="font-bold text-indigo-600">${log.role}</span>
+                    <form id="resetPassForm" class="space-y-2.5 text-xs">
+                        <p class="text-slate-600">Reset password untuk akun: <strong class="text-slate-900">${email}</strong></p>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Password Baru</label>
+                            <input type="password" id="newPassInput" required minlength="6" placeholder="Minimal 6 karakter" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
                         </div>
-                        <p class="text-slate-800 font-semibold">${log.action}</p>
-                        <p class="font-mono text-[10px] text-slate-500">Ref: ${log.ref}</p>
-                    </div>
-                `;
-            });
-        };
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold">Batal</button>
+                            <button type="submit" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shadow">Konfirmasi Reset</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            modal.classList.remove('hidden');
 
-        window.updateCharts = function() {
-            const total = appState.packages.length;
-            const process = appState.packages.filter(p => p.status !== 'completed').length;
-            const done = appState.packages.filter(p => p.status === 'completed').length;
-
-            const statTotal = document.getElementById('statTotal');
-            const statProcess = document.getElementById('statProcess');
-            const statDone = document.getElementById('statDone');
-            if(statTotal) statTotal.innerText = total;
-            if(statProcess) statProcess.innerText = process;
-            if(statDone) statDone.innerText = done;
-
-            ['chartSource', 'chartExpedition', 'chartRole', 'chartCategory', 'chartSLA'].forEach(id => {
-                if(chartsInstance[id]) chartsInstance[id].destroy();
-            });
-
-            const extCount = appState.packages.filter(p => p.source === 'external').length;
-            const intCount = appState.packages.filter(p => p.source === 'internal').length;
-            const ctxSource = document.getElementById('chartSource');
-            if(ctxSource) {
-                chartsInstance['chartSource'] = new Chart(ctxSource, {
-                    type: 'doughnut',
-                    data: { labels: ['Eksternal', 'Internal'], datasets: [{ data: [extCount, intCount], backgroundColor: ['#4f46e5', '#10b981'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' } } } } }
-                });
-            }
-
-            const expMap = {};
-            appState.packages.forEach(p => { if(p.source === 'external') expMap[p.expedition] = (expMap[p.expedition] || 0) + 1; });
-            const ctxExp = document.getElementById('chartExpedition');
-            if(ctxExp) {
-                chartsInstance['chartExpedition'] = new Chart(ctxExp, {
-                    type: 'bar',
-                    data: { labels: Object.keys(expMap).length ? Object.keys(expMap) : ['JNE'], datasets: [{ data: Object.values(expMap).length ? Object.values(expMap) : [1], backgroundColor: '#6366f1' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } }
-                });
-            }
-
-            const roleMap = { 'Student': 0, 'Staff': 0, 'Teacher': 0 };
-            appState.packages.forEach(p => { if(roleMap[p.recipientRole] !== undefined) roleMap[p.recipientRole]++; });
-            const ctxRole = document.getElementById('chartRole');
-            if(ctxRole) {
-                chartsInstance['chartRole'] = new Chart(ctxRole, {
-                    type: 'pie',
-                    data: { labels: ['Student', 'Staff', 'Teacher'], datasets: [{ data: [roleMap.Student, roleMap.Staff, roleMap.Teacher], backgroundColor: ['#f59e0b', '#3b82f6', '#ec4899'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' } } } } }
-                });
-            }
-
-            const catMap = { 'Dokumen': 0, 'Makanan': 0, 'Barang': 0 };
-            appState.packages.filter(p => p.category).forEach(p => { if(catMap[p.category] !== undefined) catMap[p.category]++; });
-            const ctxCat = document.getElementById('chartCategory');
-            if(ctxCat) {
-                chartsInstance['chartCategory'] = new Chart(ctxCat, {
-                    type: 'bar',
-                    data: { labels: ['Dokumen', 'Makanan', 'Barang'], datasets: [{ data: [catMap.Dokumen, catMap.Makanan, catMap.Barang], backgroundColor: '#10b981' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } }
-                });
-            }
-
-            const slaMap = {};
-            appState.packages.forEach(p => { if(p.sla) slaMap[p.sla] = (slaMap[p.sla] || 0) + 1; });
-            const ctxSLA = document.getElementById('chartSLA');
-            if(ctxSLA) {
-                chartsInstance['chartSLA'] = new Chart(ctxSLA, {
-                    type: 'doughnut',
-                    data: { labels: Object.keys(slaMap), datasets: [{ data: Object.values(slaMap), backgroundColor: ['#8b5cf6', '#06b6d4', '#f43f5e'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9, weight: 'bold' } } } } }
+            const resetForm = document.getElementById('resetPassForm');
+            if(resetForm) {
+                resetForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    window.logAudit("Admin", "Reset password anggota", email);
+                    window.showToast("Password berhasil direset untuk " + email);
+                    closeModal();
                 });
             }
         };
@@ -1363,17 +1296,6 @@
                 if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all";
             }
 
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
-            }
-
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                const installBtn = document.getElementById('btnInstallPwa');
-                if(installBtn) installBtn.classList.remove('hidden');
-            });
-
             const loginForm = document.getElementById('loginForm');
             if(loginForm) loginForm.addEventListener('submit', handleFirebaseLogin);
 
@@ -1437,9 +1359,6 @@
 
             const adminFilterAudit = document.getElementById('adminFilterAudit');
             if(adminFilterAudit) adminFilterAudit.addEventListener('input', window.renderAuditLogs);
-
-            const btnInstall = document.getElementById('btnInstallPwa');
-            if(btnInstall) btnInstall.addEventListener('click', window.installPwaApp);
 
             const btnRequestPush = document.getElementById('btnRequestPush');
             if(btnRequestPush) btnRequestPush.addEventListener('click', window.requestBrowserNotificationPermission);
