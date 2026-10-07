@@ -20,7 +20,7 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0 m-0 overflow-x-hidden">
 
-    <div id="appContainer" class="w-full min-h-screen bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
+    <div id="appContainer" class="w-full max-w-[430px] h-screen sm:h-[860px] sm:rounded-[40px] sm:border-[8px] sm:border-slate-800 bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
 
         <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -62,15 +62,15 @@
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
                         <div onclick="autofillLogin('petugas@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Budi Petugas:</strong> petugas@bns.edu / 123456 (Petugas)</span>
+                            <span><strong class="text-indigo-700">Petugas:</strong> petugas@bns.edu / 123456 (Officer)</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
                         <div onclick="autofillLogin('kurir@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Joko Kurir:</strong> kurir@bns.edu / 123456 (Kurir)</span>
+                            <span><strong class="text-indigo-700">Kurir:</strong> kurir@bns.edu / 123456 (Courier)</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
                         <div onclick="autofillLogin('siswa@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Siti Siswa:</strong> siswa@bns.edu / 123456 (Penerima)</span>
+                            <span><strong class="text-indigo-700">Penerima:</strong> siswa@bns.edu / 123456 (Recipient)</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
                     </div>
@@ -85,11 +85,11 @@
                     <div id="firebaseConfigInputBox" class="space-y-2 pt-1 hidden">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">Firebase API Key:</label>
-                            <input type="text" id="inputApiKey" placeholder="AIzaSy..." class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-[10px] bg-white outline-none font-mono">
+                            <input type="text" id="inputApiKey" placeholder="Masukkan API Key..." class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-[10px] bg-white outline-none font-mono">
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">Firebase Project ID:</label>
-                            <input type="text" id="inputProjectId" placeholder="project-id-123" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-[10px] bg-white outline-none font-mono">
+                            <input type="text" id="inputProjectId" placeholder="Masukkan Project ID..." class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-[10px] bg-white outline-none font-mono">
                         </div>
                         <button type="button" onclick="saveCustomFirebaseConfig()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-[10px] transition shadow-sm">
                             <i class="fa-solid fa-rotate mr-1"></i> Terapkan & Hubungkan
@@ -98,10 +98,13 @@
                 </div>
 
                 <div class="border-t border-slate-100 pt-3 text-center space-y-2">
-                    <div id="firebaseAuthStatusBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 transition-all">
-                        <span id="firebaseStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                        <span id="firebaseAuthStatus">Menghubungkan ke Firebase Cloud...</span>
+                    <div id="firebaseAuthStatusBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all">
+                        <span id="firebaseStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                        <span id="firebaseAuthStatus">Belum Connect Firebase</span>
                     </div>
+                    <button type="button" id="btnRequestPush" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs transition border border-indigo-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bell text-indigo-600"></i> Aktifkan Web Push Notification
+                    </button>
                     <button type="button" id="btnInstallPwa" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition border border-slate-200 flex items-center justify-center gap-2 hidden mt-1">
                         <i class="fa-solid fa-mobile-screen text-indigo-600"></i> Install Aplikasi (PWA)
                     </button>
@@ -402,14 +405,6 @@
         const chartsInstance = {};
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'educourier-pro-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyD-mock-api-key-for-educourier",
-            authDomain: "educourier-pro.firebaseapp.com",
-            projectId: "educourier-pro",
-            storageBucket: "educourier-pro.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef"
-        };
 
         const appState = {
             currentUser: null,
@@ -526,6 +521,35 @@
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 250);
             }, 3000);
+        };
+
+        window.requestBrowserNotificationPermission = async function() {
+            if (!("Notification" in window)) {
+                window.showToast("Browser tidak mendukung Web Push Notification.", "warning");
+                return;
+            }
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                window.showToast("Web Push Notification berhasil diaktifkan!");
+                new Notification("EduCourier Pro", {
+                    body: "Notifikasi push aktif! Anda akan menerima update status paket.",
+                    icon: "https://placehold.co/192x192/4f46e5/ffffff?text=EC"
+                });
+            } else {
+                window.showToast("Izin notifikasi ditolak oleh pengguna.", "warning");
+            }
+        };
+
+        window.sendPushNotification = function(title, body) {
+            window.showToast(`[PUSH] ${title}: ${body}`);
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(title, {
+                        body: body,
+                        icon: "https://placehold.co/192x192/4f46e5/ffffff?text=EC"
+                    });
+                } catch(e) {}
+            }
         };
 
         window.logAudit = async function(role, action, ref = "-") {
@@ -676,6 +700,7 @@
                     try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.firebaseId), { status: 'delivering', courierName: courierLabel }); } catch(e) {}
                 }
 
+                window.sendPushNotification("Paket Dalam Perjalanan", `Resi ${pkg.id} untuk ${pkg.recipientName} sedang diantar oleh ${courierLabel}.`);
                 window.logAudit("Kurir", "Ambil tugas pengiriman", pkg.id);
                 window.showToast("Tugas diambil! Masuk tab Kirim.");
                 renderAll();
@@ -734,6 +759,7 @@
                     try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.firebaseId), { status: 'completed', proofPhoto }); } catch(e) {}
                 }
 
+                window.sendPushNotification("Paket Selesai Diterima", `Resi ${pkg.id} untuk ${pkg.recipientName} di ${pkg.destination} telah sukses diterima.`);
                 window.logAudit("Kurir", "Selesaikan pengiriman", pkg.id);
                 window.showToast("Pengiriman selesai!");
                 closeModal();
@@ -1203,7 +1229,7 @@
             try {
                 const originalConsoleError = console.error;
                 console.error = function(...args) {
-                    if (args && args[0] && typeof args[0] === 'string' && args[0].includes('Could not reach Cloud Firestore backend')) {
+                    if (args && args[0] && typeof args[0] === 'string' && (args[0].includes('Could not reach Cloud Firestore backend') || args[0].includes('Firestore'))) {
                         return;
                     }
                     originalConsoleError.apply(console, args);
@@ -1302,41 +1328,39 @@
             const statusIndicator = document.getElementById('firebaseStatusIndicator');
             const statusBadge = document.getElementById('firebaseAuthStatusBadge');
 
-            let activeConfig = firebaseConfig;
             const savedFb = localStorage.getItem('educourier_custom_fb');
-            if(savedFb) {
-                try { activeConfig = JSON.parse(savedFb); } catch(e) {}
-            }
-
             const inputApiKey = document.getElementById('inputApiKey');
             const inputProjectId = document.getElementById('inputProjectId');
-            if(inputApiKey) inputApiKey.value = activeConfig.apiKey || '';
-            if(inputProjectId) inputProjectId.value = activeConfig.projectId || '';
 
-            try {
-                app = initializeApp(activeConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                
-                // Real-time ping test to Firestore collection to verify actual connection
-                await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'pingTest'));
+            if(savedFb) {
+                try {
+                    const activeConfig = JSON.parse(savedFb);
+                    if(inputApiKey) inputApiKey.value = activeConfig.apiKey || '';
+                    if(inputProjectId) inputProjectId.value = activeConfig.projectId || '';
 
-                if(statusEl) statusEl.innerText = "Firebase Online (Cloud Connected)";
-                if(statusIndicator) {
-                    statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500";
+                    if(activeConfig.apiKey && activeConfig.projectId) {
+                        app = initializeApp(activeConfig);
+                        db = getFirestore(app);
+                        auth = getAuth(app);
+
+                        const pingPromise = getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'pingTest'));
+                        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
+                        await Promise.race([pingPromise, timeoutPromise]);
+
+                        if(statusEl) statusEl.innerText = "Firebase Online (Cloud Connected)";
+                        if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500";
+                        if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all";
+                        initFirebaseListeners();
+                    }
+                } catch (err) {
+                    if(statusEl) statusEl.innerText = "Belum Connect Firebase (Gagal Koneksi)";
+                    if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
+                    if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all";
                 }
-                if(statusBadge) {
-                    statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all";
-                }
-                initFirebaseListeners();
-            } catch (err) {
-                if(statusEl) statusEl.innerText = "Firebase Offline (Gagal Koneksi Cloud)";
-                if(statusIndicator) {
-                    statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500";
-                }
-                if(statusBadge) {
-                    statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all";
-                }
+            } else {
+                if(statusEl) statusEl.innerText = "Belum Connect Firebase (Masukkan Konfigurasi)";
+                if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
+                if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all";
             }
 
             if ('serviceWorker' in navigator) {
@@ -1416,6 +1440,9 @@
 
             const btnInstall = document.getElementById('btnInstallPwa');
             if(btnInstall) btnInstall.addEventListener('click', window.installPwaApp);
+
+            const btnRequestPush = document.getElementById('btnRequestPush');
+            if(btnRequestPush) btnRequestPush.addEventListener('click', window.requestBrowserNotificationPermission);
         });
     </script>
 </body>
