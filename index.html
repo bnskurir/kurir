@@ -391,7 +391,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let app = null;
         let db = null;
@@ -1318,6 +1318,9 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
                 
+                // Real-time ping test to Firestore collection to verify actual connection
+                await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'pingTest'));
+
                 if(statusEl) statusEl.innerText = "Firebase Online (Cloud Connected)";
                 if(statusIndicator) {
                     statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500";
@@ -1327,7 +1330,7 @@
                 }
                 initFirebaseListeners();
             } catch (err) {
-                if(statusEl) statusEl.innerText = "Firebase Offline / Gagal Koneksi Jaringan";
+                if(statusEl) statusEl.innerText = "Firebase Offline (Gagal Koneksi Cloud)";
                 if(statusIndicator) {
                     statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500";
                 }
