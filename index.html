@@ -374,6 +374,7 @@
                 { id: "TRX-10483", source: "internal", expedition: "Internal Sekolah", origin: "Ruang Guru", recipientName: "Siti Rahma", destination: "Perpustakaan", recipientRole: "Teacher", category: "Barang", sla: "Same Day", status: "delivering", courierName: "Kurir Kampus", notes: "Buku paket", timestamp: new Date().toISOString() }
             ],
             members: [
+                { firebaseId: "m0", name: "Aufah Admin", email: "aufah@bns.edu", role: "admin", roleLabel: "Admin" },
                 { firebaseId: "m1", name: "Admin EduCourier", email: "admin@bns.edu", role: "admin", roleLabel: "Admin" },
                 { firebaseId: "m2", name: "Budi Petugas", email: "petugas@bns.edu", role: "officer", roleLabel: "Petugas" },
                 { firebaseId: "m3", name: "Joko Kurir", email: "kurir@bns.edu", role: "courier", roleLabel: "Kurir" },
@@ -387,6 +388,7 @@
         // --- HOISTED GLOBAL HELPER FUNCTIONS ---
         window.determineRoleByEmail = function(email) {
             const lower = (email || '').toLowerCase();
+            if (lower === 'aufah@bns.edu') return 'admin';
             if (lower.includes('officer') || lower.includes('petugas')) return 'officer';
             if (lower.includes('courier') || lower.includes('kurir')) return 'courier';
             if (lower.includes('admin')) return 'admin';
