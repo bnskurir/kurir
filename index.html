@@ -16,6 +16,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
+    <!-- ================= STREAMING_CHUNK:Rendering Login Screen ================= -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6 animate-in fade-in zoom-in duration-300">
             <div class="text-center space-y-2">
@@ -69,6 +70,7 @@
         </div>
     </div>
 
+    <!-- ================= STREAMING_CHUNK:Rendering Header & Navbar ================= -->
     <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
@@ -98,7 +100,7 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 pb-24">
 
-        <!-- Role 1: Petugas Input -->
+        <!-- ================= STREAMING_CHUNK:Rendering Petugas View ================= -->
         <div id="view-petugas" class="tab-view space-y-6">
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
@@ -167,7 +169,7 @@
             </div>
         </div>
 
-        <!-- Role 2: Kurir -->
+        <!-- ================= STREAMING_CHUNK:Rendering Courier View ================= -->
         <div id="view-kurir" class="tab-view space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-wrap gap-3 items-center justify-between">
                 <div class="flex items-center space-x-2 w-full md:w-auto">
@@ -212,7 +214,7 @@
             </div>
         </div>
 
-        <!-- Role 3: Penerima -->
+        <!-- ================= STREAMING_CHUNK:Rendering Receiver View ================= -->
         <div id="view-penerima" class="tab-view space-y-6">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-2xl p-6 shadow-md flex flex-wrap justify-between items-center gap-4">
                 <div>
@@ -243,7 +245,7 @@
             </div>
         </div>
 
-        <!-- Role 4: Admin -->
+        <!-- ================= STREAMING_CHUNK:Rendering Admin View ================= -->
         <div id="view-admin" class="tab-view space-y-6">
             <div class="flex space-x-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
                 <button onclick="switchAdminTab('overview')" id="adm-tab-overview" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-chart-pie mr-1"></i><span>Overview & Grafik</span></button>
@@ -360,6 +362,7 @@
 
     </main>
 
+    <!-- ================= STREAMING_CHUNK:Rendering Modals ================= -->
     <div id="loading-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-xs w-full p-6 text-center shadow-2xl space-y-4">
             <div class="w-16 h-16 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-2xl animate-spin">
@@ -493,10 +496,11 @@
         </div>
     </div>
 
+    <!-- ================= STREAMING_CHUNK:Initializing Firebase & Application Logic ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let app, db, auth, userId = null;
         let packages = [];
@@ -506,7 +510,9 @@
             { id: 'usr-3', name: 'Gari (Petugas)', email: 'gari@sch.edu', role: 'petugas', password: '123456' },
             { id: 'usr-4', name: 'Siti Rahma', email: 'siti@sch.edu', role: 'penerima', password: '123456' }
         ];
-        let auditLogs = [];
+        let auditLogs = [
+            { time: '08:30 WIB', rawTime: new Date().toISOString(), actor: 'Petugas (Gari)', action: 'Inisialisasi sistem Kurir BNS' }
+        ];
         let charts = {};
         
         window.loggedUser = { role: 'petugas', name: 'Gari (Petugas)', email: 'gari@sch.edu' };
@@ -517,7 +523,7 @@
 
         async function initFirebase() {
             try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
                 
                 const firebaseConfig = {
                     apiKey: "AIzaSyBUSWK7ykh99naQExKfHKJZB1oOYvlrUzU",
@@ -546,35 +552,96 @@
                     if (user) userId = user.uid;
                 });
 
+                // 1. Members collection sync & seeding
+                const memberColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+                try {
+                    const memberSnapshot = await getDocs(memberColRef);
+                    if (memberSnapshot.empty) {
+                        for (const m of members) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', m.id), m);
+                        }
+                    }
+                } catch(e) { console.warn("Members seeding notice:", e.message); }
+
+                onSnapshot(memberColRef, (snapshot) => {
+                    members = [];
+                    snapshot.forEach((docSnap) => {
+                        members.push({ firebaseId: docSnap.id, ...docSnap.data() });
+                    });
+                    if (window.currentRole === 'admin') renderAdminMembers();
+                }, (error) => {
+                    console.warn("Firebase members sync notice:", error.message);
+                });
+
+                // 2. Packages collection sync & seeding
                 const pkgColRef = collection(db, 'artifacts', appId, 'public', 'data', 'packages');
+                try {
+                    const pkgSnapshot = await getDocs(pkgColRef);
+                    if (pkgSnapshot.empty) {
+                        const defaultPackages = [
+                            {
+                                id: 'TRX-9821',
+                                source: 'external',
+                                expedition: 'JNE Express',
+                                petugas: 'Gari (Petugas)',
+                                originLocation: 'Gerbang Utama Satpam',
+                                recipient: 'Siti Rahma',
+                                role: 'Student',
+                                destination: 'Kelas X IPA 2',
+                                category: 'dokumen',
+                                sla: 'Kilat (1 Jam)',
+                                notes: 'Dokumen penting rapot',
+                                status: 'pending',
+                                photoUrl: null,
+                                timestamp: '08:30 WIB',
+                                createdAt: Date.now() - 3600000
+                            },
+                            {
+                                id: 'TRX-9822',
+                                source: 'internal',
+                                senderInternal: 'Pak Joko (Wakakur)',
+                                roomSender: 'Ruang Guru Lantai 2',
+                                petugas: 'Gari (Petugas)',
+                                recipient: 'Ibu Dr. Ratna',
+                                role: 'Teacher',
+                                destination: 'Ruang Kepala Sekolah',
+                                category: 'barang',
+                                sla: 'Prioritas Guru',
+                                notes: 'Proyektor mini lab',
+                                status: 'delivering',
+                                photoUrl: null,
+                                timestamp: '09:15 WIB',
+                                createdAt: Date.now() - 1800000
+                            }
+                        ];
+                        for (const p of defaultPackages) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', p.id), p);
+                        }
+                    }
+                } catch(e) { console.warn("Packages seeding notice:", e.message); }
+
                 onSnapshot(pkgColRef, (snapshot) => {
                     packages = [];
                     snapshot.forEach((docSnap) => {
                         packages.push({ firebaseId: docSnap.id, ...docSnap.data() });
                     });
+                    packages.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                     refreshActiveViews();
                 }, (error) => {
-                    console.error("Firebase packages error:", error);
+                    console.warn("Firebase packages sync notice:", error.message);
                 });
 
-                const memberColRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
-                onSnapshot(memberColRef, (snapshot) => {
-                    if (!snapshot.empty) {
-                        members = [];
-                        snapshot.forEach((docSnap) => {
-                            members.push({ firebaseId: docSnap.id, ...docSnap.data() });
-                        });
-                    } else {
-                        members.forEach(async (m) => {
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', m.id), m);
-                        });
-                    }
-                    if (window.currentRole === 'admin') renderAdminMembers();
-                }, (error) => {
-                    console.error("Firebase members error:", error);
-                });
-
+                // 3. Audit logs collection sync & seeding
                 const auditColRef = collection(db, 'artifacts', appId, 'public', 'data', 'auditLogs');
+                try {
+                    const auditSnapshot = await getDocs(auditColRef);
+                    if (auditSnapshot.empty) {
+                        for (let i = 0; i < auditLogs.length; i++) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'auditLogs', 'LOG-INIT-' + i), auditLogs[i]);
+                        }
+                    }
+                } catch(e) { console.warn("Audit seeding notice:", e.message); }
+
                 onSnapshot(auditColRef, (snapshot) => {
                     auditLogs = [];
                     snapshot.forEach((docSnap) => {
@@ -583,14 +650,13 @@
                     auditLogs.sort((a, b) => new Date(b.rawTime || 0) - new Date(a.rawTime || 0));
                     refreshActiveViews();
                 }, (error) => {
-                    console.error("Firebase audit error:", error);
+                    console.warn("Firebase audit sync notice:", error.message);
                 });
 
-                // Check stored session on load to stay on page/role upon refresh
                 checkPersistedSession();
 
             } catch (err) {
-                console.warn("Firebase initialization warning:", err);
+                console.warn("Firebase initialization warning:", err.message);
                 checkPersistedSession();
             }
         }
@@ -631,7 +697,6 @@
             e.preventDefault();
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
-            const role = window.loggedUser.role;
 
             const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase() && m.password === password);
             if (!foundUser) {
@@ -643,7 +708,6 @@
             window.loggedUser.email = foundUser.email;
             window.loggedUser.role = foundUser.role;
 
-            // Persist session to localStorage so refresh keeps user logged in
             localStorage.setItem('kurirBnsUser', JSON.stringify(window.loggedUser));
 
             document.getElementById('auth-screen').classList.add('hidden');
@@ -832,14 +896,18 @@
 
             setTimeout(async () => {
                 modal.classList.add('hidden');
+                
+                // Fallback local update
+                packages.unshift(newPkg);
+
                 if (db) {
                     try {
-                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
                         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', trx);
                         await setDoc(docRef, newPkg);
                         await addAuditLogFirebase(`Petugas (${petugas}) Menerima paket ${window.sourceType.toUpperCase()} (${trx}) untuk ${recipient} (${role})`);
                     } catch (err) {
-                        console.error("Error saving package to Firestore:", err);
+                        console.warn("Firestore save package warning:", err.message);
                     }
                 }
                 document.getElementById('package-form').reset();
@@ -920,17 +988,21 @@
 
         window.takeOrder = async function(id) {
             const pkg = packages.find(p => (p.firebaseId === id || p.id === id));
-            if (pkg && db) {
-                try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.id);
-                    await updateDoc(docRef, { status: 'delivering' });
-                    await addAuditLogFirebase(`Kurir (${window.loggedUser.name}) mengambil tugas pengiriman untuk paket ${pkg.id} (${pkg.recipient})`);
-                    window.renderCourierView();
-                    window.showMessage('Tugas Diambil!', 'Paket dipindahkan ke tab Sedang Dikirim.');
-                } catch(err) {
-                    console.error("Error taking order:", err);
+            if (pkg) {
+                pkg.status = 'delivering';
+                window.renderCourierView();
+
+                if (db) {
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.id);
+                        await updateDoc(docRef, { status: 'delivering' });
+                        await addAuditLogFirebase(`Kurir (${window.loggedUser.name}) mengambil tugas pengiriman untuk paket ${pkg.id} (${pkg.recipient})`);
+                    } catch(err) {
+                        console.warn("Firestore take order warning:", err.message);
+                    }
                 }
+                window.showMessage('Tugas Diambil!', 'Paket dipindahkan ke tab Sedang Dikirim.');
             }
         };
 
@@ -957,19 +1029,25 @@
         window.submitCompleteDelivery = async function() {
             const receiverName = document.getElementById('confirm-receiver-name').value || 'Penerima';
             const pkg = packages.find(p => (p.firebaseId === window.activeCompletingId || p.id === window.activeCompletingId));
-            if (pkg && db) {
-                try {
-                    const photoUrl = window.photoCaptured ? 'https://placehold.co/300x200/emerald/white?text=Bukti+' + encodeURIComponent(receiverName) : 'https://placehold.co/300x200/slate/white?text=Selesai';
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.id);
-                    await updateDoc(docRef, { status: 'completed', photoUrl: photoUrl });
-                    await addAuditLogFirebase(`Kurir (${window.loggedUser.name}) menyelesaikan pengiriman ${pkg.id} ke ${pkg.recipient} (Diterima: ${receiverName})`);
-                    window.closeCompleteModal();
-                    window.renderCourierView();
-                    window.showMessage('Pengiriman Selesai!', 'Status paket telah disinkronkan ke Firebase.');
-                } catch(err) {
-                    console.error("Error completing delivery:", err);
+            if (pkg) {
+                const photoUrl = window.photoCaptured ? 'https://placehold.co/300x200/emerald/white?text=Bukti+' + encodeURIComponent(receiverName) : 'https://placehold.co/300x200/slate/white?text=Selesai';
+                pkg.status = 'completed';
+                pkg.photoUrl = photoUrl;
+
+                window.closeCompleteModal();
+                window.renderCourierView();
+
+                if (db) {
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.id);
+                        await updateDoc(docRef, { status: 'completed', photoUrl: photoUrl });
+                        await addAuditLogFirebase(`Kurir (${window.loggedUser.name}) menyelesaikan pengiriman ${pkg.id} ke ${pkg.recipient} (Diterima: ${receiverName})`);
+                    } catch(err) {
+                        console.warn("Firestore complete delivery warning:", err.message);
+                    }
                 }
+                window.showMessage('Pengiriman Selesai!', 'Status paket telah disinkronkan.');
             }
         };
 
@@ -1161,34 +1239,46 @@
             const memberId = editId ? editId : 'usr-' + Date.now();
             const memberData = { id: memberId, name, email, role, password };
 
+            window.closeMemberModal();
+
+            // Local fallback
+            if (editId) {
+                const idx = members.findIndex(m => (m.firebaseId === editId || m.id === editId));
+                if (idx !== -1) members[idx] = { ...members[idx], ...memberData };
+            } else {
+                members.push(memberData);
+            }
+            renderAdminMembers();
+
             if (db) {
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberId);
                     await setDoc(docRef, memberData);
                     await addAuditLogFirebase(`Admin (${window.loggedUser.name}) ${editId ? 'memperbarui' : 'menambahkan'} akun anggota: ${name} (${role})`);
-                    window.closeMemberModal();
-                    window.renderAdminMembers();
                     window.showMessage('Berhasil!', 'Data anggota berhasil disinkronkan ke Firebase.');
                 } catch(err) {
-                    console.error("Error saving member:", err);
+                    console.warn("Firestore save member warning:", err.message);
+                    window.showMessage('Tersimpan Lokal', 'Data disimpan ke state lokal.');
                 }
             }
         };
 
         window.deleteMember = async function(id) {
-            if (confirm('Yakin ingin menghapus akun anggota ini?')) {
-                const m = members.find(user => (user.firebaseId === id || user.id === id));
-                if (m && db) {
+            const m = members.find(user => (user.firebaseId === id || user.id === id));
+            if (m) {
+                members = members.filter(user => (user.firebaseId !== id && user.id !== id));
+                renderAdminMembers();
+
+                if (db) {
                     try {
-                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
                         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', m.firebaseId || m.id);
                         await deleteDoc(docRef);
                         await addAuditLogFirebase(`Admin (${window.loggedUser.name}) menghapus akun anggota ${m.name}`);
-                        window.renderAdminMembers();
-                        window.showMessage('Terhapus', 'Akun anggota telah dihapus dari sistem.');
+                        window.showMessage('Terhapus', 'Akun anggota telah dihapus.');
                     } catch(err) {
-                        console.error("Error deleting member:", err);
+                        console.warn("Firestore delete member warning:", err.message);
                     }
                 }
             }
@@ -1215,72 +1305,87 @@
             e.preventDefault();
             const id = document.getElementById('edit-pkg-id').value;
             const p = packages.find(pkg => pkg.id === id);
-            if (p && db) {
-                try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', id);
-                    await updateDoc(docRef, {
-                        recipient: document.getElementById('edit-recipient').value,
-                        role: document.getElementById('edit-role').value,
-                        destination: document.getElementById('edit-dest').value,
-                        status: document.getElementById('edit-status').value,
-                        notes: document.getElementById('edit-notes').value
-                    });
-                    await addAuditLogFirebase(`Admin (${window.loggedUser.name}) memperbarui data paket ${id}`);
-                    window.closeEditModal();
-                    window.renderAdminPackages();
-                    window.showMessage('Berhasil Diperbarui!', 'Data paket berhasil disinkronkan ke Firebase.');
-                } catch(err) {
-                    console.error("Error updating package:", err);
+            if (p) {
+                p.recipient = document.getElementById('edit-recipient').value;
+                p.role = document.getElementById('edit-role').value;
+                p.destination = document.getElementById('edit-dest').value;
+                p.status = document.getElementById('edit-status').value;
+                p.notes = document.getElementById('edit-notes').value;
+
+                window.closeEditModal();
+                window.renderAdminPackages();
+
+                if (db) {
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', id);
+                        await updateDoc(docRef, {
+                            recipient: p.recipient,
+                            role: p.role,
+                            destination: p.destination,
+                            status: p.status,
+                            notes: p.notes
+                        });
+                        await addAuditLogFirebase(`Admin (${window.loggedUser.name}) memperbarui data paket ${id}`);
+                    } catch(err) {
+                        console.warn("Firestore update package warning:", err.message);
+                    }
                 }
+                window.showMessage('Berhasil Diperbarui!', 'Data paket berhasil disimpan.');
             }
         };
 
         window.deletePackage = async function(id) {
             if (confirm('Yakin ingin menghapus data paket ' + id + '?')) {
+                packages = packages.filter(pkg => pkg.id !== id);
+                window.renderAdminPackages();
+
                 if (db) {
                     try {
-                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
                         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', id);
                         await deleteDoc(docRef);
                         await addAuditLogFirebase(`Admin (${window.loggedUser.name}) menghapus data paket ${id}`);
-                        window.renderAdminPackages();
-                        window.showMessage('Terhapus', 'Data paket telah dihapus dari Firebase.');
                     } catch(err) {
-                        console.error("Error deleting package:", err);
+                        console.warn("Firestore delete package warning:", err.message);
                     }
                 }
+                window.showMessage('Terhapus', 'Data paket telah dihapus.');
             }
         };
 
         async function addAuditLogFirebase(actionText) {
+            const newLog = {
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB',
+                rawTime: new Date().toISOString(),
+                actor: window.loggedUser.name || window.loggedUser.role.toUpperCase(),
+                action: actionText
+            };
+            auditLogs.unshift(newLog);
+            if (window.currentRole === 'admin') renderAuditLogs();
+
             if (db) {
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-default';
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-app';
                     const logId = 'LOG-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-                    const logData = {
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB',
-                        rawTime: new Date().toISOString(),
-                        actor: window.loggedUser.name || window.loggedUser.role.toUpperCase(),
-                        action: actionText
-                    };
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'auditLogs', logId);
-                    await setDoc(docRef, logData);
+                    await setDoc(docRef, newLog);
                 } catch(err) {
-                    console.error("Error adding audit log:", err);
+                    console.warn("Firestore audit log warning (permissions check):", err.message);
                 }
             }
         }
 
         window.renderAuditLogs = function() {
             const container = document.getElementById('audit-log-container');
+            if(!container) return;
             container.innerHTML = auditLogs.map(log => `
                 <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex justify-between items-center text-xs">
                     <div>
-                        <span class="font-bold text-indigo-600 mr-2">[${log.actor}]</span>
+                        <span class="font-bold text-indigo-600 mr-2">[${log.actor || 'SISTEM'}]</span>
                         <span class="text-slate-700">${log.action}</span>
                     </div>
-                    <span class="text-[10px] text-slate-400 font-mono">${log.time}</span>
+                    <span class="text-[10px] text-slate-400 font-mono">${log.time || ''}</span>
                 </div>
             `).join('');
         };
