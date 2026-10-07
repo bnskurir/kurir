@@ -161,9 +161,6 @@
                         <span id="firebaseStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
                         <span id="firebaseAuthStatus">Belum Connect Firebase</span>
                     </div>
-                    <button type="button" id="btnRequestPush" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs transition border border-indigo-200 flex items-center justify-center gap-2 click-contrast shadow-sm">
-                        <i class="fa-solid fa-bell text-indigo-600"></i> Aktifkan Web Push Notification
-                    </button>
                     <button type="button" id="btnInstallPwa" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2 hidden click-contrast shadow-sm">
                         <i class="fa-solid fa-download text-emerald-600"></i> Install Aplikasi (PWA)
                     </button>
@@ -570,16 +567,18 @@
                 window.showToast("Browser tidak mendukung Web Push Notification.", "warning");
                 return;
             }
-            const permission = await Notification.requestPermission();
-            if (permission === "granted") {
-                window.showToast("Web Push Notification berhasil diaktifkan!");
-                new Notification("Edu Courier", {
-                    body: "Notifikasi push aktif! Anda akan menerima update status paket.",
-                    icon: "https://placehold.co/192x192/4f46e5/ffffff?text=EC"
-                });
-            } else {
-                window.showToast("Izin notifikasi ditolak oleh pengguna.", "warning");
-            }
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                    window.showToast("Web Push Notification berhasil diaktifkan!");
+                    new Notification("Edu Courier", {
+                        body: "Notifikasi push aktif! Anda akan menerima update status paket.",
+                        icon: "https://placehold.co/192x192/4f46e5/ffffff?text=EC"
+                    });
+                } else {
+                    window.showToast("Izin notifikasi ditolak oleh pengguna.", "warning");
+                }
+            } catch(e) {}
         };
 
         let deferredPwaPrompt = null;
@@ -592,7 +591,7 @@
 
         window.installPwaApp = async function() {
             if (!deferredPwaPrompt) {
-                window.showToast("Aplikasi sudah terpasang atau browser tidak mendukung.", "warning");
+                window.showToast("Aplikasi sudah terpasang atau browser mendeteksi siap offline.", "warning");
                 return;
             }
             deferredPwaPrompt.prompt();
@@ -1325,6 +1324,12 @@
 
             window.switchRole(role);
             renderAll();
+
+            setTimeout(() => {
+                if ("Notification" in window && Notification.permission !== "granted") {
+                    window.requestBrowserNotificationPermission();
+                }
+            }, 1000);
         }
 
         async function handleFirebaseLogin(event) {
@@ -1569,15 +1574,23 @@
             const adminFilterAudit = document.getElementById('adminFilterAudit');
             if(adminFilterAudit) adminFilterAudit.addEventListener('input', window.renderAuditLogs);
 
-            const btnRequestPush = document.getElementById('btnRequestPush');
-            if(btnRequestPush) btnRequestPush.addEventListener('click', window.requestBrowserNotificationPermission);
-
             const btnInstallPwa = document.getElementById('btnInstallPwa');
             if(btnInstallPwa) btnInstallPwa.addEventListener('click', window.installPwaApp);
 
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
+                try {
+                    const reg = await navigator.serviceWorker.register('sw.js');
+                    console.debug('ServiceWorker registration successful with scope: ', reg.scope);
+                } catch (err) {
+                    console.debug('ServiceWorker registration failed: ', err);
+                }
             }
+
+            setTimeout(() => {
+                if ("Notification" in window && Notification.permission === "default") {
+                    window.requestBrowserNotificationPermission();
+                }
+            }, 1500);
         });
     </script>
 </body>
