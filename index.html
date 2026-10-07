@@ -3,82 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduCourier Pro - Sistem Logistik Sekolah & Kampus</title>
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Edu Courier - Sistem Logistik Sekolah & Kampus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="manifest.json">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f172a; margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        body { font-family: 'Inter', sans-serif; background: #090d16; margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .fade-in { animation: fadeIn 0.2s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        /* Glassmorphism & Glow Effects */
+        .glass-frame {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(79, 70, 229, 0.15);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card-dark {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.6), 0 0 20px rgba(124, 58, 237, 0.4); }
+            70% { box-shadow: 0 0 0 14px rgba(79, 70, 229, 0), 0 0 35px rgba(124, 58, 237, 0.2); }
+            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0), 0 0 20px rgba(124, 58, 237, 0.4); }
+        }
+        .animated-login-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+            background-size: 200% 200%;
+            animation: gradientMove 4s ease infinite, pulseGlow 2.5s infinite;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .animated-login-btn:hover {
+            background-position: right center;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6), 0 0 25px rgba(219, 39, 119, 0.4);
+        }
+        .animated-login-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* High Contrast Input & Click States */
+        input:focus, select:focus, textarea:focus {
+            border-color: #4f46e5 !important;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
+            background-color: #ffffff !important;
+        }
+        .click-contrast:active {
+            transform: scale(0.97);
+            filter: brightness(0.92);
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased">
 
-    <div id="appContainer" class="w-full max-w-[430px] h-[860px] max-h-[100vh] sm:rounded-[40px] sm:border-[8px] sm:border-slate-800 bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
+    <div id="appContainer" class="w-full max-w-[430px] h-[860px] max-h-[100vh] sm:rounded-[44px] sm:border-[10px] sm:border-slate-800 bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl glass-frame select-none">
 
         <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-[380px] p-6 space-y-4 fade-in border border-white/20 my-auto">
+            <div class="glass-card rounded-3xl shadow-2xl w-full max-w-[380px] p-6 space-y-4 fade-in border border-white/40 my-auto">
                 <div class="text-center space-y-2">
-                    <div class="inline-flex bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white p-4 rounded-2xl shadow-lg shadow-indigo-500/30 text-2xl font-bold mb-1">
+                    <div class="inline-flex bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white p-4 rounded-2xl shadow-lg shadow-indigo-500/40 text-2xl font-bold mb-1">
                         <i class="fa-solid fa-box-open text-amber-300"></i>
                     </div>
-                    <h1 class="font-bold text-2xl text-slate-900">EduCourier Pro</h1>
+                    <h1 class="font-bold text-2xl text-slate-900 tracking-tight">Edu Courier</h1>
                     <p class="text-xs text-slate-500 font-medium">Sistem Logistik Sekolah & Kampus Berbasis Cloud</p>
                 </div>
 
                 <form id="loginForm" class="space-y-3">
                     <div>
-                        <input type="email" id="loginEmail" required placeholder="nama@bns.edu" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium">
+                        <input type="email" id="loginEmail" required placeholder="nama@bns.edu" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium bg-slate-50/80">
                     </div>
 
                     <div>
-                        <input type="password" id="loginPassword" required minlength="6" placeholder="Password" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        <input type="password" id="loginPassword" required minlength="6" placeholder="Password" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition bg-slate-50/80">
                     </div>
 
-                    <div id="loginRolePreviewBox" class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-[11px] text-indigo-900 flex items-center justify-between">
+                    <div id="loginRolePreviewBox" class="bg-indigo-50/90 border border-indigo-200 rounded-xl p-3 text-[11px] text-indigo-900 flex items-center justify-between shadow-sm">
                         <span class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-indigo-600"></i> Deteksi Role:</span>
-                        <span id="previewRoleBadge" class="font-bold bg-indigo-600 text-white px-2.5 py-0.5 rounded-lg text-[10px]">Masukkan Email</span>
+                        <span id="previewRoleBadge" class="font-bold bg-indigo-600 text-white px-2.5 py-0.5 rounded-lg text-[10px] shadow-sm">Masukkan Email</span>
                     </div>
 
                     <div class="flex gap-2 pt-1">
-                        <button type="submit" id="btnLoginSubmit" class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 text-xs">
+                        <button type="submit" id="btnLoginSubmit" class="flex-1 py-3 animated-login-btn text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider click-contrast">
                             <i class="fa-solid fa-right-to-bracket text-emerald-300"></i> Login
                         </button>
                     </div>
                 </form>
 
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 text-left">
+                <div class="bg-slate-50/90 border border-slate-200/80 rounded-xl p-3 space-y-2 text-left shadow-sm">
                     <p class="text-[11px] font-bold text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-key text-indigo-600"></i> Akun Uji Coba Tersedia:</p>
                     <div class="space-y-1 text-[10px] text-slate-600 font-medium">
-                        <div onclick="autofillLogin('aufah@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Aufah Admin:</strong> aufah@bns.edu / 123456 (Admin)</span>
+                        <div onclick="autofillLogin('aufah@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-100/70 p-1.5 rounded-lg transition flex justify-between items-center bg-white border border-slate-200 click-contrast">
+                            <span><strong class="text-indigo-700">Aufah Admin:</strong> aufah@bns.edu / 123456</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
-                        <div onclick="autofillLogin('petugas@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Petugas:</strong> petugas@bns.edu / 123456 (Officer)</span>
+                        <div onclick="autofillLogin('petugas@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-100/70 p-1.5 rounded-lg transition flex justify-between items-center bg-white border border-slate-200 click-contrast">
+                            <span><strong class="text-indigo-700">Petugas:</strong> petugas@bns.edu / 123456</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
-                        <div onclick="autofillLogin('kurir@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Kurir:</strong> kurir@bns.edu / 123456 (Courier)</span>
+                        <div onclick="autofillLogin('kurir@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-100/70 p-1.5 rounded-lg transition flex justify-between items-center bg-white border border-slate-200 click-contrast">
+                            <span><strong class="text-indigo-700">Kurir:</strong> kurir@bns.edu / 123456</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
-                        <div onclick="autofillLogin('siswa@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition flex justify-between items-center bg-white border border-slate-100">
-                            <span><strong class="text-indigo-700">Penerima:</strong> siswa@bns.edu / 123456 (Recipient)</span>
+                        <div onclick="autofillLogin('siswa@bns.edu', '123456')" class="cursor-pointer hover:bg-indigo-100/70 p-1.5 rounded-lg transition flex justify-between items-center bg-white border border-slate-200 click-contrast">
+                            <span><strong class="text-indigo-700">Penerima:</strong> siswa@bns.edu / 123456</span>
                             <i class="fa-solid fa-arrow-right text-indigo-500"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-indigo-50/60 border border-indigo-200 rounded-xl p-3 space-y-2 text-left">
-                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleFirebaseConfigBox()">
-                        <p class="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5"><i class="fa-solid fa-database text-indigo-600"></i> Pengaturan Firebase Manual:</p>
+                <div class="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 space-y-2 text-left shadow-sm">
+                    <div class="flex justify-between items-center cursor-pointer click-contrast" onclick="toggleFirebaseConfigBox()">
+                        <p class="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5"><i class="fa-solid fa-database text-indigo-600"></i> Konfigurasi Firebase Manual:</p>
                         <i class="fa-solid fa-chevron-down text-indigo-600 text-[10px]" id="firebaseConfigChevron"></i>
                     </div>
                     <div id="firebaseConfigInputBox" class="space-y-2 pt-1 hidden">
@@ -90,42 +150,45 @@
                             <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">Firebase Project ID:</label>
                             <input type="text" id="inputProjectId" placeholder="Masukkan Project ID..." class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-[10px] bg-white outline-none font-mono">
                         </div>
-                        <button type="button" onclick="saveCustomFirebaseConfig()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-[10px] transition shadow-sm">
-                            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan & Hubungkan
+                        <button type="button" onclick="saveCustomFirebaseConfig()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-[10px] transition shadow-md click-contrast flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-floppy-disk"></i> Simpan & Hubungkan
                         </button>
                     </div>
                 </div>
 
-                <div class="border-t border-slate-100 pt-3 text-center space-y-2">
-                    <div id="firebaseAuthStatusBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all">
+                <div class="border-t border-slate-200/80 pt-3 text-center space-y-2">
+                    <div id="firebaseAuthStatusBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 shadow-sm transition-all">
                         <span id="firebaseStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
                         <span id="firebaseAuthStatus">Belum Connect Firebase</span>
                     </div>
-                    <button type="button" id="btnRequestPush" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs transition border border-indigo-200 flex items-center justify-center gap-2">
+                    <button type="button" id="btnRequestPush" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs transition border border-indigo-200 flex items-center justify-center gap-2 click-contrast shadow-sm">
                         <i class="fa-solid fa-bell text-indigo-600"></i> Aktifkan Web Push Notification
+                    </button>
+                    <button type="button" id="btnInstallPwa" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2 hidden click-contrast shadow-sm">
+                        <i class="fa-solid fa-download text-emerald-600"></i> Install Aplikasi (PWA)
                     </button>
                 </div>
             </div>
         </div>
 
-        <header class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 text-white shadow-md sticky top-0 z-40 shrink-0">
+        <header class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 text-white shadow-lg sticky top-0 z-40 shrink-0 border-b border-white/10">
             <div class="px-4 py-3 flex justify-between items-center gap-3">
                 <div class="flex items-center space-x-2.5">
-                    <div class="bg-white/20 backdrop-blur-md text-white p-2 rounded-xl shadow font-bold text-base flex items-center justify-center w-9 h-9 border border-white/20">
+                    <div class="bg-white/20 backdrop-blur-md text-white p-2 rounded-xl shadow-md font-bold text-base flex items-center justify-center w-9 h-9 border border-white/25">
                         <i class="fa-solid fa-box-open text-amber-300"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-sm leading-tight flex items-center gap-1.5">EduCourier Pro <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded font-semibold">LIVE</span></h1>
-                        <p class="text-[10px] text-indigo-200" id="headerSubtitle">Cloud Synchronized</p>
+                        <h1 class="font-bold text-sm leading-tight flex items-center gap-1.5">Edu Courier <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded font-semibold shadow-sm">LIVE</span></h1>
+                        <p class="text-[10px] text-indigo-200">Cloud Synchronized</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center space-x-2">
                     <div class="flex flex-col text-right">
                         <span id="activeUserName" class="text-[11px] font-bold text-white max-w-[100px] truncate">Guest</span>
-                        <span id="activeUserRoleBadge" class="text-[9px] bg-indigo-900/60 text-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Cloud</span>
+                        <span id="activeUserRoleBadge" class="text-[9px] bg-indigo-900/70 text-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Cloud</span>
                     </div>
-                    <button id="btnLogout" class="bg-indigo-800 hover:bg-red-600 text-white p-2 rounded-xl text-xs font-semibold transition flex items-center justify-center border border-indigo-600 w-8 h-8 shadow-sm" title="Keluar Akun">
+                    <button id="btnLogout" class="bg-indigo-900/80 hover:bg-red-600 text-white p-2 rounded-xl text-xs font-semibold transition flex items-center justify-center border border-indigo-500/50 w-8 h-8 shadow-md click-contrast" title="Keluar Akun">
                         <i class="fa-solid fa-power-off text-rose-300"></i>
                     </button>
                 </div>
@@ -137,25 +200,25 @@
 
             <!-- ================= ROLE 1: PETUGAS (OFFICER) ================= -->
             <section id="view-officer" class="role-view space-y-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
+                <div class="glass-card rounded-2xl shadow-lg border border-slate-200 p-4 space-y-4">
                     <div class="flex flex-col pb-3 border-b border-slate-100 gap-2">
                         <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-circle-plus text-indigo-600 text-lg"></i> Entri Paket Masuk
                         </h2>
-                        <div class="flex bg-slate-100 p-1 rounded-xl">
-                            <button type="button" id="tabExternal" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-truck-fast text-indigo-500"></i> Eksternal</button>
-                            <button type="button" id="tabInternal" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-school text-emerald-600"></i> Internal</button>
+                        <div class="flex bg-slate-100/90 p-1 rounded-xl border border-slate-200">
+                            <button type="button" id="tabExternal" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5 click-contrast"><i class="fa-solid fa-truck-fast text-indigo-500"></i> Eksternal</button>
+                            <button type="button" id="tabInternal" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5 click-contrast"><i class="fa-solid fa-school text-emerald-600"></i> Internal</button>
                         </div>
                     </div>
 
-                    <form id="packageForm" class="space-y-4">
+                    <form id="packageForm" class="space-y-3.5">
                         <input type="hidden" id="sourceType" value="external">
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-barcode text-purple-600 mr-1"></i> ID Transaksi & No. Resi</label>
                             <div class="flex gap-2">
-                                <input type="text" id="trackingId" required placeholder="Scan barcode..." class="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
-                                <button type="button" id="btnScanBarcode" class="bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-2 rounded-xl text-xs font-bold transition border border-purple-200" title="Scan Barcode"><i class="fa-solid fa-barcode text-base"></i></button>
+                                <input type="text" id="trackingId" required placeholder="Scan barcode..." class="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50/50">
+                                <button type="button" id="btnScanBarcode" class="bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-2 rounded-xl text-xs font-bold transition border border-purple-200 shadow-sm click-contrast" title="Scan Barcode"><i class="fa-solid fa-barcode text-base"></i></button>
                             </div>
                         </div>
 
@@ -172,7 +235,7 @@
 
                         <div id="fieldOriginContainer">
                             <label id="labelOrigin" class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-map-pin text-rose-600 mr-1"></i> Lokasi Asal</label>
-                            <input type="text" id="originLocation" required placeholder="Depo Hub Kota" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <input type="text" id="originLocation" required placeholder="Depo Hub Kota" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50/50">
                         </div>
 
                         <div>
@@ -183,26 +246,26 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-camera text-amber-600 mr-1"></i> Foto Kondisi Paket</label>
                             <div class="flex items-center gap-3">
-                                <div id="photoPreviewBox" class="w-20 h-16 bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 text-xs overflow-hidden shrink-0">
+                                <div id="photoPreviewBox" class="w-20 h-16 bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 text-xs overflow-hidden shrink-0 shadow-inner">
                                     <span id="photoPlaceholder"><i class="fa-solid fa-camera text-xl text-slate-400"></i></span>
                                     <img id="capturedImg" class="w-full h-full object-cover hidden" alt="Foto Paket">
                                 </div>
                                 <div class="flex flex-col gap-1.5 flex-1">
-                                    <button type="button" id="btnCaptureCamera" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-1.5"><i class="fa-solid fa-camera text-amber-300"></i> Ambil Foto Kamera</button>
+                                    <button type="button" id="btnCaptureCamera" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold rounded-xl transition shadow-md flex items-center justify-center gap-1.5 click-contrast"><i class="fa-solid fa-camera text-amber-300"></i> Ambil Foto Kamera</button>
                                     <span id="photoStatus" class="text-[10px] text-slate-500 truncate">Belum ada foto</span>
                                     <input type="hidden" id="packagePhoto" value="">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="border-t border-slate-100 pt-3 space-y-3">
+                        <div class="border-t border-slate-200/80 pt-3 space-y-3">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-user-tag text-emerald-600 mr-1"></i> Nama Penerima</label>
-                                <input type="text" id="recipientName" required placeholder="Nama lengkap penerima" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <input type="text" id="recipientName" required placeholder="Nama lengkap penerima" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50/50">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-building text-violet-600 mr-1"></i> Tempat Tujuan (Ruangan / Kelas / Lab)</label>
-                                <input type="text" id="destination" required placeholder="Contoh: Lab Komputer 2" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <input type="text" id="destination" required placeholder="Contoh: Lab Komputer 2" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50/50">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-graduation-cap text-orange-600 mr-1"></i> Peran Penerima</label>
@@ -235,11 +298,11 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-note-sticky text-slate-500 mr-1"></i> Catatan Tambahan (Opsional)</label>
-                            <input type="text" id="packageNotes" placeholder="Contoh: Jangan dibanting, rapuh" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <input type="text" id="packageNotes" placeholder="Contoh: Jangan dibanting, rapuh" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50/50">
                         </div>
 
                         <div class="pt-2">
-                            <button type="submit" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 text-xs">
+                            <button type="submit" id="submitBtn" class="w-full py-3 animated-login-btn text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider click-contrast">
                                 <i class="fa-solid fa-paper-plane text-emerald-300"></i> Simpan & Kirim Paket
                             </button>
                         </div>
@@ -249,16 +312,16 @@
 
             <!-- ================= ROLE 2: KURIR (COURIER) ================= -->
             <section id="view-courier" class="role-view hidden space-y-4">
-                <div class="flex gap-1 bg-white p-1 rounded-2xl shadow-sm border border-slate-200">
-                    <button type="button" id="cTabQueue" class="flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1"><i class="fa-solid fa-list-check"></i> Antrian (<span id="badgeQueue">0</span>)</button>
-                    <button type="button" id="cTabDelivering" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1"><i class="fa-solid fa-truck-fast"></i> Kirim (<span id="badgeDelivering">0</span>)</button>
-                    <button type="button" id="cTabCompleted" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check"></i> Selesai (<span id="badgeCompleted">0</span>)</button>
+                <div class="flex gap-1 glass-card p-1 rounded-2xl shadow-md border border-slate-200">
+                    <button type="button" id="cTabQueue" class="flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1 click-contrast"><i class="fa-solid fa-list-check"></i> Antrian (<span id="badgeQueue">0</span>)</button>
+                    <button type="button" id="cTabDelivering" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1 click-contrast"><i class="fa-solid fa-truck-fast"></i> Kirim (<span id="badgeDelivering">0</span>)</button>
+                    <button type="button" id="cTabCompleted" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1 click-contrast"><i class="fa-solid fa-circle-check"></i> Selesai (<span id="badgeCompleted">0</span>)</button>
                 </div>
 
                 <div>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input type="text" id="filterCourier" placeholder="Cari resi / penerima..." class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-indigo-500 bg-white outline-none">
+                        <input type="text" id="filterCourier" placeholder="Cari resi / penerima..." class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-indigo-500 bg-white outline-none shadow-sm">
                     </div>
                 </div>
 
@@ -267,24 +330,24 @@
 
             <!-- ================= ROLE 3: PENERIMA (RECIPIENT) ================= -->
             <section id="view-recipient" class="role-view hidden space-y-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div class="glass-card rounded-2xl shadow-lg border border-slate-200 p-4 space-y-3">
                     <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
                         <i class="fa-solid fa-box-archive text-indigo-600 text-lg"></i> Portal Transaksi Penerima
                     </h2>
                     <div class="grid grid-cols-1 gap-2.5">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-500 mb-1"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima (Filter):</label>
-                            <input type="text" id="myRecipientName" placeholder="Masukkan nama Anda..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-1 focus:ring-indigo-500 outline-none">
+                            <input type="text" id="myRecipientName" placeholder="Masukkan nama Anda..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-1 focus:ring-indigo-500 outline-none shadow-sm">
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-slate-500 mb-1"><i class="fa-solid fa-building text-emerald-500 mr-1"></i> Tempat / Ruangan Tujuan:</label>
-                            <input type="text" id="myRecipientLocation" placeholder="Masukkan ruangan..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-1 focus:ring-indigo-500 outline-none">
+                            <input type="text" id="myRecipientLocation" placeholder="Masukkan ruangan..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-1 focus:ring-indigo-500 outline-none shadow-sm">
                         </div>
                     </div>
 
                     <div class="flex gap-2 border-b border-slate-200 pt-2">
-                        <button type="button" id="tabRecIncoming" class="flex-1 pb-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center gap-1"><i class="fa-solid fa-clock"></i> Paket Masuk / Proses</button>
-                        <button type="button" id="tabRecFinished" class="flex-1 pb-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1"><i class="fa-solid fa-history"></i> Riwayat Selesai</button>
+                        <button type="button" id="tabRecIncoming" class="flex-1 pb-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center gap-1 click-contrast"><i class="fa-solid fa-clock"></i> Paket Masuk / Proses</button>
+                        <button type="button" id="tabRecFinished" class="flex-1 pb-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1 click-contrast"><i class="fa-solid fa-history"></i> Riwayat Selesai</button>
                     </div>
                 </div>
 
@@ -293,30 +356,30 @@
 
             <!-- ================= ROLE 4: ADMIN ================= -->
             <section id="view-admin" class="role-view hidden space-y-4">
-                <div class="grid grid-cols-4 gap-1 bg-white p-1 rounded-2xl shadow-sm border border-slate-200">
-                    <button type="button" id="adminTabOverview" class="py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5"><i class="fa-solid fa-chart-pie"></i> Stats</button>
-                    <button type="button" id="adminTabPackages" class="py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5"><i class="fa-solid fa-boxes-stacked"></i> Paket</button>
-                    <button type="button" id="adminTabMembers" class="py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5"><i class="fa-solid fa-users"></i> Anggota</button>
-                    <button type="button" id="adminTabAudit" class="py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5"><i class="fa-solid fa-shield-halved"></i> Log</button>
+                <div class="grid grid-cols-4 gap-1 glass-card p-1 rounded-2xl shadow-md border border-slate-200">
+                    <button type="button" id="adminTabOverview" class="py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5 click-contrast"><i class="fa-solid fa-chart-pie"></i> Stats</button>
+                    <button type="button" id="adminTabPackages" class="py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast"><i class="fa-solid fa-boxes-stacked"></i> Paket</button>
+                    <button type="button" id="adminTabMembers" class="py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast"><i class="fa-solid fa-users"></i> Anggota</button>
+                    <button type="button" id="adminTabAudit" class="py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast"><i class="fa-solid fa-shield-halved"></i> Log</button>
                 </div>
 
                 <div id="adminOverviewSection" class="space-y-4">
                     <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <div class="glass-card p-3 rounded-2xl border border-slate-200 shadow-md text-center">
                             <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1"><i class="fa-solid fa-box text-indigo-500"></i> Total</p>
                             <h3 id="statTotal" class="text-xl font-bold text-slate-900 mt-0.5">0</h3>
                         </div>
-                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <div class="glass-card p-3 rounded-2xl border border-slate-200 shadow-md text-center">
                             <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1"><i class="fa-solid fa-spinner text-amber-500"></i> Proses</p>
                             <h3 id="statProcess" class="text-xl font-bold text-amber-600 mt-0.5">0</h3>
                         </div>
-                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <div class="glass-card p-3 rounded-2xl border border-slate-200 shadow-md text-center">
                             <p class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1"><i class="fa-solid fa-check-circle text-emerald-500"></i> Selesai</p>
                             <h3 id="statDone" class="text-xl font-bold text-emerald-600 mt-0.5">0</h3>
                         </div>
                     </div>
 
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="glass-card p-4 rounded-2xl border border-slate-200 shadow-lg space-y-4">
                         <div>
                             <h4 class="font-bold text-slate-800 text-xs mb-2 flex items-center gap-1.5"><i class="fa-solid fa-chart-pie text-indigo-600"></i> Rasio Sumber Paket</h4>
                             <div class="relative h-40"><canvas id="chartSource"></canvas></div>
@@ -340,49 +403,49 @@
                     </div>
                 </div>
 
-                <div id="adminPackagesSection" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div id="adminPackagesSection" class="hidden glass-card rounded-2xl shadow-lg border border-slate-200 p-4 space-y-3">
                     <div class="flex justify-between items-center gap-2">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-boxes-stacked text-indigo-600"></i> Kelola Paket</h3>
-                        <input type="text" id="adminFilterPkg" placeholder="Cari..." class="px-2.5 py-1.5 border border-slate-300 rounded-xl text-xs w-36 focus:ring-1 focus:ring-indigo-500 outline-none">
+                        <input type="text" id="adminFilterPkg" placeholder="Cari..." class="px-2.5 py-1.5 border border-slate-300 rounded-xl text-xs w-36 focus:ring-1 focus:ring-indigo-500 outline-none shadow-sm">
                     </div>
                     <div id="adminPackageListContainer" class="space-y-2.5 max-h-[500px] overflow-y-auto"></div>
                 </div>
 
-                <div id="adminMembersSection" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div id="adminMembersSection" class="hidden glass-card rounded-2xl shadow-lg border border-slate-200 p-4 space-y-3">
                     <div class="flex justify-between items-center gap-2">
                         <div>
                             <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-users text-indigo-600"></i> Kelola Anggota Sistem</h3>
                             <p class="text-[10px] text-slate-500">Tambah, Edit, Reset, & Hapus Anggota.</p>
                         </div>
-                        <button type="button" id="btnAddMemberModal" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1">
+                        <button type="button" id="btnAddMemberModal" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1 click-contrast">
                             <i class="fa-solid fa-user-plus"></i> Tambah
                         </button>
                     </div>
                     <div>
-                        <input type="text" id="adminFilterMember" placeholder="Cari nama / email anggota..." class="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:ring-1 focus:ring-indigo-500 outline-none">
+                        <input type="text" id="adminFilterMember" placeholder="Cari nama / email anggota..." class="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:ring-1 focus:ring-indigo-500 outline-none shadow-sm">
                     </div>
                     <div id="adminMemberListContainer" class="space-y-2.5 max-h-[480px] overflow-y-auto"></div>
                 </div>
 
-                <div id="adminAuditSection" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div id="adminAuditSection" class="hidden glass-card rounded-2xl shadow-lg border border-slate-200 p-4 space-y-3">
                     <div class="flex justify-between items-center gap-2">
                         <div>
                             <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-emerald-600"></i> Audit Log</h3>
                             <p class="text-[10px] text-slate-500">Real-time activity log seluruh aksi.</p>
                         </div>
-                        <input type="text" id="adminFilterAudit" placeholder="Cari..." class="px-2.5 py-1.5 border border-slate-300 rounded-xl text-xs w-32 focus:ring-1 focus:ring-indigo-500 outline-none">
+                        <input type="text" id="adminFilterAudit" placeholder="Cari..." class="px-2.5 py-1.5 border border-slate-300 rounded-xl text-xs w-32 focus:ring-1 focus:ring-indigo-500 outline-none shadow-sm">
                     </div>
                     <div id="auditLogListContainer" class="space-y-2 max-h-[500px] overflow-y-auto"></div>
                 </div>
             </section>
         </main>
 
-        <nav class="bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center shrink-0 z-40 select-none" id="androidBottomNav"></nav>
+        <nav class="glass-card border-t border-slate-200/80 px-2 py-2 flex justify-around items-center shrink-0 z-40 select-none shadow-lg" id="androidBottomNav"></nav>
 
     </div>
 
-    <div id="globalModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div id="modalContentBox" class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-5 space-y-3 fade-in"></div>
+    <div id="globalModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div id="modalContentBox" class="glass-card rounded-2xl shadow-2xl max-w-sm w-full p-5 space-y-3 fade-in border border-white/50"></div>
     </div>
 
     <script type="module">
@@ -433,7 +496,7 @@
             let bgColors = { 'officer': 'bg-indigo-600', 'courier': 'bg-amber-600', 'recipient': 'bg-emerald-600', 'admin': 'bg-purple-600' };
             
             badge.innerText = roleNameMap[role] || 'Penerima';
-            badge.className = `font-bold text-white px-2.5 py-0.5 rounded-lg text-[10px] ${bgColors[role] || 'bg-indigo-600'}`;
+            badge.className = `font-bold text-white px-2.5 py-0.5 rounded-lg text-[10px] shadow-sm ${bgColors[role] || 'bg-indigo-600'}`;
         };
 
         window.autofillLogin = function(email, password) {
@@ -492,8 +555,8 @@
             const container = document.getElementById('toastContainer');
             if(!container) return;
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-slate-900 text-white' : 'bg-red-600 text-white';
-            toast.className = `${bgColor} px-3.5 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 pointer-events-auto fade-in`;
+            const bgColor = type === 'success' ? 'bg-slate-900 text-white shadow-xl' : 'bg-red-600 text-white shadow-xl';
+            toast.className = `${bgColor} px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2 pointer-events-auto fade-in border border-white/20`;
             toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-triangle-exclamation text-amber-300'} text-base"></i> <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
@@ -510,13 +573,36 @@
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
                 window.showToast("Web Push Notification berhasil diaktifkan!");
-                new Notification("EduCourier Pro", {
+                new Notification("Edu Courier", {
                     body: "Notifikasi push aktif! Anda akan menerima update status paket.",
                     icon: "https://placehold.co/192x192/4f46e5/ffffff?text=EC"
                 });
             } else {
                 window.showToast("Izin notifikasi ditolak oleh pengguna.", "warning");
             }
+        };
+
+        let deferredPwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPwaPrompt = e;
+            const btnInstall = document.getElementById('btnInstallPwa');
+            if (btnInstall) btnInstall.classList.remove('hidden');
+        });
+
+        window.installPwaApp = async function() {
+            if (!deferredPwaPrompt) {
+                window.showToast("Aplikasi sudah terpasang atau browser tidak mendukung.", "warning");
+                return;
+            }
+            deferredPwaPrompt.prompt();
+            const { outcome } = await deferredPwaPrompt.userChoice;
+            if (outcome === 'accepted') {
+                window.showToast("Terima kasih telah menginstal Edu Courier!");
+            }
+            deferredPwaPrompt = null;
+            const btnInstall = document.getElementById('btnInstallPwa');
+            if (btnInstall) btnInstall.classList.add('hidden');
         };
 
         window.sendPushNotification = function(title, body) {
@@ -551,14 +637,14 @@
             const originInput = document.getElementById('originLocation');
 
             if(type === 'external') {
-                if(tabExt) tabExt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5";
-                if(tabInt) tabInt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5";
+                if(tabExt) tabExt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5 click-contrast";
+                if(tabInt) tabInt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5 click-contrast";
                 if(fieldExp) fieldExp.classList.remove('hidden');
                 if(labelOrigin) labelOrigin.innerHTML = '<i class="fa-solid fa-map-pin text-rose-600 mr-1"></i> Lokasi Asal (Depo/Hub Ekspedisi)';
                 if(originInput) originInput.placeholder = "Depo Hub Kota";
             } else {
-                if(tabInt) tabInt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5";
-                if(tabExt) tabExt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5";
+                if(tabInt) tabInt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-sm transition flex items-center justify-center gap-1.5 click-contrast";
+                if(tabExt) tabExt.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5 click-contrast";
                 if(fieldExp) fieldExp.classList.add('hidden');
                 if(labelOrigin) labelOrigin.innerHTML = '<i class="fa-solid fa-school text-emerald-600 mr-1"></i> Ruangan Pengirim';
                 if(originInput) originInput.placeholder = "Ruang Tata Usaha";
@@ -599,13 +685,13 @@
             const btnD = document.getElementById('cTabDelivering');
             const btnC = document.getElementById('cTabCompleted');
 
-            if(btnQ) btnQ.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1";
-            if(btnD) btnD.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1";
-            if(btnC) btnC.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1";
+            if(btnQ) btnQ.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1 click-contrast";
+            if(btnD) btnD.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1 click-contrast";
+            if(btnC) btnC.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center justify-center gap-1 click-contrast";
 
-            if(tab === 'queue' && btnQ) btnQ.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1";
-            else if(tab === 'delivering' && btnD) btnD.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1";
-            else if(tab === 'completed' && btnC) btnC.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1";
+            if(tab === 'queue' && btnQ) btnQ.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1 click-contrast";
+            else if(tab === 'delivering' && btnD) btnD.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1 click-contrast";
+            else if(tab === 'completed' && btnC) btnC.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm flex items-center justify-center gap-1 click-contrast";
 
             window.renderCourierQueues();
         };
@@ -628,15 +714,15 @@
                     if(pkg.id.toLowerCase().includes(filter) || pkg.recipientName.toLowerCase().includes(filter) || pkg.destination.toLowerCase().includes(filter)) {
                         let actionBtn = '';
                         if(pkg.status === 'queue') {
-                            actionBtn = `<button type="button" onclick="takeDelivery('${pkg.firebaseId || pkg.id}')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition w-full mt-2 flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-solid fa-hand text-amber-300"></i> Ambil Tugas</button>`;
+                            actionBtn = `<button type="button" onclick="takeDelivery('${pkg.firebaseId || pkg.id}')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition w-full mt-2 flex items-center justify-center gap-1.5 shadow-md click-contrast"><i class="fa-solid fa-hand text-amber-300"></i> Ambil Tugas</button>`;
                         } else if(pkg.status === 'delivering') {
-                            actionBtn = `<button type="button" onclick="openCompleteModal('${pkg.firebaseId || pkg.id}')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition w-full mt-2 flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-solid fa-circle-check text-white"></i> Selesaikan Pengiriman</button>`;
+                            actionBtn = `<button type="button" onclick="openCompleteModal('${pkg.firebaseId || pkg.id}')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition w-full mt-2 flex items-center justify-center gap-1.5 shadow-md click-contrast"><i class="fa-solid fa-circle-check text-white"></i> Selesaikan Pengiriman</button>`;
                         } else {
                             actionBtn = `<div class="text-[11px] text-emerald-700 font-bold mt-1 pt-1.5 border-t flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-500"></i> Selesai (Kurir: ${pkg.courierName || '-'})</div>`;
                         }
 
                         container.innerHTML += `
-                            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2 shadow-sm">
+                            <div class="glass-card border border-slate-200 rounded-2xl p-3.5 space-y-2 shadow-md">
                                 <div class="flex justify-between items-start">
                                     <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-100"><i class="fa-solid fa-barcode mr-1"></i>${pkg.id}</span>
                                     <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-bold">${pkg.sla}</span>
@@ -695,19 +781,19 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-camera text-emerald-600"></i> Selesaikan Pengiriman</h3>
-                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 click-contrast"><i class="fa-solid fa-xmark text-base"></i></button>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Foto Bukti / Tanda Tangan</label>
                         <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 text-center space-y-2 bg-slate-50">
                             <img id="proofImgPreview" class="mx-auto h-24 object-cover rounded-lg hidden shadow" alt="Bukti">
-                            <button type="button" onclick="simulateProofCamera()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto"><i class="fa-solid fa-camera text-amber-300"></i> Ambil Foto Bukti</button>
+                            <button type="button" onclick="simulateProofCamera()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto click-contrast shadow-md"><i class="fa-solid fa-camera text-amber-300"></i> Ambil Foto Bukti</button>
                             <input type="hidden" id="proofPhotoInput" value="">
                         </div>
                     </div>
                     <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" onclick="closeModal()" class="px-3 py-2 border rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
-                        <button type="button" onclick="submitCompleteDelivery('${pkgId}')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow">Konfirmasi Selesai</button>
+                        <button type="button" onclick="closeModal()" class="px-3 py-2 border rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 click-contrast">Batal</button>
+                        <button type="button" onclick="submitCompleteDelivery('${pkgId}')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md click-contrast">Konfirmasi Selesai</button>
                     </div>
                 </div>
             `;
@@ -751,11 +837,11 @@
             const btnInc = document.getElementById('tabRecIncoming');
             const btnFin = document.getElementById('tabRecFinished');
             if(tab === 'incoming') {
-                if(btnInc) btnInc.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center gap-1";
-                if(btnFin) btnFin.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1";
+                if(btnInc) btnInc.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center gap-1 click-contrast";
+                if(btnFin) btnFin.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1 click-contrast";
             } else {
-                if(btnFin) btnFin.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center gap-1";
-                if(btnInc) btnInc.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1";
+                if(btnFin) btnFin.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center gap-1 click-contrast";
+                if(btnInc) btnInc.className = "flex-1 pb-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1 click-contrast";
             }
             window.filterRecipientView();
         };
@@ -789,7 +875,7 @@
                 const statusText = pkg.status === 'queue' ? 'Menunggu Kurir' : (pkg.status === 'delivering' ? 'Sedang Dikirim' : 'Selesai');
                 
                 container.innerHTML += `
-                    <div class="bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2 shadow-sm">
+                    <div class="glass-card border border-slate-200 rounded-2xl p-3.5 space-y-2 shadow-md">
                         <div class="flex justify-between items-start">
                             <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-100"><i class="fa-solid fa-barcode mr-1"></i>${pkg.id}</span>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}">${statusText}</span>
@@ -820,26 +906,26 @@
             if(memberSec) memberSec.classList.add('hidden');
             if(auditSec) auditSec.classList.add('hidden');
             
-            if(btnO) btnO.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5";
-            if(btnP) btnP.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5";
-            if(btnM) btnM.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5";
-            if(btnA) btnA.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5";
+            if(btnO) btnO.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast";
+            if(btnP) btnP.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast";
+            if(btnM) btnM.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast";
+            if(btnA) btnA.className = "py-2 text-[11px] font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition text-center flex flex-col items-center gap-0.5 click-contrast";
 
             if(tab === 'overview') {
                 if(overviewSec) overviewSec.classList.remove('hidden');
-                if(btnO) btnO.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5";
+                if(btnO) btnO.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5 click-contrast";
                 window.updateCharts();
             } else if(tab === 'packages') {
                 if(pkgSec) pkgSec.classList.remove('hidden');
-                if(btnP) btnP.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5";
+                if(btnP) btnP.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5 click-contrast";
                 window.renderAdminPackages();
             } else if(tab === 'members') {
                 if(memberSec) memberSec.classList.remove('hidden');
-                if(btnM) btnM.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5";
+                if(btnM) btnM.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5 click-contrast";
                 window.renderAdminMembers();
             } else if(tab === 'audit') {
                 if(auditSec) auditSec.classList.remove('hidden');
-                if(btnA) btnA.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5";
+                if(btnA) btnA.className = "py-2 text-[11px] font-bold rounded-xl bg-indigo-600 text-white transition shadow-sm text-center flex flex-col items-center gap-0.5 click-contrast";
                 window.renderAuditLogs();
             }
         };
@@ -866,16 +952,16 @@
                 else if(mem.role === 'admin') badgeBg = 'bg-purple-100 text-purple-800';
 
                 container.innerHTML += `
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 text-xs">
+                    <div class="bg-white/90 border border-slate-200 rounded-xl p-3 space-y-1.5 text-xs shadow-sm">
                         <div class="flex justify-between items-start">
                             <span class="font-bold text-slate-900 flex items-center gap-1"><i class="fa-solid fa-user text-indigo-500"></i> ${mem.name}</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeBg}">${mem.roleLabel || mem.role}</span>
                         </div>
                         <p class="text-slate-500"><i class="fa-solid fa-envelope mr-1 text-slate-400"></i> ${mem.email}</p>
                         <div class="flex justify-end gap-1.5 pt-2 border-t border-slate-200">
-                            <button type="button" onclick="openEditMemberModal('${mem.firebaseId}')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                            <button type="button" onclick="openResetPasswordModal('${mem.firebaseId}', '${mem.email}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-key"></i> Reset</button>
-                            <button type="button" onclick="deleteMember('${mem.firebaseId}')" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-trash"></i> Hapus</button>
+                            <button type="button" onclick="openEditMemberModal('${mem.firebaseId}')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] font-bold flex items-center gap-1 click-contrast shadow-sm"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            <button type="button" onclick="openResetPasswordModal('${mem.firebaseId}', '${mem.email}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-[11px] font-bold flex items-center gap-1 click-contrast shadow-sm"><i class="fa-solid fa-key"></i> Reset</button>
+                            <button type="button" onclick="deleteMember('${mem.firebaseId}')" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[11px] font-bold flex items-center gap-1 click-contrast shadow-sm"><i class="fa-solid fa-trash"></i> Hapus</button>
                         </div>
                     </div>
                 `;
@@ -891,20 +977,20 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-user-plus text-indigo-600"></i> Tambah Anggota Baru</h3>
-                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 click-contrast"><i class="fa-solid fa-xmark text-base"></i></button>
                     </div>
                     <form id="addMemberForm" class="space-y-2.5 text-xs">
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label>
-                            <input type="text" id="newMemName" required placeholder="Nama Anggota" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="text" id="newMemName" required placeholder="Nama Anggota" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Email (Akun Login)</label>
-                            <input type="email" id="newMemEmail" required placeholder="email@bns.edu" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="email" id="newMemEmail" required placeholder="email@bns.edu" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Password</label>
-                            <input type="password" id="newMemPass" required placeholder="Minimal 6 karakter" minlength="6" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="password" id="newMemPass" required placeholder="Minimal 6 karakter" minlength="6" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Peran / Role</label>
@@ -916,8 +1002,8 @@
                             </select>
                         </div>
                         <div class="flex justify-end gap-2 pt-2">
-                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold">Batal</button>
-                            <button type="submit" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow">Simpan Anggota</button>
+                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold click-contrast">Batal</button>
+                            <button type="submit" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md click-contrast">Simpan Anggota</button>
                         </div>
                     </form>
                 </div>
@@ -972,16 +1058,16 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-pen-to-square text-indigo-600"></i> Edit Anggota</h3>
-                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 click-contrast"><i class="fa-solid fa-xmark text-base"></i></button>
                     </div>
                     <form id="editMemberForm" class="space-y-2.5 text-xs">
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label>
-                            <input type="text" id="editMemName" required value="${mem.name}" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="text" id="editMemName" required value="${mem.name}" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Email</label>
-                            <input type="email" id="editMemEmail" required value="${mem.email}" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="email" id="editMemEmail" required value="${mem.email}" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Peran / Role</label>
@@ -993,8 +1079,8 @@
                             </select>
                         </div>
                         <div class="flex justify-end gap-2 pt-2">
-                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold">Batal</button>
-                            <button type="submit" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow">Simpan Perubahan</button>
+                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold click-contrast">Batal</button>
+                            <button type="submit" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md click-contrast">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -1038,17 +1124,17 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-key text-amber-600"></i> Reset Password</h3>
-                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
+                        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 click-contrast"><i class="fa-solid fa-xmark text-base"></i></button>
                     </div>
                     <form id="resetPassForm" class="space-y-2.5 text-xs">
                         <p class="text-slate-600">Reset password untuk akun: <strong class="text-slate-900">${email}</strong></p>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Password Baru</label>
-                            <input type="password" id="newPassInput" required minlength="6" placeholder="Minimal 6 karakter" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="password" id="newPassInput" required minlength="6" placeholder="Minimal 6 karakter" class="w-full px-3 py-1.5 border rounded-xl outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50">
                         </div>
                         <div class="flex justify-end gap-2 pt-2">
-                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold">Batal</button>
-                            <button type="submit" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shadow">Konfirmasi Reset</button>
+                            <button type="button" onclick="closeModal()" class="px-3 py-1.5 border rounded-xl font-bold click-contrast">Batal</button>
+                            <button type="submit" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shadow-md click-contrast">Konfirmasi Reset</button>
                         </div>
                     </form>
                 </div>
@@ -1064,6 +1150,129 @@
                     closeModal();
                 });
             }
+        };
+
+        window.deleteMember = async function(memFirebaseId) {
+            appState.members = appState.members.filter(m => m.firebaseId !== memFirebaseId);
+            if(db) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', memFirebaseId));
+                } catch(e) {}
+            }
+            window.showToast("Anggota dihapus dari sistem.");
+            window.renderAdminMembers();
+        };
+
+        window.renderAdminPackages = function() {
+            const filterInput = document.getElementById('adminFilterPkg');
+            const filter = filterInput ? filterInput.value.toLowerCase() : '';
+            const container = document.getElementById('adminPackageListContainer');
+            if(!container) return;
+
+            container.innerHTML = '';
+            let filtered = appState.packages.filter(p => p.id.toLowerCase().includes(filter) || p.recipientName.toLowerCase().includes(filter) || p.destination.toLowerCase().includes(filter));
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">Tidak ada data paket.</div>`;
+                return;
+            }
+
+            filtered.forEach(pkg => {
+                container.innerHTML += `
+                    <div class="bg-white/90 border border-slate-200 rounded-xl p-3 space-y-1 text-xs shadow-sm">
+                        <div class="flex justify-between items-center font-bold text-indigo-600">
+                            <span>${pkg.id}</span>
+                            <span class="text-[10px] text-slate-500">${pkg.status}</span>
+                        </div>
+                        <p class="text-slate-800">Penerima: <strong>${pkg.recipientName}</strong> (${pkg.destination})</p>
+                        <p class="text-slate-500">Asal: ${pkg.source === 'external' ? pkg.expedition : pkg.origin} | Kategori: ${pkg.category}</p>
+                        <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                            <button type="button" onclick="deletePackage('${pkg.firebaseId || pkg.id}')" class="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[10px] font-bold click-contrast shadow-sm"><i class="fa-solid fa-trash mr-1"></i>Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.deletePackage = async function(pkgId) {
+            appState.packages = appState.packages.filter(p => (p.firebaseId !== pkgId && p.id !== pkgId));
+            if(db) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkgId));
+                } catch(e) {}
+            }
+            window.showToast("Paket berhasil dihapus.");
+            renderAll();
+        };
+
+        window.renderAuditLogs = function() {
+            const filterInput = document.getElementById('adminFilterAudit');
+            const filter = filterInput ? filterInput.value.toLowerCase() : '';
+            const container = document.getElementById('auditLogListContainer');
+            if(!container) return;
+
+            container.innerHTML = '';
+            let filtered = appState.auditLogs.filter(l => l.role.toLowerCase().includes(filter) || l.action.toLowerCase().includes(filter));
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">Belum ada log aktivitas.</div>`;
+                return;
+            }
+
+            filtered.forEach(log => {
+                container.innerHTML += `
+                    <div class="bg-white/90 border border-slate-200 rounded-xl p-2.5 text-[11px] flex justify-between items-center shadow-sm">
+                        <div>
+                            <span class="font-bold text-indigo-600">[${log.role}]</span> <span class="text-slate-800">${log.action}</span> <span class="text-slate-400 font-mono">(${log.ref})</span>
+                        </div>
+                        <span class="text-slate-400 text-[10px]">${log.time}</span>
+                    </div>
+                `;
+            });
+        };
+
+        window.updateCharts = function() {
+            const counts = { total: appState.packages.length, process: 0, done: 0 };
+            const sourceMap = { external: 0, internal: 0 };
+            const expMap = {};
+            const roleMap = { Student: 0, Staff: 0, Teacher: 0 };
+            const catMap = { Dokumen: 0, Makanan: 0, Barang: 0 };
+            const slaMap = {};
+
+            appState.packages.forEach(p => {
+                if(p.status === 'completed') counts.done++;
+                else counts.process++;
+
+                if(p.source === 'external') sourceMap.external++; else sourceMap.internal++;
+                if(p.source === 'external' && p.expedition) expMap[p.expedition] = (expMap[p.expedition] || 0) + 1;
+                if(p.recipientRole && roleMap[p.recipientRole] !== undefined) roleMap[p.recipientRole]++;
+                if(p.category && catMap[p.category] !== undefined) catMap[p.category]++;
+                if(p.sla) slaMap[p.sla] = (slaMap[p.sla] || 0) + 1;
+            });
+
+            const statTotal = document.getElementById('statTotal');
+            const statProcess = document.getElementById('statProcess');
+            const statDone = document.getElementById('statDone');
+            if(statTotal) statTotal.innerText = counts.total;
+            if(statProcess) statProcess.innerText = counts.process;
+            if(statDone) statDone.innerText = counts.done;
+
+            const makeChart = (canvasId, type, labels, data, colors) => {
+                const ctx = document.getElementById(canvasId);
+                if(!ctx) return;
+                if(chartsInstance[canvasId]) chartsInstance[canvasId].destroy();
+                chartsInstance[canvasId] = new Chart(ctx, {
+                    type,
+                    data: { labels, datasets: [{ data, backgroundColor: colors }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+                });
+            };
+
+            makeChart('chartSource', 'doughnut', ['Eksternal', 'Internal'], [sourceMap.external, sourceMap.internal], ['#4f46e5', '#10b981']);
+            makeChart('chartExpedition', 'bar', Object.keys(expMap), Object.values(expMap), ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#06b6d4']);
+            makeChart('chartRole', 'pie', ['Student', 'Staff', 'Teacher'], [roleMap.Student, roleMap.Staff, roleMap.Teacher], ['#6366f1', '#14b8a6', '#f97316']);
+            makeChart('chartCategory', 'doughnut', ['Dokumen', 'Makanan', 'Barang'], [catMap.Dokumen, catMap.Makanan, catMap.Barang], ['#0ea5e9', '#f43f5e', '#84cc16']);
+            makeChart('chartSLA', 'bar', Object.keys(slaMap), Object.values(slaMap), ['#eab308', '#6366f1', '#a855f7']);
         };
 
         window.closeModal = function() {
@@ -1282,18 +1491,18 @@
 
                         if(statusEl) statusEl.innerText = "Firebase Online (Cloud Connected)";
                         if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500";
-                        if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all";
+                        if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm transition-all";
                         initFirebaseListeners();
                     }
                 } catch (err) {
                     if(statusEl) statusEl.innerText = "Belum Connect Firebase (Gagal Koneksi)";
                     if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
-                    if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all";
+                    if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 shadow-sm transition-all";
                 }
             } else {
                 if(statusEl) statusEl.innerText = "Belum Connect Firebase (Masukkan Konfigurasi)";
                 if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
-                if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 transition-all";
+                if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 shadow-sm transition-all";
             }
 
             const loginForm = document.getElementById('loginForm');
@@ -1362,6 +1571,13 @@
 
             const btnRequestPush = document.getElementById('btnRequestPush');
             if(btnRequestPush) btnRequestPush.addEventListener('click', window.requestBrowserNotificationPermission);
+
+            const btnInstallPwa = document.getElementById('btnInstallPwa');
+            if(btnInstallPwa) btnInstallPwa.addEventListener('click', window.installPwaApp);
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            }
         });
     </script>
 </body>
