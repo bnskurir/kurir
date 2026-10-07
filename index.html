@@ -22,9 +22,9 @@
 
     <!-- ANDROID PHONE FRAME WRAPPER (FIXED LAYOUT) -->
     <div id="deviceFrame" class="w-full md:w-[420px] md:h-[860px] bg-slate-50 md:rounded-[44px] md:border-[10px] md:border-slate-800 md:shadow-2xl flex flex-col overflow-hidden relative shrink-0 transition-all duration-300">
-        
-        <!-- ANDROID NOTCH / STATUS BAR -->
-        <div class="bg-indigo-900 text-white px-4 py-2 text-xs flex justify-between items-center select-none shrink-0 z-50">
+
+    <!-- ================= LOGIN SCREEN / MODAL ================= -->
+    <div id="loginScreen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
             <span id="statusBarTime" class="font-bold text-[11px]">03:58</span>
             <div class="w-20 h-3 bg-slate-950 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-1.5 hidden md:block"></div>
             <div class="flex items-center gap-2 text-[11px]">
@@ -34,58 +34,58 @@
             </div>
         </div>
 
-    <!-- ================= LOGIN SCREEN / MODAL ================= -->
-    <div id="loginScreen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-3xl shadow-2xl w-full p-6 space-y-5 fade-in border border-slate-100 my-auto">
-            <div class="text-center space-y-2">
-                <div class="inline-flex bg-indigo-600 text-white p-3 rounded-2xl shadow-lg shadow-indigo-200 text-2xl font-bold mb-1">
-                    <i class="fa-solid fa-box-open"></i>
-                </div>
-                <h1 class="font-bold text-2xl text-slate-900">EduCourier Pro</h1>
-                <p class="text-xs text-slate-500">Sistem Logistik Kampus (Firebase bns-kurir)</p>
-            </div>
-
-            <form onsubmit="handleFirebaseLogin(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">Email Akun (Firebase Auth)</label>
-                    <input type="email" id="loginEmail" required placeholder="nama@sekolah.edu" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+        <!-- ================= LOGIN SCREEN (INSIDE DEVICE FRAME) ================= -->
+        <div id="loginScreen" class="absolute inset-x-0 bottom-0 top-[33px] bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-[340px] p-6 space-y-4 fade-in border border-slate-100 my-auto">
+                <div class="text-center space-y-2">
+                    <div class="inline-flex bg-indigo-600 text-white p-3 rounded-2xl shadow-lg shadow-indigo-200 text-2xl font-bold mb-1">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h1 class="font-bold text-2xl text-slate-900">EduCourier Pro</h1>
+                    <p class="text-xs text-slate-500">Sistem Logistik Kampus (Firebase bns-kurir)</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">Password (Min. 6 Karakter)</label>
-                    <input type="password" id="loginPassword" required minlength="6" placeholder="••••••••" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
-                </div>
+                <form onsubmit="handleFirebaseLogin(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">Email Akun</label>
+                        <input type="email" id="loginEmail" required placeholder="nama@sekolah.edu" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+                    </div>
 
-                <div id="loginHintBox" class="bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 text-[11px] text-indigo-700 flex items-start gap-2">
-                    <i class="fa-solid fa-circle-info mt-0.5"></i>
-                    <span><strong>Info:</strong> Masuk sesuai email terdaftar. Role otomatis terdeteksi (Petugas/Kurir/Admin/Penerima).</span>
-                </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">Password</label>
+                        <input type="password" id="loginPassword" required minlength="6" placeholder="••••••••" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+                    </div>
 
-                <div class="flex gap-2 pt-1">
-                    <button type="submit" id="btnLoginSubmit" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 text-xs">
-                        <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
+                    <div id="loginHintBox" class="bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 text-[11px] text-indigo-700 flex items-start gap-2">
+                        <i class="fa-solid fa-circle-info mt-0.5"></i>
+                        <span><strong>Info:</strong> Masuk sesuai email terdaftar (Role otomatis terdeteksi).</span>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button type="submit" id="btnLoginSubmit" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 text-xs">
+                            <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
+                        </button>
+                        <button type="button" id="btnRegisterSubmit" onclick="handleFirebaseRegister(event)" class="px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">
+                            Daftar
+                        </button>
+                    </div>
+                </form>
+
+                <div class="border-t border-slate-100 pt-3 text-center space-y-2">
+                    <p id="firebaseAuthStatus" class="text-[11px] text-slate-400">Menghubungkan ke Firebase Cloud (bns-kurir)...</p>
+                    <!-- Instant Login khusus Penerima -->
+                    <button type="button" onclick="instantLoginRecipient()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Instant Login Khusus Penerima
                     </button>
-                    <button type="button" id="btnRegisterSubmit" onclick="handleFirebaseRegister(event)" class="px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">
-                        Daftar
+                    <!-- Tombol Install PWA -->
+                    <button type="button" id="btnInstallPwa" onclick="installPwaApp()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition border border-slate-200 flex items-center justify-center gap-2 hidden">
+                        <i class="fa-solid fa-mobile-screen"></i> Install Aplikasi
                     </button>
                 </div>
-            </form>
-
-            <div class="border-t border-slate-100 pt-3 text-center space-y-2">
-                <p id="firebaseAuthStatus" class="text-[11px] text-slate-400">Menghubungkan ke Firebase Cloud (bns-kurir)...</p>
-                <!-- Instant Login khusus Penerima -->
-                <button type="button" onclick="instantLoginRecipient()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-bolt"></i> Instant Login Khusus Penerima
-                </button>
-                <!-- Tombol Install PWA -->
-                <button type="button" id="btnInstallPwa" onclick="installPwaApp()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition border border-slate-200 flex items-center justify-center gap-2 hidden">
-                    <i class="fa-solid fa-mobile-screen"></i> Install Aplikasi ke Perangkat
-                </button>
             </div>
         </div>
-    </div>
 
-    <!-- HEADER NAVIGATION (ANDROID APP BAR) -->
+        <!-- HEADER NAVIGATION (ANDROID APP BAR) -->
     <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-45 shrink-0">
         <div class="px-4 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center space-x-2.5">
@@ -259,22 +259,22 @@
         <section id="view-recipient" class="role-view hidden space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
                 <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-box text-indigo-600"></i> Portal Penerima Paket
+                    <i class="fa-solid fa-box text-indigo-600"></i> Portal Transaksi Penerima
                 </h2>
                 <div class="grid grid-cols-1 gap-2.5">
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nama Anda:</label>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nama Penerima (Filter):</label>
                         <input type="text" id="myRecipientName" value="Dr. Andi Pratama" oninput="filterRecipientView()" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Tempat / Ruangan:</label>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Tempat / Ruangan Tujuan:</label>
                         <input type="text" id="myRecipientLocation" value="Ruang Guru" oninput="filterRecipientView()" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>
 
                 <div class="flex gap-2 border-b border-slate-200 pt-2">
-                    <button onclick="switchRecipientTab('incoming')" id="tabRecIncoming" class="flex-1 pb-2 text-xs font-semibold border-b-2 border-indigo-600 text-indigo-600 transition">Proses</button>
-                    <button onclick="switchRecipientTab('finished')" id="tabRecFinished" class="flex-1 pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition">Selesai</button>
+                    <button onclick="switchRecipientTab('incoming')" id="tabRecIncoming" class="flex-1 pb-2 text-xs font-semibold border-b-2 border-indigo-600 text-indigo-600 transition">Paket Masuk / Proses</button>
+                    <button onclick="switchRecipientTab('finished')" id="tabRecFinished" class="flex-1 pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition">Riwayat Selesai</button>
                 </div>
             </div>
 
