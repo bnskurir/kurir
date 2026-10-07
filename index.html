@@ -18,17 +18,17 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-6">
+<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-6 overflow-hidden">
 
     <!-- DESKTOP MODE TOGGLE BAR -->
-    <div class="hidden md:flex items-center justify-between w-full max-w-[420px] mb-3 px-2 text-white">
+    <div class="hidden md:flex items-center justify-between w-full max-w-[420px] mb-3 px-2 text-white shrink-0">
         <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
             <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> Mode: Android Frame View
         </div>
         <button onclick="toggleDeviceFrame()" id="frameToggleBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-lg border border-slate-700 transition">
             <i class="fa-solid fa-expand mr-1"></i> Fullscreen / Frame
         </button>
-    </div>
+<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-4">
 
     <!-- ANDROID PHONE FRAME WRAPPER (FIXED LAYOUT) -->
     <div id="deviceFrame" class="w-full md:w-[420px] md:h-[850px] bg-slate-50 md:rounded-[40px] md:border-[10px] md:border-slate-800 md:shadow-2xl flex flex-col overflow-hidden relative shrink-0 transition-all duration-300">
@@ -68,7 +68,7 @@
 
                 <div id="loginHintBox" class="bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 text-[11px] text-indigo-700 flex items-start gap-2">
                     <i class="fa-solid fa-circle-info mt-0.5"></i>
-                    <span><strong>Info:</strong> Masuk sesuai email terdaftar. Role (Petugas / Kurir / Admin / Penerima) terdeteksi otomatis.</span>
+                    <span><strong>Info:</strong> Masuk sesuai email terdaftar. Role otomatis terdeteksi (Petugas/Kurir/Admin/Penerima).</span>
                 </div>
 
                 <div class="flex gap-2 pt-1">
@@ -85,7 +85,7 @@
                 <p id="firebaseAuthStatus" class="text-[11px] text-slate-400">Menghubungkan ke Firebase Cloud (bns-kurir)...</p>
                 <!-- Instant Login khusus Penerima -->
                 <button type="button" onclick="instantLoginRecipient()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-bolt"></i> Instant Login Khusus Penerima (Student/Staff/Teacher)
+                    <i class="fa-solid fa-bolt"></i> Instant Login Khusus Penerima
                 </button>
             </div>
         </div>
@@ -463,17 +463,7 @@
         }
 
         window.toggleDeviceFrame = function() {
-            const frame = document.getElementById('deviceFrame');
-            const btn = document.getElementById('frameToggleBtn');
-            if(frame.classList.contains('md:w-[420px]')) {
-                frame.classList.remove('md:w-[420px]', 'md:h-[850px]', 'md:rounded-[40px]', 'md:border-[10px]');
-                frame.classList.add('w-full', 'max-w-7xl', 'h-[90vh]', 'rounded-2xl', 'border', 'border-slate-700');
-                btn.innerHTML = `<i class="fa-solid fa-compress mr-1"></i> Frame Android`;
-            } else {
-                frame.classList.add('md:w-[420px]', 'md:h-[850px]', 'md:rounded-[40px]', 'md:border-[10px]');
-                frame.classList.remove('w-full', 'max-w-7xl', 'h-[90vh]', 'rounded-2xl', 'border', 'border-slate-700');
-                btn.innerHTML = `<i class="fa-solid fa-expand mr-1"></i> Fullscreen / Frame`;
-            }
+            // Function retained for compatibility if called elsewhere
         };
 
         function determineRoleByEmail(email) {
@@ -662,22 +652,60 @@
 
         function updateAndroidBottomNav(currentRole) {
             const nav = document.getElementById('androidBottomNav');
-            let items = [
-                { role: 'officer', icon: 'fa-plus-circle', label: 'Entri' },
-                { role: 'courier', icon: 'fa-truck-fast', label: 'Kurir' },
-                { role: 'recipient', icon: 'fa-box', label: 'Penerima' },
-                { role: 'admin', icon: 'fa-chart-pie', label: 'Admin' }
-            ];
+            let items = [];
+
+            if (currentRole === 'officer') {
+                items = [{ role: 'officer', icon: 'fa-plus-circle', label: 'Entri' }];
+            } else if (currentRole === 'courier') {
+                items = [{ role: 'courier', icon: 'fa-truck-fast', label: 'Kurir' }];
+            } else if (currentRole === 'recipient') {
+                items = [{ role: 'recipient', icon: 'fa-box', label: 'Penerima' }];
+            } else if (currentRole === 'admin') {
+                items = [
+                    { role: 'admin', icon: 'fa-chart-pie', label: 'Overview' },
+                    { role: 'admin', icon: 'fa-boxes-stacked', label: 'Paket' },
+                    { role: 'admin', icon: 'fa-users', label: 'Anggota' },
+                    { role: 'admin', icon: 'fa-shield-halved', label: 'Log' }
+                ];
+            } else {
+                items = [
+                    { role: 'officer', icon: 'fa-plus-circle', label: 'Entri' },
+                    { role: 'courier', icon: 'fa-truck-fast', label: 'Kurir' },
+                    { role: 'recipient', icon: 'fa-box', label: 'Penerima' }
+                ];
+            }
 
             nav.innerHTML = '';
             items.forEach(item => {
                 const isActive = currentRole === item.role;
-                nav.innerHTML += `
-                    <button onclick="switchRole('${item.role}')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${isActive ? 'text-indigo-600 bg-indigo-50 font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'}">
-                        <i class="fa-solid ${item.icon} text-base mb-0.5"></i>
-                        <span class="text-[10px]">${item.label}</span>
-                    </button>
-                `;
+                if (currentRole === 'admin' && item.role === 'admin') {
+                    // For admin subtabs, render tab switches
+                    nav.innerHTML = `
+                        <button onclick="switchAdminTab('overview')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-indigo-600 bg-indigo-50 font-bold">
+                            <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
+                            <span class="text-[10px]">Stats</span>
+                        </button>
+                        <button onclick="switchAdminTab('packages')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
+                            <i class="fa-solid fa-boxes-stacked text-base mb-0.5"></i>
+                            <span class="text-[10px]">Paket</span>
+                        </button>
+                        <button onclick="switchAdminTab('members')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
+                            <i class="fa-solid fa-users text-base mb-0.5"></i>
+                            <span class="text-[10px]">Anggota</span>
+                        </button>
+                        <button onclick="switchAdminTab('audit')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-slate-500 hover:text-slate-800 font-medium">
+                            <i class="fa-solid fa-shield-halved text-base mb-0.5"></i>
+                            <span class="text-[10px]">Log</span>
+                        </button>
+                    `;
+                } else {
+                    nav.innerHTML += `
+                        <button onclick="switchRole('${item.role}')" class="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${isActive ? 'text-indigo-600 bg-indigo-50 font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'}">
+                            <i class="fa-solid ${item.icon} text-base mb-0.5"></i>
+                            <span class="text-[10px]">${item.label}</span>
+                        </button>
+                    `;
+                }
             });
         }
 
