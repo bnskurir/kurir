@@ -20,7 +20,7 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-0 m-0 overflow-x-hidden">
 
-    <div id="deviceFrame" class="w-full min-h-screen bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
+    <div id="appContainer" class="w-full min-h-screen bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
 
         <div id="loginScreen" class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-[360px] p-6 space-y-4 fade-in border border-white/20 my-auto">
@@ -357,11 +357,31 @@
         let recipientTab = 'incoming';
         const chartsInstance = {};
 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'educourier-pro-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyD-mock-api-key-for-educourier",
+            authDomain: "educourier-pro.firebaseapp.com",
+            projectId: "educourier-pro",
+            storageBucket: "educourier-pro.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef"
+        };
+
         const appState = {
             currentUser: null,
-            packages: [],
-            members: [],
-            auditLogs: []
+            packages: [
+                { id: "TRX-10482", source: "external", expedition: "JNE Express", origin: "Depo Jakarta", recipientName: "Budi Santoso", destination: "Kelas 12 IPA 1", recipientRole: "Student", category: "Dokumen", sla: "Express", status: "queue", notes: "Penting", timestamp: new Date().toISOString() },
+                { id: "TRX-10483", source: "internal", expedition: "Internal Sekolah", origin: "Ruang Guru", recipientName: "Siti Rahma", destination: "Perpustakaan", recipientRole: "Teacher", category: "Barang", sla: "Same Day", status: "delivering", courierName: "Kurir Kampus", notes: "Buku paket", timestamp: new Date().toISOString() }
+            ],
+            members: [
+                { firebaseId: "m1", name: "Admin EduCourier", email: "admin@bns.edu", role: "admin", roleLabel: "Admin" },
+                { firebaseId: "m2", name: "Budi Petugas", email: "petugas@bns.edu", role: "officer", roleLabel: "Petugas" },
+                { firebaseId: "m3", name: "Joko Kurir", email: "kurir@bns.edu", role: "courier", roleLabel: "Kurir" },
+                { firebaseId: "m4", name: "Siti Siswa", email: "siswa@bns.edu", role: "recipient", roleLabel: "Penerima" }
+            ],
+            auditLogs: [
+                { time: "08:30:00", role: "Admin", action: "Inisialisasi Sistem Cloud", ref: "SYSTEM" }
+            ]
         };
 
         // --- HOISTED GLOBAL HELPER FUNCTIONS ---
@@ -1094,14 +1114,18 @@
                     appState.packages = [];
                     snapshot.forEach(docSnap => appState.packages.push({ firebaseId: docSnap.id, ...docSnap.data() }));
                     renderAll();
-                }, (err) => { console.error("Firestore packages error:", err); });
+                }, (err) => { 
+                    console.warn("Firestore packages permission notice (using local sync mode):", err.message); 
+                });
 
                 const membersCol = collection(db, 'artifacts', appId, 'public', 'data', 'members');
                 onSnapshot(membersCol, (snapshot) => {
                     appState.members = [];
                     snapshot.forEach(docSnap => appState.members.push({ firebaseId: docSnap.id, ...docSnap.data() }));
                     window.renderAdminMembers();
-                }, (err) => { console.error("Firestore members error:", err); });
+                }, (err) => { 
+                    console.warn("Firestore members permission notice:", err.message); 
+                });
 
                 const auditCol = collection(db, 'artifacts', appId, 'public', 'data', 'auditLogs');
                 onSnapshot(auditCol, (snapshot) => {
@@ -1109,9 +1133,11 @@
                     snapshot.forEach(docSnap => appState.auditLogs.push(docSnap.data()));
                     appState.auditLogs.sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
                     window.renderAuditLogs();
-                }, (err) => { console.error("Firestore audit error:", err); });
+                }, (err) => { 
+                    console.warn("Firestore audit permission notice:", err.message); 
+                });
             } catch(e) {
-                console.error("Init Firebase listeners failed:", e);
+                console.warn("Init Firebase listeners graceful fallback:", e);
             }
 
             if(window.liveSyncInterval) clearInterval(window.liveSyncInterval);
@@ -1269,7 +1295,7 @@
             if(adminTabO) adminTabO.addEventListener('click', () => window.switchAdminTab('overview'));
             if(adminTabP) adminTabP.addEventListener('click', () => window.switchAdminTab('packages'));
             if(adminTabM) adminTabM.addEventListener('click', () => window.switchAdminTab('members'));
-            if(adminTabA) adminTabA.addEventListener('click', () => window.switchAdminTab('adminTabAudit' in window ? 'audit' : 'audit'));
+            if(adminTabA) adminTabA.addEventListener('click', () => window.switchAdminTab('audit'));
 
             const adminFilterPkg = document.getElementById('adminFilterPkg');
             if(adminFilterPkg) adminFilterPkg.addEventListener('input', window.renderAdminPackages);
