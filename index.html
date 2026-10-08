@@ -16,7 +16,7 @@
 
         @keyframes subtle-glow {
             0% { box-shadow: 0 0 2px rgba(99, 102, 241, 0.25), inset 0 0 1px rgba(99, 102, 241, 0.1); }
-            50% { box-shadow: 0 0 6px rgba(168, 85, 247, 0.4), inset 0 0 2px rgba(168, 85, 247, 0.15); }
+            50% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.35), inset 0 0 2px rgba(99, 102, 241, 0.15); }
             100% { box-shadow: 0 0 2px rgba(99, 102, 241, 0.25), inset 0 0 1px rgba(99, 102, 241, 0.1); }
         }
 
@@ -27,51 +27,60 @@
 
         .btn-glow:hover, .btn-glow:active {
             transform: translateY(-1px);
-            box-shadow: 0 0 8px rgba(236, 72, 153, 0.45), inset 0 0 3px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 6px rgba(236, 72, 153, 0.4), inset 0 0 2px rgba(99, 102, 241, 0.2);
             filter: brightness(1.05);
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+        .connection-indicator {
+            animation: pulse-slow 2s infinite ease-in-out;
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col text-sm">
 
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in duration-200 border border-slate-100">
-            <div class="text-center space-y-1.5">
-                <div class="w-14 h-14 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center justify-center mx-auto text-xl shadow-md btn-glow">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-xl space-y-3 animate-in fade-in zoom-in duration-200 border border-slate-100">
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center justify-center mx-auto text-lg shadow-md btn-glow">
                     <i class="fa-solid fa-boxes-stacked"></i>
                 </div>
-                <h2 class="text-lg font-bold text-slate-800">Kurir BNS Realtime</h2>
-                <p class="text-[11px] text-slate-500">Sistem Logistik Sekolah & Manajemen Paket</p>
+                <h2 class="text-base font-bold text-slate-800">Kurir BNS Realtime</h2>
+                <p class="text-[10px] text-slate-500">Sistem Logistik Sekolah & Manajemen Paket</p>
             </div>
 
+            <!-- Role Selector -->
             <div class="grid grid-cols-2 gap-1.5">
-                <button type="button" onclick="selectLoginRole('petugas')" id="login-btn-petugas" class="p-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-xs font-bold transition flex flex-col items-center space-y-0.5 shadow-sm btn-glow">
+                <button type="button" onclick="selectLoginRole('petugas')" id="login-btn-petugas" class="p-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-xs font-bold transition flex flex-col items-center space-y-0.5 shadow-sm btn-glow">
                     <i class="fa-solid fa-box-archive text-sm text-indigo-600"></i>
                     <span>Petugas Input</span>
                 </button>
-                <button type="button" onclick="selectLoginRole('kurir')" id="login-btn-kurir" class="p-2.5 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-sky-300 btn-glow">
+                <button type="button" onclick="selectLoginRole('kurir')" id="login-btn-kurir" class="p-2 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-sky-300 btn-glow">
                     <i class="fa-solid fa-people-carry-box text-sm text-sky-600"></i>
                     <span>Kurir</span>
                 </button>
-                <button type="button" onclick="selectLoginRole('penerima')" id="login-btn-penerima" class="p-2.5 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-emerald-300 btn-glow">
+                <button type="button" onclick="selectLoginRole('penerima')" id="login-btn-penerima" class="p-2 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-emerald-300 btn-glow">
                     <i class="fa-solid fa-box-open text-sm text-emerald-600"></i>
                     <span>Penerima</span>
                 </button>
-                <button type="button" onclick="selectLoginRole('admin')" id="login-btn-admin" class="p-2.5 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-amber-300 btn-glow">
+                <button type="button" onclick="selectLoginRole('admin')" id="login-btn-admin" class="p-2 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-amber-300 btn-glow">
                     <i class="fa-solid fa-warehouse text-sm text-amber-600"></i>
                     <span>Admin</span>
                 </button>
             </div>
 
-            <form onsubmit="handleLogin(event)" class="space-y-3">
+            <form onsubmit="handleLogin(event)" class="space-y-2.5">
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 mb-1" id="login-label-name">Email / Username</label>
-                    <input type="text" id="login-username" required value="gari@sch.edu" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 bg-slate-50">
+                    <input type="text" id="login-username" required value="gari@sch.edu" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 bg-slate-50">
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kata Sandi</label>
                     <div class="relative">
-                        <input type="password" id="login-password" required value="123456" class="w-full px-3 py-2.5 pr-9 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 bg-slate-50">
+                        <input type="password" id="login-password" required value="123456" class="w-full px-3 py-2 pr-9 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 bg-slate-50">
                         <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-700 text-xs focus:outline-none" title="Lihat / Sembunyikan Kata Sandi">
                             <i id="password-toggle-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -82,7 +91,7 @@
                     <span>Login</span>
                 </button>
             </form>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-[10px] text-slate-500 space-y-0.5">
+            <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-[10px] text-slate-500 space-y-0.5">
                 <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-key text-amber-500 mr-1"></i> Kredensial Login:</p>
                 <p>• Admin: <strong class="text-amber-600">aufah@sch.edu</strong> | Kurir: <strong class="text-sky-600">rizky@sch.edu</strong></p>
                 <p>• Petugas: <strong class="text-indigo-600">gari@sch.edu</strong> | Penerima: <strong class="text-emerald-600">siti@sch.edu</strong></p>
@@ -92,13 +101,20 @@
     </div>
 
     <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-40">
-        <div class="max-w-4xl mx-auto px-3 py-2.5 flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center space-x-2.5">
+        <div class="max-w-4xl mx-auto px-3 py-2 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-2">
                 <div class="bg-gradient-to-tr from-amber-400 to-orange-500 text-white p-2 rounded-xl font-bold shadow-md btn-glow">
                     <i class="fa-solid fa-boxes-stacked text-base"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-xs leading-tight">Kurir BNS</h1>
+                    <div class="flex items-center space-x-1.5">
+                        <h1 class="font-bold text-xs leading-tight">Kurir BNS</h1>
+                        <!-- Firebase Connection Status Indicator -->
+                        <div id="firebase-status-badge" class="flex items-center space-x-1 bg-slate-900/40 px-1.5 py-0.5 rounded-full text-[9px] font-medium" title="Status Koneksi Firebase">
+                            <span id="firebase-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 connection-indicator inline-block"></span>
+                            <span id="firebase-status-text" class="text-emerald-200">Connected</span>
+                        </div>
+                    </div>
                     <p id="header-user-badge" class="text-[10px] text-indigo-200">-</p>
                 </div>
             </div>
@@ -118,88 +134,88 @@
         </div>
     </header>
 
-    <main class="flex-1 max-w-4xl w-full mx-auto p-3 pb-20 space-y-4">
+    <main class="flex-1 max-w-4xl w-full mx-auto p-2.5 pb-20 space-y-3">
 
-        <div id="view-petugas" class="tab-view space-y-4">
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3">
+        <div id="view-petugas" class="tab-view space-y-3">
+            <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-2.5">
                 <div class="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-100">
                     <div>
-                        <h2 class="text-sm font-bold text-slate-800 flex items-center"><i class="fa-solid fa-box-archive text-indigo-500 mr-1.5"></i> Penerimaan Paket Baru</h2>
+                        <h2 class="text-xs font-bold text-slate-800 flex items-center"><i class="fa-solid fa-box-archive text-indigo-500 mr-1.5"></i> Penerimaan Paket Baru</h2>
                         <p class="text-[10px] text-slate-500">Input paket & foto fisik langsung</p>
                     </div>
                     <div class="flex bg-slate-100 p-0.5 rounded-xl">
-                        <button onclick="switchSourceType('external')" id="btn-src-ext" class="px-3 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow"><i class="fa-solid fa-truck-fast mr-1"></i><span>Eksternal</span></button>
-                        <button onclick="switchSourceType('internal')" id="btn-src-int" class="px-3 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow"><i class="fa-solid fa-building mr-1"></i><span>Internal</span></button>
+                        <button onclick="switchSourceType('external')" id="btn-src-ext" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow"><i class="fa-solid fa-truck-fast mr-1"></i><span>Eksternal</span></button>
+                        <button onclick="switchSourceType('internal')" id="btn-src-int" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow"><i class="fa-solid fa-building mr-1"></i><span>Internal</span></button>
                     </div>
                 </div>
 
-                <form id="package-form" onsubmit="handleSavePackage(event)" class="space-y-3 text-xs">
-                    <div id="source-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200/60"></div>
+                <form id="package-form" onsubmit="handleSavePackage(event)" class="space-y-2 text-xs">
+                    <div id="source-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200/60"></div>
 
                     <!-- Direct Camera Capture Section -->
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-2">
+                    <div class="p-2 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1.5">
                         <label class="block font-semibold text-slate-600"><i class="fa-solid fa-camera text-indigo-500 mr-1"></i> Foto Paket Fisik Langsung</label>
                         <div class="flex items-center space-x-3">
-                            <div class="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden relative cursor-pointer hover:border-indigo-500 transition shadow-inner flex-shrink-0" onclick="openPetugasCameraModal()">
+                            <div class="w-12 h-12 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden relative cursor-pointer hover:border-indigo-500 transition shadow-inner flex-shrink-0" onclick="openPetugasCameraModal()">
                                 <img id="preview-package-photo" src="" class="w-full h-full object-cover hidden">
                                 <div id="preview-placeholder" class="text-center p-1">
-                                    <i class="fa-solid fa-camera text-indigo-500 text-lg"></i>
+                                    <i class="fa-solid fa-camera text-indigo-500 text-sm"></i>
                                 </div>
                             </div>
                             <div class="flex-1 space-y-1">
-                                <button type="button" onclick="openPetugasCameraModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold px-3 py-2 rounded-xl transition flex items-center space-x-1.5 shadow btn-glow">
+                                <button type="button" onclick="openPetugasCameraModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded-xl transition flex items-center space-x-1 shadow btn-glow">
                                     <i class="fa-solid fa-camera"></i>
                                     <span>Buka Kamera Foto Paket</span>
                                 </button>
-                                <p class="text-[10px] text-slate-400 leading-tight">Ambil foto kondisi fisik paket menggunakan kamera perangkat.</p>
+                                <p class="text-[9px] text-slate-400 leading-tight">Ambil foto kondisi fisik paket menggunakan kamera.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <div>
-                            <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima</label>
-                            <input type="text" id="input-recipient" required value="Aufah Hidayat Tullah" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima</label>
+                            <input type="text" id="input-recipient" required placeholder="Cth: Aufah Hidayat Tullah" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400/70">
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-id-badge text-sky-500 mr-1"></i> Peran Penerima</label>
-                            <select id="input-recipient-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-id-badge text-sky-500 mr-1"></i> Peran Penerima</label>
+                            <select id="input-recipient-role" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
                                 <option value="Student">Student (Siswa)</option>
                                 <option value="Karyawan">Karyawan</option>
                                 <option value="Teacher">Teacher (Guru)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Tempat Tujuan</label>
-                            <input type="text" id="input-destination" required value="IT Room" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Tempat Tujuan</label>
+                            <input type="text" id="input-destination" required placeholder="Cth: IT Room" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400/70">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <div>
-                            <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-boxes-stacked text-purple-500 mr-1"></i> Kategori Paket</label>
-                            <select id="input-category" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-boxes-stacked text-purple-500 mr-1"></i> Kategori Paket</label>
+                            <select id="input-category" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
                                 <option value="dokumen">Dokumen / Surat</option>
                                 <option value="makanan">Makanan / Minuman</option>
                                 <option value="barang">Barang / Paket Umum</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-gauge-high text-amber-500 mr-1"></i> Prioritas SLA</label>
-                            <select id="input-sla" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-gauge-high text-amber-500 mr-1"></i> Prioritas SLA</label>
+                            <select id="input-sla" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
                                 <option value="30 menit (cepat)">30 menit (cepat)</option>
                                 <option value="2 jam (reguler)">2 jam (reguler)</option>
                                 <option value="24 jam (besok)">24 jam (besok)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-note-sticky text-emerald-500 mr-1"></i> Catatan</label>
-                            <input type="text" id="input-notes" placeholder="Cth: Jangan dibanting" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-note-sticky text-emerald-500 mr-1"></i> Catatan</label>
+                            <input type="text" id="input-notes" placeholder="Cth: Jangan dibanting" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
                         </div>
                     </div>
 
-                    <div class="pt-2">
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold py-2.5 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow">
+                    <div class="pt-1">
+                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold py-2 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                             <span>Simpan & Kirim Paket ke Firebase</span>
                         </button>
@@ -208,14 +224,14 @@
             </div>
         </div>
 
-        <div id="view-kurir" class="tab-view space-y-4">
-            <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-wrap gap-2 items-center justify-between text-xs">
-                <div class="flex items-center space-x-2 flex-1 min-w-[200px]">
+        <div id="view-kurir" class="tab-view space-y-2.5">
+            <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 flex flex-wrap gap-2 items-center justify-between text-xs">
+                <div class="flex items-center space-x-2 flex-1 min-w-[180px]">
                     <i class="fa-solid fa-filter text-indigo-500"></i>
-                    <input type="text" id="filter-kurir-search" oninput="renderCourierView()" placeholder="Cari resi / penerima..." class="px-3 py-1.5 rounded-xl border border-slate-200 w-full focus:outline-none focus:border-indigo-500 bg-white">
+                    <input type="text" id="filter-kurir-search" oninput="renderCourierView()" placeholder="Cari resi / penerima..." class="px-2.5 py-1 rounded-xl border border-slate-200 w-full focus:outline-none focus:border-indigo-500 bg-white">
                 </div>
                 <div>
-                    <select id="filter-kurir-status" onchange="renderCourierView()" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none">
+                    <select id="filter-kurir-status" onchange="renderCourierView()" class="px-2.5 py-1 rounded-xl border border-slate-200 bg-white focus:outline-none">
                         <option value="all">Semua Status</option>
                         <option value="pending">Antrian (Pending)</option>
                         <option value="delivering">Sedang Dikirim</option>
@@ -224,57 +240,57 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex flex-col h-[480px]">
-                    <h3 class="font-bold text-slate-800 mb-2.5 flex items-center justify-between text-xs border-b pb-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div class="bg-white rounded-2xl p-2.5 shadow-sm border border-slate-100 flex flex-col h-[420px]">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center justify-between text-xs border-b pb-1.5">
                         <span><i class="fa-solid fa-box-archive text-amber-500 mr-1"></i> Antrian</span>
                         <span id="count-pending" class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-semibold">0</span>
                     </h3>
-                    <div id="list-courier-pending" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                    <div id="list-courier-pending" class="flex-1 overflow-y-auto space-y-1.5 pr-1"></div>
                 </div>
 
-                <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex flex-col h-[480px]">
-                    <h3 class="font-bold text-slate-800 mb-2.5 flex items-center justify-between text-xs border-b pb-2">
+                <div class="bg-white rounded-2xl p-2.5 shadow-sm border border-slate-100 flex flex-col h-[420px]">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center justify-between text-xs border-b pb-1.5">
                         <span><i class="fa-solid fa-people-carry-box text-sky-500 mr-1"></i> Sedang Dikirim</span>
                         <span id="count-delivering" class="bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-full font-semibold">0</span>
                     </h3>
-                    <div id="list-courier-delivering" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                    <div id="list-courier-delivering" class="flex-1 overflow-y-auto space-y-1.5 pr-1"></div>
                 </div>
 
-                <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex flex-col h-[480px]">
-                    <h3 class="font-bold text-slate-800 mb-2.5 flex items-center justify-between text-xs border-b pb-2">
+                <div class="bg-white rounded-2xl p-2.5 shadow-sm border border-slate-100 flex flex-col h-[420px]">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center justify-between text-xs border-b pb-1.5">
                         <span><i class="fa-solid fa-box-open text-emerald-500 mr-1"></i> Selesai</span>
                         <span id="count-completed" class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-semibold">0</span>
                     </h3>
-                    <div id="list-courier-completed" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                    <div id="list-courier-completed" class="flex-1 overflow-y-auto space-y-1.5 pr-1"></div>
                 </div>
             </div>
         </div>
 
-        <div id="view-penerima" class="tab-view space-y-4">
-            <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-2xl p-4 shadow-md flex flex-wrap justify-between items-center gap-3">
+        <div id="view-penerima" class="tab-view space-y-2.5">
+            <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-2xl p-3 shadow-md flex flex-wrap justify-between items-center gap-2">
                 <div>
                     <span class="bg-white/20 text-[10px] px-2 py-0.5 rounded-full font-medium"><i class="fa-solid fa-box-open mr-1"></i> Portal Penerima</span>
-                    <h2 class="text-base font-bold mt-1">Daftar Transaksi Paket Masuk & Selesai</h2>
-                    <p class="text-[11px] text-emerald-100">Filter dan urutkan transaksi paket sekolah secara instan.</p>
+                    <h2 class="text-xs font-bold mt-0.5">Daftar Transaksi Paket Masuk & Selesai</h2>
+                    <p class="text-[9px] text-emerald-100">Filter dan urutkan transaksi paket sekolah secara instan.</p>
                 </div>
             </div>
 
             <!-- Receiver Search, Filter & Sort Bar -->
-            <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+            <div class="bg-white rounded-2xl p-2.5 shadow-sm border border-slate-100 grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
                 <div class="sm:col-span-2 relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-search"></i></span>
-                    <input type="text" id="receiver-search" oninput="renderReceiverView()" placeholder="Cari penerima, resi, atau tujuan..." class="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 bg-white">
+                    <input type="text" id="receiver-search" oninput="renderReceiverView()" placeholder="Cari penerima, resi, atau tujuan..." class="w-full pl-8 pr-2.5 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 bg-white">
                 </div>
                 <div>
-                    <select id="receiver-filter-status" onchange="renderReceiverView()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none">
+                    <select id="receiver-filter-status" onchange="renderReceiverView()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none">
                         <option value="all">Semua Status</option>
                         <option value="active">Belum Diterima</option>
                         <option value="completed">Sudah Diterima</option>
                     </select>
                 </div>
                 <div>
-                    <select id="receiver-sort-by" onchange="renderReceiverView()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none font-semibold text-indigo-700">
+                    <select id="receiver-sort-by" onchange="renderReceiverView()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none font-semibold text-indigo-700">
                         <option value="time-desc">Urut: Waktu Terbaru</option>
                         <option value="time-asc">Urut: Waktu Terlama</option>
                         <option value="name-asc">Urut: Nama (A-Z)</option>
@@ -283,79 +299,79 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3">
-                <div class="flex justify-between items-center border-b pb-2.5 text-xs">
+            <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-2">
+                <div class="flex justify-between items-center border-b pb-1.5 text-xs">
                     <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-boxes-stacked text-emerald-500 mr-1.5"></i> Transaksi Paket</h3>
-                    <span id="receiver-count-badge" class="bg-emerald-100 text-emerald-700 text-[10px] px-2.5 py-0.5 rounded-full font-semibold">0 paket</span>
+                    <span id="receiver-count-badge" class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-semibold">0 paket</span>
                 </div>
-                <div id="receiver-packages-list" class="space-y-2.5"></div>
+                <div id="receiver-packages-list" class="space-y-1.5"></div>
             </div>
         </div>
 
-        <div id="view-admin" class="tab-view space-y-4">
-            <div class="flex space-x-1.5 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto text-xs">
-                <button onclick="switchAdminTab('overview')" id="adm-tab-overview" class="px-3.5 py-1.5 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-chart-pie mr-1"></i><span>Overview</span></button>
-                <button onclick="switchAdminTab('packages')" id="adm-tab-packages" class="px-3.5 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-boxes-stacked mr-1"></i><span>Kelola Paket</span></button>
-                <button onclick="switchAdminTab('members')" id="adm-tab-members" class="px-3.5 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-users-gear mr-1"></i><span>Kelola Anggota</span></button>
-                <button onclick="switchAdminTab('audit')" id="adm-tab-audit" class="px-3.5 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-clipboard-list mr-1"></i><span>Audit Log</span></button>
+        <div id="view-admin" class="tab-view space-y-2.5">
+            <div class="flex space-x-1.5 bg-white p-1 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto text-xs">
+                <button onclick="switchAdminTab('overview')" id="adm-tab-overview" class="px-3 py-1.5 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-chart-pie mr-1"></i><span>Overview</span></button>
+                <button onclick="switchAdminTab('packages')" id="adm-tab-packages" class="px-3 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-boxes-stacked mr-1"></i><span>Kelola Paket</span></button>
+                <button onclick="switchAdminTab('members')" id="adm-tab-members" class="px-3 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-users-gear mr-1"></i><span>Kelola Anggota</span></button>
+                <button onclick="switchAdminTab('audit')" id="adm-tab-audit" class="px-3 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-clipboard-list mr-1"></i><span>Audit Log</span></button>
             </div>
 
-            <div id="admin-content-overview" class="admin-tab-content space-y-4">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium">Total Masuk</p>
-                        <h3 id="stat-total-pkg" class="text-xl font-bold text-slate-800 mt-0.5">0</h3>
+            <div id="admin-content-overview" class="admin-tab-content space-y-2.5">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-medium">Total Masuk</p>
+                        <h3 id="stat-total-pkg" class="text-base font-bold text-slate-800 mt-0.5">0</h3>
                     </div>
-                    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium">Sedang Dikirim</p>
-                        <h3 id="stat-deliv-pkg" class="text-xl font-bold text-sky-600 mt-0.5">0</h3>
+                    <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-medium">Sedang Dikirim</p>
+                        <h3 id="stat-deliv-pkg" class="text-base font-bold text-sky-600 mt-0.5">0</h3>
                     </div>
-                    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium">Selesai</p>
-                        <h3 id="stat-comp-pkg" class="text-xl font-bold text-emerald-600 mt-0.5">0</h3>
+                    <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-medium">Selesai</p>
+                        <h3 id="stat-comp-pkg" class="text-base font-bold text-emerald-600 mt-0.5">0</h3>
                     </div>
-                    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium">Keberhasilan</p>
-                        <h3 id="stat-success-rate" class="text-xl font-bold text-indigo-600 mt-0.5">100%</h3>
+                    <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-medium">Keberhasilan</p>
+                        <h3 id="stat-success-rate" class="text-base font-bold text-indigo-600 mt-0.5">100%</h3>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <h4 class="font-bold text-slate-800 text-xs mb-2.5">Rasio Sumber Paket</h4>
-                        <div class="h-48 relative flex items-center justify-center"><canvas id="chartSource"></canvas></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-xs mb-1.5">Rasio Sumber Paket</h4>
+                        <div class="h-36 relative flex items-center justify-center"><canvas id="chartSource"></canvas></div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <h4 class="font-bold text-slate-800 text-xs mb-2.5">Distribusi Kategori</h4>
-                        <div class="h-48 relative flex items-center justify-center"><canvas id="chartCategory"></canvas></div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-xs mb-1.5">Distribusi Kategori</h4>
+                        <div class="h-36 relative flex items-center justify-center"><canvas id="chartCategory"></canvas></div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <h4 class="font-bold text-slate-800 text-xs mb-2.5">Rasio Peran Penerima</h4>
-                        <div class="h-48 relative flex items-center justify-center"><canvas id="chartRole"></canvas></div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-xs mb-1.5">Rasio Peran Penerima</h4>
+                        <div class="h-36 relative flex items-center justify-center"><canvas id="chartRole"></canvas></div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <h4 class="font-bold text-slate-800 text-xs mb-2.5">Vendor & Petugas</h4>
-                        <div class="h-48 relative flex items-center justify-center"><canvas id="chartExpedition"></canvas></div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-xs mb-1.5">Vendor & Petugas</h4>
+                        <div class="h-36 relative flex items-center justify-center"><canvas id="chartExpedition"></canvas></div>
                     </div>
                 </div>
             </div>
 
-            <div id="admin-content-packages" class="admin-tab-content space-y-3 hidden">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-xs">
-                    <div class="flex justify-between items-center mb-3">
+            <div id="admin-content-packages" class="admin-tab-content space-y-2.5 hidden">
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 text-xs">
+                    <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-slate-800">Kelola Data Seluruh Paket</h3>
-                        <input type="text" id="filter-admin-search" oninput="renderAdminPackages()" placeholder="Cari resi / penerima..." class="px-3 py-1.5 rounded-xl border border-slate-200 w-48 focus:outline-none bg-white">
+                        <input type="text" id="filter-admin-search" oninput="renderAdminPackages()" placeholder="Cari resi / penerima..." class="px-2.5 py-1 rounded-xl border border-slate-200 w-40 focus:outline-none bg-white">
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[10px]">
                                 <tr>
-                                    <th class="p-2.5">ID / Resi</th>
-                                    <th class="p-2.5">Sumber</th>
-                                    <th class="p-2.5">Penerima</th>
-                                    <th class="p-2.5">Tujuan</th>
-                                    <th class="p-2.5">Status</th>
-                                    <th class="p-2.5 text-right">Aksi</th>
+                                    <th class="p-2">ID / Resi</th>
+                                    <th class="p-2">Sumber</th>
+                                    <th class="p-2">Penerima</th>
+                                    <th class="p-2">Tujuan</th>
+                                    <th class="p-2">Status</th>
+                                    <th class="p-2 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-packages-table-body" class="divide-y divide-slate-100"></tbody>
@@ -364,14 +380,14 @@
                 </div>
             </div>
 
-            <div id="admin-content-members" class="admin-tab-content space-y-3 hidden">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3 text-xs">
-                    <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-2.5">
+            <div id="admin-content-members" class="admin-tab-content space-y-2.5 hidden">
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 space-y-2.5 text-xs">
+                    <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-1.5">
                         <div>
                             <h3 class="font-bold text-slate-800">Manajemen Anggota</h3>
                             <p class="text-[10px] text-slate-500">Kelola akun pengguna sistem</p>
                         </div>
-                        <button onclick="openAddMemberModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl font-semibold shadow transition flex items-center space-x-1 btn-glow">
+                        <button onclick="openAddMemberModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-xl font-semibold shadow transition flex items-center space-x-1 btn-glow">
                             <i class="fa-solid fa-user-plus mr-1"></i><span>Tambah</span>
                         </button>
                     </div>
@@ -379,10 +395,10 @@
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[10px]">
                                 <tr>
-                                    <th class="p-2.5">Nama</th>
-                                    <th class="p-2.5">Email</th>
-                                    <th class="p-2.5">Peran</th>
-                                    <th class="p-2.5 text-right">Aksi</th>
+                                    <th class="p-2">Nama</th>
+                                    <th class="p-2">Email</th>
+                                    <th class="p-2">Peran</th>
+                                    <th class="p-2 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-members-table-body" class="divide-y divide-slate-100"></tbody>
@@ -391,13 +407,13 @@
                 </div>
             </div>
 
-            <div id="admin-content-audit" class="admin-tab-content space-y-3 hidden">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-xs">
-                    <div class="flex justify-between items-center mb-3">
+            <div id="admin-content-audit" class="admin-tab-content space-y-2.5 hidden">
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 text-xs">
+                    <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-slate-800">Realtime Audit Log</h3>
                         <button onclick="clearAuditLogs()" class="text-[11px] text-rose-600 hover:underline"><i class="fa-solid fa-trash mr-1"></i> Bersihkan</button>
                     </div>
-                    <div id="audit-log-container" class="space-y-2 max-h-[400px] overflow-y-auto pr-1"></div>
+                    <div id="audit-log-container" class="space-y-1 max-h-[320px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </div>
@@ -405,20 +421,20 @@
     </main>
 
     <!-- Loading Modal -->
-    <div id="loading-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-6 text-center shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200 border border-slate-100">
-            <div class="relative w-16 h-16 mx-auto">
-                <div class="absolute inset-0 rounded-full border-3 border-indigo-100"></div>
-                <div class="absolute inset-0 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin"></div>
-                <div class="absolute inset-0 flex items-center justify-center text-indigo-600 text-lg font-bold">
+    <div id="loading-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-4 text-center shadow-2xl space-y-2.5 animate-in fade-in zoom-in duration-200 border border-slate-100">
+            <div class="relative w-10 h-10 mx-auto">
+                <div class="absolute inset-0 rounded-full border-2 border-indigo-100"></div>
+                <div class="absolute inset-0 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-indigo-600 text-sm font-bold">
                     <i class="fa-solid fa-cloud-arrow-up animate-pulse"></i>
                 </div>
             </div>
-            <div class="space-y-1">
-                <h4 class="font-bold text-slate-800 text-sm">Menyimpan & Menyinkronkan...</h4>
-                <p class="text-[11px] text-slate-500">Mengunggah data paket ke Firebase secara realtime</p>
+            <div class="space-y-0.5">
+                <h4 class="font-bold text-slate-800 text-xs">Menyimpan & Menyinkronkan...</h4>
+                <p class="text-[10px] text-slate-500">Mengunggah data paket ke Firebase secara realtime</p>
             </div>
-            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden shadow-inner">
                 <div id="loading-progress-bar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full w-0 transition-all duration-300 rounded-full"></div>
             </div>
         </div>
@@ -426,10 +442,10 @@
 
     <!-- Scanner Modal -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-3 text-xs text-center">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs text-center">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-barcode text-indigo-500 mr-1.5"></i> Scan Barcode / Resi</h3>
-                <button onclick="closeScannerModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeScannerModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="relative bg-slate-900 rounded-xl overflow-hidden aspect-video flex items-center justify-center">
                 <video id="scanner-video" autoplay playsinline class="w-full h-full object-cover"></video>
@@ -439,11 +455,11 @@
                     </div>
                 </div>
             </div>
-            <div class="space-y-2">
-                <p id="scanner-status" class="text-slate-500">Mengaktifkan kamera...</p>
+            <div class="space-y-1.5">
+                <p id="scanner-status" class="text-slate-500 text-[11px]">Mengaktifkan kamera...</p>
                 <input type="file" id="scanner-file-input" accept="image/*" class="hidden" onchange="handleScanFromFile(event)">
-                <button onclick="document.getElementById('scanner-file-input').click()" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 rounded-xl transition btn-glow">
-                    <i class="fa-solid fa-image mr-1"></i> Upload dari Galeri
+                <button onclick="document.getElementById('scanner-file-input').click()" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-1.5 rounded-xl transition btn-glow text-[11px]">
+                    <i class="fa-solid fa-image mr-1"></i> Upload & Deteksi dari Galeri
                 </button>
             </div>
         </div>
@@ -451,18 +467,18 @@
 
     <!-- Petugas Camera Modal -->
     <div id="petugas-camera-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-3 text-xs text-center">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs text-center">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-camera text-indigo-500 mr-1.5"></i> Foto Paket Fisik</h3>
-                <button onclick="closePetugasCameraModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closePetugasCameraModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="relative bg-slate-900 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center">
                 <video id="petugas-camera-video" autoplay playsinline class="w-full h-full object-cover"></video>
                 <canvas id="petugas-camera-canvas" class="hidden"></canvas>
             </div>
-            <div class="space-y-2">
-                <p id="petugas-cam-status" class="text-slate-500">Posisikan paket di depan kamera...</p>
-                <button onclick="capturePetugasCameraPhoto()" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold py-2.5 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow">
+            <div class="space-y-1.5">
+                <p id="petugas-cam-status" class="text-slate-500 text-[11px]">Posisikan paket di depan kamera...</p>
+                <button onclick="capturePetugasCameraPhoto()" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold py-2 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow text-xs">
                     <i class="fa-solid fa-camera-retro"></i>
                     <span>Ambil Foto Sekarang</span>
                 </button>
@@ -472,23 +488,23 @@
 
     <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-3 text-xs">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-camera-retro text-emerald-500 mr-1.5"></i> Selesaikan Pengiriman</h3>
-                <button onclick="closeCompleteModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeCompleteModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-slate-500">Unggah foto bukti penerimaan atau tanda terima fisik.</p>
+            <p class="text-slate-500 text-[11px]">Unggah foto bukti penerimaan atau tanda terima fisik.</p>
             
-            <div class="space-y-2.5">
-                <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-indigo-500 transition bg-slate-50" onclick="simulateCameraCapture()">
-                    <i id="cam-icon" class="fa-solid fa-camera text-2xl text-indigo-500 mb-1"></i>
-                    <p id="cam-status-text" class="font-medium text-slate-600">Klik untuk ambil foto tanda terima</p>
+            <div class="space-y-2">
+                <div class="border-2 border-dashed border-slate-200 rounded-xl p-3 text-center cursor-pointer hover:border-indigo-500 transition bg-slate-50" onclick="simulateCameraCapture()">
+                    <i id="cam-icon" class="fa-solid fa-camera text-xl text-indigo-500 mb-1"></i>
+                    <p id="cam-status-text" class="font-medium text-slate-600 text-[11px]">Klik untuk ambil foto tanda terima</p>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Nama Penerima Langsung</label>
-                    <input type="text" id="confirm-receiver-name" placeholder="Cth: Diterima ybs / staf piket" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Nama Penerima Langsung</label>
+                    <input type="text" id="confirm-receiver-name" placeholder="Cth: Diterima ybs / staf piket" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none">
                 </div>
-                <button onclick="submitCompleteDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl shadow transition flex items-center justify-center space-x-1 btn-glow">
+                <button onclick="submitCompleteDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-xl shadow transition flex items-center justify-center space-x-1 btn-glow">
                     <i class="fa-solid fa-check-circle mr-1"></i>
                     <span>Konfirmasi Selesai & Sinkronkan</span>
                 </button>
@@ -498,21 +514,21 @@
 
     <!-- Edit Package Modal -->
     <div id="edit-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-4 shadow-2xl space-y-3 text-xs">
+        <div class="bg-white rounded-2xl max-w-md w-full p-3.5 shadow-2xl space-y-2.5 text-xs">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-pen-to-square text-indigo-500 mr-1.5"></i> Edit Data Paket</h3>
-                <button onclick="closeEditModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeEditModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="edit-pkg-form" onsubmit="handleUpdatePackage(event)" class="space-y-2.5">
+            <form id="edit-pkg-form" onsubmit="handleUpdatePackage(event)" class="space-y-2">
                 <input type="hidden" id="edit-pkg-id">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Penerima</label>
-                        <input type="text" id="edit-recipient" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                        <label class="block font-semibold text-slate-600 mb-0.5">Penerima</label>
+                        <input type="text" id="edit-recipient" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Peran</label>
-                        <select id="edit-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                        <label class="block font-semibold text-slate-600 mb-0.5">Peran</label>
+                        <select id="edit-role" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                             <option value="Student">Student</option>
                             <option value="Karyawan">Karyawan</option>
                             <option value="Teacher">Teacher</option>
@@ -521,12 +537,12 @@
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Tujuan</label>
-                        <input type="text" id="edit-dest" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                        <label class="block font-semibold text-slate-600 mb-0.5">Tujuan</label>
+                        <input type="text" id="edit-dest" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Status</label>
-                        <select id="edit-status" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                        <label class="block font-semibold text-slate-600 mb-0.5">Status</label>
+                        <select id="edit-status" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                             <option value="pending">Antrian</option>
                             <option value="delivering">Dikirim</option>
                             <option value="completed">Selesai</option>
@@ -534,8 +550,8 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Catatan</label>
-                    <input type="text" id="edit-notes" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Catatan</label>
+                    <input type="text" id="edit-notes" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl shadow transition btn-glow">Simpan Perubahan</button>
             </form>
@@ -544,24 +560,24 @@
 
     <!-- Member Modal -->
     <div id="member-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-3 text-xs">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs">
             <div class="flex justify-between items-center">
                 <h3 id="member-modal-title" class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-user-plus text-indigo-500 mr-1.5"></i> Tambah Anggota</h3>
-                <button onclick="closeMemberModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeMemberModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="member-form" onsubmit="handleSaveMember(event)" class="space-y-2.5">
+            <form id="member-form" onsubmit="handleSaveMember(event)" class="space-y-2">
                 <input type="hidden" id="member-edit-id">
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Nama Lengkap</label>
-                    <input type="text" id="member-name" required placeholder="Cth: Ahmad Rian" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Nama Lengkap</label>
+                    <input type="text" id="member-name" required placeholder="Cth: Ahmad Rian" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Email / Username</label>
-                    <input type="email" id="member-email" required placeholder="Cth: rian@sch.edu" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Email / Username</label>
+                    <input type="email" id="member-email" required placeholder="Cth: rian@sch.edu" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Peran (Role)</label>
-                    <select id="member-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Peran (Role)</label>
+                    <select id="member-role" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                         <option value="petugas">Petugas Input</option>
                         <option value="kurir">Kurir</option>
                         <option value="penerima">Penerima</option>
@@ -569,23 +585,23 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Kata Sandi</label>
-                    <input type="text" id="member-password" required value="123456" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
+                    <input type="text" id="member-password" required value="123456" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl shadow transition btn-glow">Simpan Anggota</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl shadow transition btn-glow">Simpan Anggota</button>
             </form>
         </div>
     </div>
 
     <!-- Message Alert Modal -->
     <div id="msg-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-5 text-center shadow-xl space-y-2.5 text-xs">
-            <div id="msg-icon" class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-base">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-4 text-center shadow-xl space-y-2 text-xs">
+            <div id="msg-icon" class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-sm">
                 <i class="fa-solid fa-check"></i>
             </div>
-            <h4 id="msg-title" class="font-bold text-slate-800 text-sm">Berhasil!</h4>
-            <p id="msg-text" class="text-slate-500">Aksi berhasil diproses.</p>
-            <button onclick="closeMsgModal()" class="w-full bg-indigo-600 text-white py-2 rounded-xl font-semibold hover:bg-indigo-700 transition btn-glow">OK</button>
+            <h4 id="msg-title" class="font-bold text-slate-800 text-xs">Berhasil!</h4>
+            <p id="msg-text" class="text-slate-500 text-[11px]">Aksi berhasil diproses.</p>
+            <button onclick="closeMsgModal()" class="w-full bg-indigo-600 text-white py-1.5 rounded-xl font-semibold hover:bg-indigo-700 transition btn-glow text-xs">OK</button>
         </div>
     </div>
 
@@ -609,6 +625,7 @@
         let charts = {};
         let activeScannerStream = null;
         let petugasCameraStream = null;
+        let isFirebaseConnected = false;
         
         window.loggedUser = { role: 'petugas', name: 'Gari (Petugas)', email: 'gari@sch.edu' };
         window.currentRole = 'petugas';
@@ -616,6 +633,21 @@
         window.activeCompletingId = null;
         window.photoCaptured = false;
         window.petugasPackagePhotoUrl = null;
+
+        function updateConnectionStatus(connected) {
+            isFirebaseConnected = connected;
+            const dot = document.getElementById('firebase-status-dot');
+            const text = document.getElementById('firebase-status-text');
+            if (connected) {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-400 connection-indicator inline-block";
+                text.innerText = "Connected";
+                text.className = "text-emerald-200";
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-rose-500 connection-indicator inline-block";
+                text.innerText = "Disconnected";
+                text.className = "text-rose-200";
+            }
+        }
 
         async function initFirebase() {
             try {
@@ -665,7 +697,11 @@
                         members.push({ firebaseId: docSnap.id, ...docSnap.data() });
                     });
                     if (window.currentRole === 'admin') renderAdminMembers();
-                }, (error) => { console.warn("Members sync error:", error.message); });
+                    updateConnectionStatus(true);
+                }, (error) => { 
+                    console.warn("Members sync error:", error.message);
+                    updateConnectionStatus(false);
+                });
 
                 // Packages sync & seeding
                 const pkgColRef = collection(db, 'artifacts', appId, 'public', 'data', 'packages');
@@ -691,25 +727,6 @@
                                 photoUrl: null,
                                 timestamp: '08:30 WIB',
                                 createdAt: Date.now() - 3600000
-                            },
-                            {
-                                id: 'BNS-20261008-002',
-                                resi: 'INT-8821',
-                                source: 'internal',
-                                senderInternal: 'Pak Joko (Wakakur)',
-                                roomSender: 'Ruang Guru Lantai 2',
-                                petugas: 'Gari (Petugas)',
-                                recipient: 'Aufah Hidayat Tullah',
-                                role: 'Teacher',
-                                destination: 'IT Room',
-                                category: 'barang',
-                                sla: '2 jam (reguler)',
-                                notes: 'Proyektor mini lab',
-                                status: 'delivering',
-                                packagePhotoUrl: 'https://placehold.co/300x200/emerald/white?text=Paket+Fisik+2',
-                                photoUrl: null,
-                                timestamp: '09:15 WIB',
-                                createdAt: Date.now() - 1800000
                             }
                         ];
                         for (const p of defaultPackages) {
@@ -725,7 +742,11 @@
                     });
                     packages.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                     refreshActiveViews();
-                }, (error) => { console.warn("Packages sync error:", error.message); });
+                    updateConnectionStatus(true);
+                }, (error) => { 
+                    console.warn("Packages sync error:", error.message);
+                    updateConnectionStatus(false);
+                });
 
                 // Audit Logs sync
                 const auditColRef = collection(db, 'artifacts', appId, 'public', 'data', 'auditLogs');
@@ -736,12 +757,17 @@
                     });
                     auditLogs.sort((a, b) => new Date(b.rawTime || 0) - new Date(a.rawTime || 0));
                     refreshActiveViews();
-                }, (error) => { console.warn("Audit sync error:", error.message); });
+                    updateConnectionStatus(true);
+                }, (error) => { 
+                    console.warn("Audit sync error:", error.message);
+                    updateConnectionStatus(false);
+                });
 
                 checkPersistedSession();
 
             } catch (err) {
                 console.warn("Firebase initialization warning:", err.message);
+                updateConnectionStatus(false);
                 checkPersistedSession();
             }
         }
@@ -750,9 +776,9 @@
             ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
                 const btn = document.getElementById(`login-btn-${r}`);
                 if (r === role) {
-                    btn.className = "p-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-xs font-bold transition flex flex-col items-center space-y-0.5 shadow-sm btn-glow";
+                    btn.className = "p-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-xs font-bold transition flex flex-col items-center space-y-0.5 shadow-sm btn-glow";
                 } else {
-                    btn.className = "p-2.5 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-indigo-300 btn-glow";
+                    btn.className = "p-2 rounded-xl border-2 border-slate-200 text-slate-600 text-xs font-bold transition flex flex-col items-center space-y-0.5 hover:border-indigo-300 btn-glow";
                 }
             });
 
@@ -873,16 +899,15 @@
             const btnExt = document.getElementById('btn-src-ext');
             const btnInt = document.getElementById('btn-src-int');
             if (type === 'external') {
-                btnExt.className = "px-3 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow";
-                btnInt.className = "px-3 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow";
+                btnExt.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow";
+                btnInt.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow";
             } else {
-                btnInt.className = "px-3 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow";
-                btnExt.className = "px-3 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow";
+                btnInt.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow";
+                btnExt.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow";
             }
             renderPetugasForm();
         };
 
-        // Auto-generate date-based, non-duplicate transaction ID (e.g. BNS-20261008-001)
         function generateTransactionId() {
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -910,53 +935,53 @@
             if (window.sourceType === 'external') {
                 container.innerHTML = `
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-fingerprint text-indigo-500 mr-1"></i> ID Transaksi (Otomatis)</label>
-                        <input type="text" id="input-trx" value="${generatedTrxId}" readonly class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold bg-slate-100 text-indigo-700 cursor-not-allowed">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-fingerprint text-indigo-500 mr-1"></i> ID Transaksi (Otomatis)</label>
+                        <input type="text" id="input-trx" value="${generatedTrxId}" readonly class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 font-mono font-bold bg-slate-100 text-indigo-700 cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Resi / Barcode</label>
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Resi / Barcode</label>
                         <div class="flex space-x-1.5">
-                            <input type="text" id="input-resi" value="${randomResi}" required placeholder="Cth: JNE-982173" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold bg-white focus:outline-none focus:border-indigo-500">
-                            <button type="button" onclick="openScannerModal()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2.5 py-2 rounded-xl font-semibold transition whitespace-nowrap btn-glow"><i class="fa-solid fa-camera mr-1"></i> Scan</button>
+                            <input type="text" id="input-resi" value="${randomResi}" required placeholder="Cth: JNE-982173" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 font-mono font-bold bg-white focus:outline-none focus:border-indigo-500">
+                            <button type="button" onclick="openScannerModal()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1.5 rounded-xl font-semibold transition whitespace-nowrap btn-glow text-[11px]"><i class="fa-solid fa-camera mr-1"></i> Scan</button>
                         </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-truck text-purple-500 mr-1"></i> Pengirim</label>
-                        <select id="input-sender-vendor" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none mb-1.5" onchange="checkVendorSelection(this)">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user text-purple-500 mr-1"></i> Pengirim</label>
+                        <select id="input-sender-vendor" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none mb-1" onchange="checkVendorSelection(this)">
                             <option value="JNE Express">JNE Express</option>
                             <option value="J&T Express">J&T Express</option>
                             <option value="SiCepat Ekspres">SiCepat Ekspres</option>
                             <option value="GoSend / GrabExpress">GoSend / GrabExpress</option>
                             <option value="Vendor Lainnya">Vendor Lainnya...</option>
                         </select>
-                        <input type="text" id="input-sender-custom" placeholder="Nama vendor / pengirim..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none hidden">
+                        <input type="text" id="input-sender-custom" placeholder="Cth: Kurir Tokopedia..." class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none hidden">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user-shield text-emerald-500 mr-1"></i> Petugas Penerima</label>
-                        <input type="text" id="input-petugas" value="${window.loggedUser.name}" readonly class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-600">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user-shield text-emerald-500 mr-1"></i> Petugas Penerima</label>
+                        <input type="text" id="input-petugas" value="${window.loggedUser.name}" readonly class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-600">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-building-shield text-amber-500 mr-1"></i> Lokasi Asal</label>
-                        <input type="text" id="input-origin" value="Pos 3" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-building-shield text-amber-500 mr-1"></i> Lokasi Asal</label>
+                        <input type="text" id="input-origin" value="Pos 3" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none">
                     </div>
                 `;
             } else {
                 container.innerHTML = `
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-fingerprint text-indigo-500 mr-1"></i> ID Transaksi (Otomatis)</label>
-                        <input type="text" id="input-trx" value="${generatedTrxId}" readonly class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold bg-slate-100 text-indigo-700 cursor-not-allowed">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-fingerprint text-indigo-500 mr-1"></i> ID Transaksi (Otomatis)</label>
+                        <input type="text" id="input-trx" value="${generatedTrxId}" readonly class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 font-mono font-bold bg-slate-100 text-indigo-700 cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Referensi Internal</label>
-                        <input type="text" id="input-resi" value="INT-${Math.floor(1000 + Math.random() * 9000)}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold bg-white focus:outline-none">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Referensi Internal</label>
+                        <input type="text" id="input-resi" value="INT-${Math.floor(1000 + Math.random() * 9000)}" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 font-mono font-bold bg-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user-tie text-purple-500 mr-1"></i> Pengirim Internal (Nama & Jabatan)</label>
-                        <input type="text" id="input-sender-internal" placeholder="Cth: Pak Joko (Wakakurikulum)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user-tie text-purple-500 mr-1"></i> Pengirim Internal (Nama & Jabatan)</label>
+                        <input type="text" id="input-sender-internal" placeholder="Cth: Pak Joko (Wakakurikulum)" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1"><i class="fa-solid fa-door-open text-amber-500 mr-1"></i> Ruangan Pengirim</label>
-                        <input type="text" id="input-room-sender" placeholder="Cth: Ruang Guru Lantai 2" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none">
+                        <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-door-open text-amber-500 mr-1"></i> Ruangan Pengirim</label>
+                        <input type="text" id="input-room-sender" placeholder="Cth: Ruang Guru Lantai 2" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none">
                     </div>
                     <input type="hidden" id="input-petugas" value="${window.loggedUser.name}">
                 `;
@@ -984,9 +1009,9 @@
             try {
                 activeScannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 video.srcObject = activeScannerStream;
-                status.innerText = "Kamera aktif. Posisikan barcode resi.";
+                status.innerText = "Kamera aktif. Posisikan barcode resi atau upload galeri.";
             } catch (err) {
-                status.innerText = "Gagal mengakses kamera. Gunakan upload galeri.";
+                status.innerText = "Gagal mengakses kamera. Gunakan upload galeri di bawah.";
             }
         };
 
@@ -1171,44 +1196,44 @@
             document.getElementById('count-delivering').innerText = delivering.length;
             document.getElementById('count-completed').innerText = completed.length;
 
-            document.getElementById('list-courier-pending').innerHTML = pending.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada antrian</p>' : pending.map(p => `
-                <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/70 space-y-2 text-xs">
+            document.getElementById('list-courier-pending').innerHTML = pending.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-5">Tidak ada antrian</p>' : pending.map(p => `
+                <div class="p-2 rounded-xl border border-slate-100 bg-slate-50/70 space-y-1 text-xs">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
+                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
                             ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
                         </div>
                         <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-full ${p.source === 'external' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700'}">${p.source}</span>
                     </div>
-                    ${p.packagePhotoUrl ? `<div class="mt-1"><img src="${p.packagePhotoUrl}" class="w-full h-16 object-cover rounded-lg border" alt="Foto"></div>` : ''}
+                    ${p.packagePhotoUrl ? `<div class="mt-1"><img src="${p.packagePhotoUrl}" class="w-full h-12 object-cover rounded-lg border" alt="Foto"></div>` : ''}
                     <div>
                         <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
                         <p class="text-slate-500"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
                     </div>
-                    <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1.5">
+                    <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1">
                         <span>Pengirim: <strong>${p.senderName || p.senderInternal || 'Eksternal'}</strong></span>
-                        <button onclick="takeOrder('${p.firebaseId || p.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-2.5 py-1 rounded-lg shadow transition btn-glow">Ambil</button>
+                        <button onclick="takeOrder('${p.firebaseId || p.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-2 py-0.5 rounded-lg shadow transition btn-glow text-[10px]">Ambil</button>
                     </div>
                 </div>
             `).join('');
 
-            document.getElementById('list-courier-delivering').innerHTML = delivering.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada pengiriman</p>' : delivering.map(p => `
-                <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/70 space-y-2 text-xs">
+            document.getElementById('list-courier-delivering').innerHTML = delivering.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-5">Tidak ada pengiriman</p>' : delivering.map(p => `
+                <div class="p-2 rounded-xl border border-slate-100 bg-slate-50/70 space-y-1 text-xs">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="font-mono font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
+                            <span class="font-mono font-bold text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
                             ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
                         </div>
                         <span class="text-[9px] font-semibold text-sky-700 bg-sky-100 px-1.5 py-0.5 rounded-full">Dikirim</span>
                     </div>
-                    ${p.packagePhotoUrl ? `<div class="mt-1"><img src="${p.packagePhotoUrl}" class="w-full h-16 object-cover rounded-lg border" alt="Foto"></div>` : ''}
+                    ${p.packagePhotoUrl ? `<div class="mt-1"><img src="${p.packagePhotoUrl}" class="w-full h-12 object-cover rounded-lg border" alt="Foto"></div>` : ''}
                     <div>
                         <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
                         <p class="text-slate-500"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
                     </div>
-                    <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1.5">
+                    <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1">
                         <span>SLA: ${p.sla}</span>
-                        <button onclick="openCompleteModal('${p.firebaseId || p.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-2.5 py-1 rounded-lg shadow transition flex items-center space-x-1 btn-glow">
+                        <button onclick="openCompleteModal('${p.firebaseId || p.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-2 py-0.5 rounded-lg shadow transition flex items-center space-x-1 btn-glow text-[10px]">
                             <i class="fa-solid fa-check"></i>
                             <span>Selesaikan</span>
                         </button>
@@ -1216,18 +1241,18 @@
                 </div>
             `).join('');
 
-            document.getElementById('list-courier-completed').innerHTML = completed.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Belum ada riwayat</p>' : completed.map(p => `
-                <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/70 space-y-2 text-xs">
+            document.getElementById('list-courier-completed').innerHTML = completed.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-5">Belum ada riwayat</p>' : completed.map(p => `
+                <div class="p-2 rounded-xl border border-slate-100 bg-slate-50/70 space-y-1 text-xs">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
+                            <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
                             ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
                         </div>
                         <span class="text-[9px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">Selesai</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-1.5 mt-1">
-                        ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400">Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-14 object-cover rounded-md border"></div>` : ''}
-                        ${p.photoUrl ? `<div><p class="text-[9px] text-slate-400">Bukti:</p><img src="${p.photoUrl}" class="w-full h-14 object-cover rounded-md border"></div>` : ''}
+                    <div class="grid grid-cols-2 gap-1 mt-1">
+                        ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400">Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-10 object-cover rounded-md border"></div>` : ''}
+                        ${p.photoUrl ? `<div><p class="text-[9px] text-slate-400">Bukti:</p><img src="${p.photoUrl}" class="w-full h-10 object-cover rounded-md border"></div>` : ''}
                     </div>
                     <div>
                         <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
@@ -1260,7 +1285,7 @@
         window.openCompleteModal = function(id) {
             window.activeCompletingId = id;
             window.photoCaptured = false;
-            document.getElementById('cam-icon').className = "fa-solid fa-camera text-2xl text-indigo-500 mb-1";
+            document.getElementById('cam-icon').className = "fa-solid fa-camera text-xl text-indigo-500 mb-1";
             document.getElementById('cam-status-text').innerText = "Klik untuk ambil foto tanda terima";
             document.getElementById('confirm-receiver-name').value = '';
             document.getElementById('complete-modal').classList.remove('hidden');
@@ -1272,7 +1297,7 @@
 
         window.simulateCameraCapture = function() {
             window.photoCaptured = true;
-            document.getElementById('cam-icon').className = "fa-solid fa-circle-check text-2xl text-emerald-500 mb-1";
+            document.getElementById('cam-icon').className = "fa-solid fa-circle-check text-xl text-emerald-500 mb-1";
             document.getElementById('cam-status-text').innerText = "Foto bukti berhasil diambil!";
             window.showMessage('Foto Berhasil!', 'Kamera mengambil bukti tanda terima paket.');
         };
@@ -1330,26 +1355,26 @@
             document.getElementById('receiver-count-badge').innerText = filtered.length + ' paket';
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs"><i class="fa-solid fa-box-open text-2xl mb-1.5 block"></i>Tidak ada transaksi paket ditemukan.</div>`;
+                container.innerHTML = `<div class="text-center py-5 text-slate-400 text-xs"><i class="fa-solid fa-box-open text-xl mb-1 block"></i>Tidak ada transaksi paket ditemukan.</div>`;
                 return;
             }
 
             container.innerHTML = filtered.map(p => `
-                <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-3 text-xs">
-                    <div class="space-y-1 flex-1 min-w-[200px]">
-                        <div class="flex items-center space-x-2 flex-wrap gap-1">
-                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-[10px]">${p.id}</span>
+                <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-2 text-xs">
+                    <div class="space-y-0.5 flex-1 min-w-[160px]">
+                        <div class="flex items-center space-x-1.5 flex-wrap gap-1">
+                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded text-[10px]">${p.id}</span>
                             ${p.resi ? `<span class="font-mono text-slate-500 text-[10px]">Resi: ${p.resi}</span>` : ''}
                             <span class="px-2 py-0.5 rounded-full font-semibold text-[9px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}">
                                 ${p.status === 'completed' ? 'Sudah Diterima' : (p.status === 'delivering' ? 'Sedang Dikirim' : 'Antrian')}
                             </span>
                         </div>
                         <h4 class="font-bold text-slate-800">${p.recipient} (${p.role}) - ${p.destination}</h4>
-                        <p class="text-slate-500 text-[11px]">Kategori: <strong>${p.category}</strong> | SLA: <strong>${p.sla}</strong> ${p.notes ? '| Catatan: ' + p.notes : ''}</p>
+                        <p class="text-slate-500 text-[10px]">Kategori: <strong>${p.category}</strong> | SLA: <strong>${p.sla}</strong> ${p.notes ? '| Catatan: ' + p.notes : ''}</p>
                     </div>
-                    <div class="flex space-x-1.5">
-                        ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400">Paket:</p><img src="${p.packagePhotoUrl}" class="w-12 h-10 object-cover rounded-md border"></div>` : ''}
-                        ${p.photoUrl ? `<div><p class="text-[9px] text-slate-400">Bukti:</p><img src="${p.photoUrl}" class="w-12 h-10 object-cover rounded-md border"></div>` : ''}
+                    <div class="flex space-x-1">
+                        ${p.packagePhotoUrl ? `<div><p class="text-[8px] text-slate-400">Fisik:</p><img src="${p.packagePhotoUrl}" class="w-9 h-8 object-cover rounded-md border"></div>` : ''}
+                        ${p.photoUrl ? `<div><p class="text-[8px] text-slate-400">Bukti:</p><img src="${p.photoUrl}" class="w-9 h-8 object-cover rounded-md border"></div>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1360,10 +1385,10 @@
                 const btn = document.getElementById(`adm-tab-${t}`);
                 const content = document.getElementById(`admin-content-${t}`);
                 if (t === tab) {
-                    btn.className = "px-3.5 py-1.5 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow whitespace-nowrap";
+                    btn.className = "px-3 py-1.5 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow whitespace-nowrap";
                     content.classList.remove('hidden');
                 } else {
-                    btn.className = "px-3.5 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap";
+                    btn.className = "px-3 py-1.5 rounded-xl font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1 btn-glow whitespace-nowrap";
                     content.classList.add('hidden');
                 }
             });
@@ -1428,21 +1453,21 @@
             const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search)) || p.recipient.toLowerCase().includes(search));
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Tidak ada data paket.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400">Tidak ada data paket.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(p => `
                 <tr class="hover:bg-slate-50 transition">
-                    <td class="p-2.5 font-mono font-bold text-indigo-600">
+                    <td class="p-2 font-mono font-bold text-indigo-600">
                         <div>${p.id}</div>
                         ${p.resi ? `<div class="text-[9px] text-slate-400 font-normal">Resi: ${p.resi}</div>` : ''}
                     </td>
-                    <td class="p-2.5 capitalize">${p.source}</td>
-                    <td class="p-2.5 font-semibold">${p.recipient} <span class="text-slate-400 font-normal text-[10px]">(${p.role})</span></td>
-                    <td class="p-2.5">${p.destination}</td>
-                    <td class="p-2.5"><span class="px-2 py-0.5 rounded-full font-semibold text-[9px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : (p.status === 'delivering' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700')}">${p.status}</span></td>
-                    <td class="p-2.5 text-right space-x-1.5">
+                    <td class="p-2 capitalize">${p.source}</td>
+                    <td class="p-2 font-semibold">${p.recipient} <span class="text-slate-400 font-normal text-[10px]">(${p.role})</span></td>
+                    <td class="p-2">${p.destination}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded-full font-semibold text-[9px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : (p.status === 'delivering' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700')}">${p.status}</span></td>
+                    <td class="p-2 text-right space-x-1">
                         <button onclick="openEditModal('${p.id}')" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button onclick="deletePackage('${p.id}')" class="text-rose-600 hover:text-rose-900"><i class="fa-solid fa-trash"></i></button>
                     </td>
@@ -1453,16 +1478,16 @@
         window.renderAdminMembers = function() {
             const tbody = document.getElementById('admin-members-table-body');
             if (members.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-400">Tidak ada anggota.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400">Tidak ada anggota.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = members.map(m => `
                 <tr class="hover:bg-slate-50 transition">
-                    <td class="p-2.5 font-bold text-slate-800">${m.name}</td>
-                    <td class="p-2.5 font-mono text-indigo-600">${m.email}</td>
-                    <td class="p-2.5"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-indigo-50 text-indigo-700">${m.role}</span></td>
-                    <td class="p-2.5 text-right space-x-1.5">
+                    <td class="p-2 font-bold text-slate-800">${m.name}</td>
+                    <td class="p-2 font-mono text-indigo-600">${m.email}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-indigo-50 text-indigo-700">${m.role}</span></td>
+                    <td class="p-2 text-right space-x-1">
                         <button onclick="openEditMemberModal('${m.firebaseId || m.id}')" class="text-indigo-600 hover:text-indigo-900"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button onclick="deleteMember('${m.firebaseId || m.id}')" class="text-rose-600 hover:text-rose-900"><i class="fa-solid fa-trash"></i></button>
                     </td>
@@ -1647,7 +1672,7 @@
             const container = document.getElementById('audit-log-container');
             if(!container) return;
             container.innerHTML = auditLogs.map(log => `
-                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex justify-between items-center text-[11px]">
+                <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 flex justify-between items-center text-[11px]">
                     <div>
                         <span class="font-bold text-indigo-600 mr-1.5">[${log.actor || 'SISTEM'}]</span>
                         <span class="text-slate-700">${log.action}</span>
