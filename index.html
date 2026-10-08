@@ -64,8 +64,10 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col text-[11px]">
 
+    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-12 right-2 z-50 space-y-1.5 max-w-xs w-full pointer-events-none"></div>
 
+    <!-- Login Screen with Clean Inputs (No Pre-filled Defaults) -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1">
@@ -123,6 +125,7 @@
         </div>
     </div>
 
+    <!-- Main Navigation Header -->
     <header class="bg-indigo-700 text-white shadow-sm sticky top-0 z-45">
         <div class="max-w-6xl mx-auto px-2 py-1 flex flex-wrap justify-between items-center gap-1">
             <div class="flex items-center space-x-1.5">
@@ -629,17 +632,15 @@
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
-        let loggedUser = { role: 'petugas', name: 'Petugas Piket' };
+        let loggedUser = { role: 'petugas', name: '' };
         let currentRole = 'petugas';
         let sourceType = 'external';
         let activeCompletingId = null;
         let proofPhotoCaptured = false;
         let physicalPhotoDataUrl = null;
         let physicalCameraStream = null;
-        let barcodeReader = null;
         let pendingPackagePayload = null;
 
-        // Strict Authorized Members List matching Admin panel
         let members = [
             { id: 'usr-1', name: 'Petugas Piket', email: 'petugas@sch.edu', role: 'petugas', password: '123456', status: 'Aktif' },
             { id: 'usr-2', name: 'Kurir Sekolah', email: 'kurir@sch.edu', role: 'kurir', password: '123456', status: 'Aktif' },
@@ -809,20 +810,17 @@
             const passwordInput = document.getElementById('login-password');
             const labelName = document.getElementById('login-label-name');
 
-            if(passwordInput) passwordInput.value = "123456";
+            if(usernameInput) usernameInput.value = "";
+            if(passwordInput) passwordInput.value = "";
 
             if (role === 'petugas') {
                 if(labelName) labelName.innerText = "Email Petugas";
-                if(usernameInput) usernameInput.value = "petugas@sch.edu";
             } else if (role === 'kurir') {
                 if(labelName) labelName.innerText = "Email Kurir";
-                if(usernameInput) usernameInput.value = "kurir@sch.edu";
             } else if (role === 'admin') {
                 if(labelName) labelName.innerText = "Email Administrator";
-                if(usernameInput) usernameInput.value = "admin@sch.edu";
             } else if (role === 'penerima') {
                 if(labelName) labelName.innerText = "Email Penerima";
-                if(usernameInput) usernameInput.value = "penerima@sch.edu";
             }
             loggedUser.role = role;
         }
@@ -861,6 +859,10 @@
         function logoutApp() {
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.remove('hidden');
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
+            if(usernameInput) usernameInput.value = "";
+            if(passwordInput) passwordInput.value = "";
             addAuditLog(`Pengguna keluar dari sistem`);
             showToast('Anda telah keluar dari sistem', 'info');
         }
@@ -1144,8 +1146,8 @@
 
         function openBarcodeModal() {
             const modal = document.getElementById('barcode-modal');
-            if(modal) modal.classList.add('hidden'); // placeholder
-            showToast('Fitur scan barcode aktif', 'info');
+            if(modal) modal.classList.remove('hidden');
+            showToast('Kamera barcode aktif', 'info');
         }
         window.openBarcodeModal = openBarcodeModal;
         window.closeBarcodeModal = function() {
@@ -1157,6 +1159,7 @@
             const inputResi = document.getElementById('input-resi');
             if(inputResi) inputResi.value = simulatedResi;
             saveFormDraft();
+            closeBarcodeModal();
             showToast('Resi terdeteksi: ' + simulatedResi);
         };
 
