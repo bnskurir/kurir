@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <header class="bg-indigo-700 text-white shadow-sm sticky top-0 z-40">
+    <header class="bg-indigo-700 text-white shadow-sm sticky top-0 z-45">
         <div class="max-w-6xl mx-auto px-2 py-1 flex flex-wrap justify-between items-center gap-1">
             <div class="flex items-center space-x-1.5">
                 <div class="bg-gradient-to-tr from-amber-400 to-orange-500 text-white p-1 rounded-lg font-bold shadow">
@@ -153,7 +153,7 @@
 
         <!-- Role 1: Petugas -->
         <div id="view-petugas" class="tab-view space-y-1">
-            <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-30">
+            <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-40">
                 <button onclick="window.switchPetugasTab('input')" id="petugas-tab-input" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
                     <i class="fa-solid fa-plus-circle mr-0.5"></i><span>Input Paket</span>
                 </button>
@@ -266,7 +266,7 @@
 
         <!-- Role 2: Kurir -->
         <div id="view-kurir" class="tab-view space-y-1">
-            <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-30">
+            <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-40">
                 <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
                     <i class="fa-solid fa-list-check text-amber-300"></i>
                     <span>Antrian (<span id="count-pending-badge">0</span>)</span>
@@ -352,7 +352,7 @@
 
         <!-- Role 4: Admin -->
         <div id="view-admin" class="tab-view space-y-1">
-            <div class="flex space-x-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-30">
+            <div class="flex space-x-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-40">
                 <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-1.5 py-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-0.5"><i class="fa-solid fa-chart-pie mr-0.5"></i><span>Overview</span></button>
                 <button onclick="window.switchAdminTab('packages')" id="adm-tab-packages" class="px-1.5 py-0.5 rounded text-[8.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-0.5"><i class="fa-solid fa-boxes-stacked mr-0.5"></i><span>Paket</span></button>
                 <button onclick="window.switchAdminTab('members')" id="adm-tab-members" class="px-1.5 py-0.5 rounded text-[8.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-0.5"><i class="fa-solid fa-users-gear mr-0.5"></i><span>Anggota</span></button>
@@ -492,7 +492,6 @@
         </div>
     </div>
 
-    <!-- Summary Confirmation Modal -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1.5 modal-transition border border-slate-100">
             <div class="text-center space-y-0.2">
@@ -531,7 +530,6 @@
         </div>
     </div>
 
-    <!-- Barcode Scanner Modal -->
     <div id="barcode-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1">
             <div class="flex justify-between items-center border-b pb-0.5">
@@ -554,7 +552,6 @@
         </div>
     </div>
 
-    <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1 modal-transition">
             <div class="flex justify-between items-center">
@@ -580,7 +577,6 @@
         </div>
     </div>
 
-    <!-- Member Modal -->
     <div id="member-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1.5 modal-transition">
             <div class="flex justify-between items-center border-b pb-0.5">
@@ -615,7 +611,6 @@
         </div>
     </div>
 
-    <!-- Zoom Modal -->
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 hidden" onclick="window.closeZoomModal()">
         <div class="relative max-w-xl w-full text-center">
             <button onclick="window.closeZoomModal()" class="absolute -top-7 right-0 text-white text-sm hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
@@ -638,7 +633,6 @@
         let barcodeStream = null;
         let pendingPackagePayload = null;
 
-        // Default operational staff records if database is empty
         let members = [
             { id: 'usr-1', name: 'Petugas Piket', email: 'petugas@sch.edu', role: 'petugas', password: '123456', status: 'Aktif' },
             { id: 'usr-2', name: 'Kurir Sekolah', email: 'kurir@sch.edu', role: 'kurir', password: '123456', status: 'Aktif' },
@@ -691,7 +685,6 @@
         function setupRealtimeSync() {
             if (!db) return;
             
-            // Sync Packages Collection
             const refPkg = collection(db, 'artifacts', appId, 'public', 'data', 'packages_col');
             onSnapshot(refPkg, (snapshot) => {
                 const cloudPkgs = [];
@@ -704,7 +697,6 @@
                 console.log('Package sync note:', err.message);
             });
 
-            // Sync Members Collection
             const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
             onSnapshot(refUsr, (snapshot) => {
                 const cloudMembers = [];
@@ -1216,9 +1208,9 @@
                         }
                         renderPetugasForm();
                         showToast('Sukses! Data paket berhasil masuk ke Firebase Cloud.');
-                    }, 500);
+                    }, 400);
                 }
-            }, 200);
+            }, 150);
         }
         window.executeSavePackageToFirebase = executeSavePackageToFirebase;
 
