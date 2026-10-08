@@ -96,7 +96,7 @@
 
             <form onsubmit="window.handleLogin(event)" class="space-y-1.5">
                 <div>
-                    <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Firebase API Key</label>
+                    <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Firebase API Key Terpisah</label>
                     <input type="text" id="login-apikey" required placeholder="AIzaSy... (Masukkan API Key Google)" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50 font-mono">
                 </div>
                 <div>
@@ -118,8 +118,8 @@
                 </button>
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
-                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Autentikasi Cloud Asli</p>
-                <p>Masukkan Firebase API Key dan kredensial resmi sekolah.</p>
+                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Proyek: kurirapps-d651e</p>
+                <p>Masukkan API Key terpisah untuk menghubungkan cloud.</p>
             </div>
         </div>
     </div>
@@ -155,7 +155,7 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-1 md:p-1.5 pb-12 space-y-1">
 
-        <!-- Role 1: Petugas View -->
+        <!-- Petugas View -->
         <div id="view-petugas" class="tab-view space-y-1">
             <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-40">
                 <button onclick="window.switchPetugasTab('input')" id="petugas-tab-input" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -268,7 +268,7 @@
             </div>
         </div>
 
-        <!-- Role 2: Kurir View -->
+        <!-- Kurir View -->
         <div id="view-kurir" class="tab-view space-y-1">
             <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-40">
                 <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -328,7 +328,7 @@
             </div>
         </div>
 
-        <!-- Role 3: Penerima View -->
+        <!-- Penerima View -->
         <div id="view-penerima" class="tab-view space-y-1">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-xl p-2 shadow-sm flex flex-wrap justify-between items-center gap-1">
                 <div>
@@ -354,7 +354,7 @@
             </div>
         </div>
 
-        <!-- Role 4: Admin View -->
+        <!-- Admin View -->
         <div id="view-admin" class="tab-view space-y-1">
             <div class="flex space-x-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-40">
                 <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-1.5 py-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-0.5"><i class="fa-solid fa-chart-pie mr-0.5"></i><span>Overview</span></button>
@@ -496,11 +496,12 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal with Instant Action -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1.5 modal-transition border border-slate-100">
             <div class="text-center space-y-0.2">
-                <div id="summary-modal-icon" class="w-7 h-7 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-[11px] shadow-inner">
-                    <i class="fa-solid fa-box-check"></i>
+                <div id="summary-modal-icon" class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xs shadow-inner">
+                    <i class="fa-solid fa-circle-check"></i>
                 </div>
                 <h3 id="summary-modal-title" class="font-bold text-slate-800 text-[10px]">Konfirmasi Simpan dan Kirim</h3>
                 <p id="summary-modal-desc" class="text-[8.5px] text-slate-500">Periksa ringkasan data paket berikut sebelum dikirim.</p>
@@ -517,19 +518,15 @@
                 <div class="flex justify-between items-center"><span class="text-slate-400">Foto Fisik:</span> <img id="sum-photo" src="" class="w-6 h-6 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)"></div>
             </div>
 
-            <div id="summary-loading-section" class="space-y-0.5 hidden">
-                <div class="flex justify-between text-[7.5px] text-slate-500 font-medium">
-                    <span id="summary-progress-label">Menghubungkan Cloud...</span>
-                    <span id="summary-progress-percent">0%</span>
-                </div>
-                <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-                    <div id="summary-progress-bar" class="bg-gradient-to-r from-indigo-600 to-emerald-500 h-full w-0 transition-all duration-300"></div>
-                </div>
-            </div>
-
             <div id="summary-action-buttons" class="grid grid-cols-2 gap-1 pt-0.5">
-                <button type="button" onclick="window.closeSummaryModal()" class="py-1 rounded-lg border border-slate-200 text-slate-600 font-semibold text-[9px] hover:bg-slate-50 transition">Batal</button>
-                <button type="button" onclick="window.executeSavePackageToFirebase()" class="py-1 rounded-lg bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold text-[9px] shadow hover:brightness-105 transition">Kirim ke Cloud</button>
+                <button type="button" onclick="window.closeSummaryModal()" class="py-1 rounded-lg border border-slate-200 text-slate-600 font-semibold text-[9px] hover:bg-slate-50 transition flex items-center justify-center space-x-1">
+                    <i class="fa-solid fa-xmark text-[8px]"></i>
+                    <span>Batal</span>
+                </button>
+                <button type="button" id="btn-execute-cloud-save" onclick="window.executeSavePackageToFirebase()" class="py-1 rounded-lg bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold text-[9px] shadow hover:brightness-105 transition flex items-center justify-center space-x-1">
+                    <i class="fa-solid fa-cloud-arrow-up text-[8px]"></i>
+                    <span>Kirim ke Cloud</span>
+                </button>
             </div>
         </div>
     </div>
@@ -624,10 +621,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
-        let loggedUser = { role: 'petugas', name: 'Petugas Operasional' };
+        let loggedUser = { role: 'petugas', name: 'Petugas Piket' };
         let currentRole = 'petugas';
         let sourceType = 'external';
         let activeCompletingId = null;
@@ -649,28 +647,36 @@
         let charts = {};
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
-        let db, auth, currentUser = null;
+        let db, auth, analytics, currentUser = null;
 
         function initializeFirebaseConnection(apiKey) {
+            const cleanApiKey = apiKey ? apiKey.trim() : '';
+            if (!cleanApiKey || cleanApiKey.length < 20) {
+                showToast('API Key tidak valid. Mohon masukkan API Key Google yang benar.', 'error');
+                return;
+            }
+
             const firebaseConfig = {
-                apiKey: apiKey.trim(),
-                authDomain: "sandbox.firebaseapp.com",
-                projectId: "sandbox-bns",
-                storageBucket: "sandbox.appspot.com",
-                messagingSenderId: "123456789",
-                appId: "1:123:web:abc"
+                apiKey: cleanApiKey,
+                authDomain: "kurirapps-d651e.firebaseapp.com",
+                projectId: "kurirapps-d651e",
+                storageBucket: "kurirapps-d651e.firebasestorage.app",
+                messagingSenderId: "315550512942",
+                appId: "1:315550512942:web:6c7248e546439e571facbf",
+                measurementId: "G-B4RRT8JMCC"
             };
 
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                analytics = getAnalytics(app);
 
                 const initAuth = async () => {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
+                    try {
                         await signInAnonymously(auth);
+                    } catch (anonErr) {
+                        console.log('Anon auth note:', anonErr);
                     }
                     currentUser = auth.currentUser;
                     setupRealtimeSync();
@@ -687,56 +693,64 @@
                 const statusDot = document.getElementById('connection-dot');
                 const statusText = document.getElementById('connection-text');
                 if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 inline-block";
-                if(statusText) statusText.innerText = "Cloud Sync (Gagal)";
+                if(statusText) statusText.innerText = "Cloud Sync (Offline Mode)";
             }
         }
+        window.initializeFirebaseConnection = initializeFirebaseConnection;
 
         function setupRealtimeSync() {
             if (!db) return;
-            
-            const refPkg = collection(db, 'artifacts', appId, 'public', 'data', 'packages_col');
-            onSnapshot(refPkg, (snapshot) => {
-                const cloudPkgs = [];
-                snapshot.forEach(docSnap => {
-                    cloudPkgs.push(docSnap.data());
+            try {
+                const refPkg = collection(db, 'artifacts', appId, 'public', 'data', 'packages_col');
+                onSnapshot(refPkg, (snapshot) => {
+                    const cloudPkgs = [];
+                    snapshot.forEach(docSnap => {
+                        cloudPkgs.push(docSnap.data());
+                    });
+                    packages = cloudPkgs.sort((a,b) => b.id.localeCompare(a.id));
+                    refreshActiveView();
+                }, (err) => {
+                    console.log('Package sync note:', err.message);
                 });
-                packages = cloudPkgs.sort((a,b) => b.id.localeCompare(a.id));
-                refreshActiveView();
-            }, (err) => {
-                console.log('Package sync note:', err.message);
-            });
 
-            const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
-            onSnapshot(refUsr, (snapshot) => {
-                const cloudMembers = [];
-                snapshot.forEach(docSnap => {
-                    cloudMembers.push(docSnap.data());
+                const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
+                onSnapshot(refUsr, (snapshot) => {
+                    const cloudMembers = [];
+                    snapshot.forEach(docSnap => {
+                        cloudMembers.push(docSnap.data());
+                    });
+                    if (cloudMembers.length > 0) {
+                        members = cloudMembers;
+                        if (currentRole === 'admin') renderAdminMembers();
+                    }
+                }, (err) => {
+                    console.log('Member sync note:', err.message);
                 });
-                if (cloudMembers.length > 0) {
-                    members = cloudMembers;
-                    if (currentRole === 'admin') renderAdminMembers();
-                }
-            }, (err) => {
-                console.log('Member sync note:', err.message);
-            });
+            } catch (syncErr) {
+                console.log('Realtime sync setup error:', syncErr);
+            }
         }
 
         async function syncPackageToFirebase(pkgObj) {
-            if (!db) return;
+            if (!db) {
+                showToast('Database offline. Paket tersimpan secara lokal.', 'info');
+                return true;
+            }
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', pkgObj.id), pkgObj);
-                showToast(`Sukses sync paket ${pkgObj.id} ke Google Cloud!`);
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id));
+                await setDoc(docRef, pkgObj, { merge: true });
+                return true;
             } catch (e) {
                 console.log('Firebase sync error:', e);
-                showToast(`Gagal sync paket ${pkgObj.id} ke cloud`, 'error');
+                showToast(`Gagal sync cloud: ${e.message}`, 'error');
+                return false;
             }
         }
 
         async function deletePackageFromFirebase(id) {
             if (!db) return;
             try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', id));
-                showToast(`Paket ${id} terhapus di Cloud`);
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(id)));
             } catch (e) {
                 console.log('Firebase delete error:', e);
             }
@@ -745,19 +759,16 @@
         async function syncMemberToFirebase(memberObj) {
             if (!db) return;
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', memberObj.id), memberObj);
-                showToast(`Sukses sync anggota ${memberObj.name} ke Cloud!`);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true });
             } catch (e) {
                 console.log('Firebase member sync error:', e);
-                showToast(`Gagal sync anggota ${memberObj.name}`, 'error');
             }
         }
 
         async function deleteMemberFromFirebase(id) {
             if (!db) return;
             try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', id));
-                showToast('Anggota terhapus di Cloud');
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id)));
             } catch (e) {
                 console.log('Firebase member delete error:', e);
             }
@@ -833,7 +844,7 @@
             const role = loggedUser.role;
 
             if (!apiKey) {
-                showToast('Masukkan Firebase API Key terlebih dahulu!', 'error');
+                showToast('Masukkan Firebase API Key terpisah terlebih dahulu!', 'error');
                 return;
             }
 
@@ -1169,12 +1180,7 @@
             if(elPetugas) elPetugas.innerText = petugas;
             if(elPhoto) elPhoto.src = physicalPhotoDataUrl;
 
-            const loadingSec = document.getElementById('summary-loading-section');
-            const actionBtns = document.getElementById('summary-action-buttons');
             const modal = document.getElementById('summary-confirmation-modal');
-
-            if(loadingSec) loadingSec.classList.add('hidden');
-            if(actionBtns) actionBtns.classList.remove('hidden');
             if(modal) modal.classList.remove('hidden');
         }
         window.handlePreparePackageSummary = handlePreparePackageSummary;
@@ -1185,49 +1191,40 @@
         }
         window.closeSummaryModal = closeSummaryModal;
 
-        function executeSavePackageToFirebase() {
-            const actionBtns = document.getElementById('summary-action-buttons');
-            const loadingSec = document.getElementById('summary-loading-section');
-            if(actionBtns) actionBtns.classList.add('hidden');
-            if(loadingSec) loadingSec.classList.remove('hidden');
-            
-            const progressBar = document.getElementById('summary-progress-bar');
-            const progressPercent = document.getElementById('summary-progress-percent');
-            const progressLabel = document.getElementById('summary-progress-label');
+        async function executeSavePackageToFirebase() {
+            if (!pendingPackagePayload) return;
+            const btnSave = document.getElementById('btn-execute-cloud-save');
+            if(btnSave) {
+                btnSave.disabled = true;
+                btnSave.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-[8px]"></i><span>Menyimpan...</span>`;
+            }
 
-            let progress = 0;
-            if(progressBar) progressBar.style.width = '0%';
-            
-            const interval = setInterval(async () => {
-                progress += 25;
-                if(progressBar) progressBar.style.width = progress + '%';
-                if(progressPercent) progressPercent.innerText = progress + '%';
-
-                if (progress === 50 && progressLabel) progressLabel.innerText = "Mengunggah foto fisik...";
-                if (progress === 75 && progressLabel) progressLabel.innerText = "Sinkronisasi Google Cloud...";
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    if(progressLabel) progressLabel.innerText = "Berhasil tersimpan ke Cloud!";
-                    setTimeout(async () => {
-                        packages.unshift(pendingPackagePayload);
-                        await syncPackageToFirebase(pendingPackagePayload);
-                        addAuditLog(`Petugas (${pendingPackagePayload.petugas}) Menerima paket ${sourceType.toUpperCase()} (${pendingPackagePayload.id})`);
-                        closeSummaryModal();
-                        const form = document.getElementById('package-form');
-                        if(form) form.reset();
-                        physicalPhotoDataUrl = null;
-                        const wrap = document.getElementById('physical-photo-preview-wrap');
-                        if(wrap) wrap.classList.add('hidden');
-                        const badge = document.getElementById('photo-status-badge');
-                        if(badge) {
-                            badge.className = "text-[7.5px] bg-amber-100 text-amber-700 px-1 py-0.1 rounded-full font-medium inline-block";
-                            badge.innerText = "Belum Diambil";
-                        }
-                        renderPetugasForm();
-                        showToast('Sukses! Data paket berhasil masuk ke Firebase Cloud.');
-                    }, 400);
+            const success = await syncPackageToFirebase(pendingPackagePayload);
+            if (success) {
+                if (!packages.some(p => p.id === pendingPackagePayload.id)) {
+                    packages.unshift(pendingPackagePayload);
                 }
-            }, 150);
+                addAuditLog(`Petugas (${pendingPackagePayload.petugas}) Menerima paket ${sourceType.toUpperCase()} (${pendingPackagePayload.id})`);
+                
+                closeSummaryModal();
+                const form = document.getElementById('package-form');
+                if(form) form.reset();
+                physicalPhotoDataUrl = null;
+                const wrap = document.getElementById('physical-photo-preview-wrap');
+                if(wrap) wrap.classList.add('hidden');
+                const badge = document.getElementById('photo-status-badge');
+                if(badge) {
+                    badge.className = "text-[7.5px] bg-amber-100 text-amber-700 px-1 py-0.1 rounded-full font-medium inline-block";
+                    badge.innerText = "Belum Diambil";
+                }
+                renderPetugasForm();
+                showToast('Sukses! Data paket berhasil masuk ke Firebase Cloud.');
+            }
+
+            if(btnSave) {
+                btnSave.disabled = false;
+                btnSave.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-[8px]"></i><span>Kirim ke Cloud</span>`;
+            }
         }
         window.executeSavePackageToFirebase = executeSavePackageToFirebase;
 
@@ -1398,7 +1395,7 @@
             const camIcon = document.getElementById('cam-icon');
             const camStatus = document.getElementById('cam-status-text');
             if(camIcon) camIcon.className = "fa-solid fa-circle-check text-sm text-emerald-500 mb-0.5";
-            if(camStatus) camStatus.innerText = "Foto bukti berhasil!";
+            if(camStatus) camStatus.innerText = "Foto bukti diterima";
             showToast('Foto bukti diterima');
         }
         window.simulateProofCameraCapture = simulateProofCameraCapture;
