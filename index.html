@@ -97,12 +97,12 @@
             <form onsubmit="window.handleLogin(event)" class="space-y-1.5">
                 <div>
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5" id="login-label-name">Email / Username</label>
-                    <input type="text" id="login-username" required value="gari@sch.edu" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
+                    <input type="text" id="login-username" required value="" placeholder="Masukkan email terdaftar" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                 </div>
                 <div>
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
                     <div class="relative">
-                        <input type="password" id="login-password" required value="123456" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
+                        <input type="password" id="login-password" required value="" placeholder="••••••" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                         <button type="button" onclick="window.togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-1.5 flex items-center text-slate-400 hover:text-slate-700 text-[10px] focus:outline-none" title="Lihat / Sembunyikan">
                             <i id="password-toggle-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -114,9 +114,8 @@
                 </button>
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
-                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-key text-amber-500 mr-1"></i> Default:</p>
-                <p>• Petugas: <strong class="text-indigo-600">gari@sch.edu</strong> | Kurir: <strong class="text-sky-600">rizky@sch.edu</strong></p>
-                <p>• Admin: <strong class="text-amber-600">aufah@sch.edu</strong> | Sandi: <strong class="text-emerald-600">123456</strong></p>
+                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Autentikasi Sistem Asli</p>
+                <p>Gunakan akun resmi operasional sekolah yang terdaftar di database.</p>
             </div>
         </div>
     </div>
@@ -201,7 +200,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-1">
                             <div>
                                 <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-user text-indigo-500 mr-0.5"></i> Nama Penerima</label>
-                                <input type="text" id="input-recipient" required placeholder="Cth: Aufah Hidayat Tullah" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400">
+                                <input type="text" id="input-recipient" required placeholder="Cth: Nama Lengkap Penerima" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400">
                             </div>
                             <div>
                                 <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-id-badge text-sky-500 mr-0.5"></i> Peran Penerima</label>
@@ -213,7 +212,7 @@
                             </div>
                             <div>
                                 <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-location-dot text-rose-500 mr-0.5"></i> Tempat Tujuan</label>
-                                <input type="text" id="input-destination" required placeholder="Cth: IT Room" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400">
+                                <input type="text" id="input-destination" required placeholder="Cth: Ruang Kelas / Lab / Kantor" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400">
                             </div>
                         </div>
 
@@ -334,7 +333,7 @@
                 </div>
                 <div class="bg-white/10 p-1 rounded backdrop-blur-sm">
                     <label class="block text-[7px] uppercase font-bold text-emerald-200 mb-0.1">Nama / Tujuan</label>
-                    <input type="text" id="receiver-session-name" oninput="window.renderReceiverView()" placeholder="Cth: Aufah / IT Room" class="px-1.5 py-0.1 rounded bg-white text-slate-800 text-[9px] font-semibold focus:outline-none w-28 placeholder:text-slate-400">
+                    <input type="text" id="receiver-session-name" oninput="window.renderReceiverView()" placeholder="Cth: Nama / Ruangan" class="px-1.5 py-0.1 rounded bg-white text-slate-800 text-[9px] font-semibold focus:outline-none w-28 placeholder:text-slate-400">
                 </div>
             </div>
 
@@ -477,7 +476,6 @@
 
     </main>
 
-    <!-- Physical Camera Modal -->
     <div id="physical-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
             <h3 class="text-[9.5px] font-bold flex items-center"><i class="fa-solid fa-camera text-indigo-400 mr-1"></i> Ambil Foto Paket Fisik</h3>
@@ -593,11 +591,11 @@
                 <input type="hidden" id="member-edit-id">
                 <div>
                     <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Nama Lengkap</label>
-                    <input type="text" id="member-name" required placeholder="Cth: Gari Saputra" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
+                    <input type="text" id="member-name" required placeholder="Cth: Nama Staff" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
                 </div>
                 <div>
                     <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Email / Username</label>
-                    <input type="email" id="member-email" required placeholder="Cth: gari@sch.edu" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
+                    <input type="email" id="member-email" required placeholder="Cth: staff@sch.edu" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
                 </div>
                 <div>
                     <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
@@ -630,7 +628,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        let loggedUser = { role: 'petugas', name: 'Gari (Petugas)' };
+        let loggedUser = { role: 'petugas', name: 'Petugas Operasional' };
         let currentRole = 'petugas';
         let sourceType = 'external';
         let activeCompletingId = null;
@@ -640,40 +638,16 @@
         let barcodeStream = null;
         let pendingPackagePayload = null;
 
+        // Default operational staff records if database is empty
         let members = [
-            { id: 'usr-1', name: 'Gari (Petugas)', email: 'gari@sch.edu', role: 'petugas', password: '123456', status: 'Aktif' },
-            { id: 'usr-2', name: 'Rizky (Kurir)', email: 'rizky@sch.edu', role: 'kurir', password: '123456', status: 'Aktif' },
-            { id: 'usr-3', name: 'Aufah (Admin)', email: 'aufah@sch.edu', role: 'admin', password: '123456', status: 'Aktif' },
-            { id: 'usr-4', name: 'Siti Rahma (Penerima)', email: 'siti@sch.edu', role: 'penerima', password: '123456', status: 'Aktif' }
+            { id: 'usr-1', name: 'Petugas Piket', email: 'petugas@sch.edu', role: 'petugas', password: '123456', status: 'Aktif' },
+            { id: 'usr-2', name: 'Kurir Sekolah', email: 'kurir@sch.edu', role: 'kurir', password: '123456', status: 'Aktif' },
+            { id: 'usr-3', name: 'Administrator', email: 'admin@sch.edu', role: 'admin', password: '123456', status: 'Aktif' },
+            { id: 'usr-4', name: 'Penerima Barang', email: 'penerima@sch.edu', role: 'penerima', password: '123456', status: 'Aktif' }
         ];
 
-        let packages = [
-            {
-                id: 'TRX-081026-1001',
-                resi: 'RES-882149',
-                source: 'external',
-                vendor: 'JNE Express',
-                petugas: 'Gari (Petugas)',
-                courier: 'Rizky (Kurir)',
-                originLocation: 'Pos 3',
-                recipient: 'Siti Rahma',
-                role: 'Student',
-                destination: 'Kelas X IPA 2',
-                category: 'dokumen',
-                sla: '30 menit (cepat)',
-                notes: 'Dokumen penting rapot',
-                status: 'pending',
-                physicalPhotoUrl: 'https://placehold.co/300x200/indigo/white?text=Paket+Fisik',
-                proofPhotoUrl: null,
-                timestamp: '08:30 WIB, 08 Okt 2026',
-                completedTimestamp: null
-            }
-        ];
-
-        let auditLogs = [
-            { time: '08:30 WIB, 08 Okt 2026', actor: 'Petugas (Gari)', action: 'Menerima paket Eksternal (TRX-081026-1001) untuk Siti Rahma' }
-        ];
-
+        let packages = [];
+        let auditLogs = [];
         let charts = {};
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
@@ -724,10 +698,8 @@
                 snapshot.forEach(docSnap => {
                     cloudPkgs.push(docSnap.data());
                 });
-                if (cloudPkgs.length > 0) {
-                    packages = cloudPkgs.sort((a,b) => b.id.localeCompare(a.id));
-                    refreshActiveView();
-                }
+                packages = cloudPkgs.sort((a,b) => b.id.localeCompare(a.id));
+                refreshActiveView();
             }, (err) => {
                 console.log('Package sync note:', err.message);
             });
@@ -837,16 +809,16 @@
 
             if (role === 'petugas') {
                 if(labelName) labelName.innerText = "Email Petugas";
-                if(usernameInput) usernameInput.value = "gari@sch.edu";
+                if(usernameInput) usernameInput.value = "petugas@sch.edu";
             } else if (role === 'kurir') {
                 if(labelName) labelName.innerText = "Email Kurir";
-                if(usernameInput) usernameInput.value = "rizky@sch.edu";
+                if(usernameInput) usernameInput.value = "kurir@sch.edu";
             } else if (role === 'admin') {
                 if(labelName) labelName.innerText = "Email Administrator";
-                if(usernameInput) usernameInput.value = "aufah@sch.edu";
+                if(usernameInput) usernameInput.value = "admin@sch.edu";
             } else if (role === 'penerima') {
-                if(labelName) labelName.innerText = "Email / Nama Penerima";
-                if(usernameInput) usernameInput.value = "siti@sch.edu";
+                if(labelName) labelName.innerText = "Email Penerima";
+                if(usernameInput) usernameInput.value = "penerima@sch.edu";
             }
             loggedUser.role = role;
         }
@@ -1012,7 +984,7 @@
                     </div>
                     <div>
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-building-shield text-emerald-500 mr-0.5"></i> Lokasi Asal</label>
-                        <input type="text" id="input-origin" value="Pos 3" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white">
+                        <input type="text" id="input-origin" value="Pos Satpam Utama" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white">
                     </div>
                 `;
             } else {
@@ -1030,11 +1002,11 @@
                     </div>
                     <div>
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-user-tie text-sky-500 mr-0.5"></i> Pengirim Internal</label>
-                        <input type="text" id="input-sender-internal" placeholder="Cth: Adha Sandy" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white text-slate-800 placeholder:text-slate-400">
+                        <input type="text" id="input-sender-internal" placeholder="Cth: Nama Pengirim" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white text-slate-800 placeholder:text-slate-400">
                     </div>
                     <div>
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-door-open text-amber-500 mr-0.5"></i> Ruang Pengirim</label>
-                        <input type="text" id="input-room-sender" placeholder="Cth: BM Room" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white text-slate-800 placeholder:text-slate-400">
+                        <input type="text" id="input-room-sender" placeholder="Cth: Ruang Guru" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white text-slate-800 placeholder:text-slate-400">
                     </div>
                 `;
             }
@@ -1148,7 +1120,7 @@
                 resi: resi,
                 source: sourceType,
                 petugas: petugas,
-                courier: 'Rizky (Kurir)',
+                courier: 'Belum Ditugaskan',
                 recipient: recipient,
                 role: document.getElementById('input-recipient-role').value,
                 destination: destination,
@@ -1307,7 +1279,7 @@
                             <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
                             <p class="text-slate-500"><i class="fa-solid fa-location-dot text-rose-500 mr-0.5"></i> ${p.destination}</p>
                             <p class="text-[7.5px] text-indigo-600"><span class="font-semibold">Petugas:</span> ${p.petugas}</p>
-                            <p class="text-[7.5px] text-sky-600"><span class="font-semibold">Kurir:</span> ${p.courier || '-'}</p>
+                            <p class="text-[7.5px] text-sky-600"><span class="font-semibold">Kurir:</span> ${p.courier || 'Belum Ditugaskan'}</p>
                         </div>
                         <div class="text-right">
                             ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" class="w-8 h-8 object-cover rounded border shadow-sm ml-auto zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
@@ -1632,9 +1604,9 @@
                 });
             }
 
-            const jneCount = packages.filter(p => p.vendor === 'JNE Express').length + 1;
+            const jneCount = packages.filter(p => p.vendor === 'JNE Express').length;
             const jtCount = packages.filter(p => p.vendor === 'J&T Express').length;
-            const scepCount = packages.filter(p => p.vendor === 'SiCepat').length + 1;
+            const scepCount = packages.filter(p => p.vendor === 'SiCepat').length;
             const intExpCount = packages.filter(p => p.source === 'internal').length;
             const ce = document.getElementById('chartExpedition');
             if (ce) {
