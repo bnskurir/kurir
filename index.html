@@ -65,7 +65,7 @@
     <div id="toast-container" class="fixed top-12 right-2 z-50 space-y-1.5 max-w-xs w-full pointer-events-none"></div>
 
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1">
                 <div class="w-9 h-9 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center justify-center mx-auto text-xs shadow-md btn-glow">
                     <i class="fa-solid fa-boxes-stacked"></i>
@@ -96,13 +96,17 @@
 
             <form onsubmit="window.handleLogin(event)" class="space-y-1.5">
                 <div>
+                    <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Firebase API Key</label>
+                    <input type="text" id="login-apikey" required placeholder="AIzaSy... (Masukkan API Key Google)" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50 font-mono">
+                </div>
+                <div>
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5" id="login-label-name">Email / Username</label>
-                    <input type="text" id="login-username" required value="" placeholder="Masukkan email terdaftar" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
+                    <input type="text" id="login-username" required placeholder="Masukkan email terdaftar" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                 </div>
                 <div>
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
                     <div class="relative">
-                        <input type="password" id="login-password" required value="" placeholder="••••••" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
+                        <input type="password" id="login-password" required placeholder="••••••" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                         <button type="button" onclick="window.togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-1.5 flex items-center text-slate-400 hover:text-slate-700 text-[10px] focus:outline-none" title="Lihat / Sembunyikan">
                             <i id="password-toggle-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -110,12 +114,12 @@
                 </div>
                 <button type="submit" id="login-submit-btn" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold py-1.5 rounded-lg text-[10px] shadow-sm transition flex items-center justify-center space-x-1 btn-glow">
                     <i class="fa-solid fa-right-to-bracket text-indigo-200 text-[9px]"></i>
-                    <span>Login</span>
+                    <span>Hubungkan & Login</span>
                 </button>
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
-                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Autentikasi Sistem Asli</p>
-                <p>Gunakan akun resmi operasional sekolah yang terdaftar di database.</p>
+                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Autentikasi Cloud Asli</p>
+                <p>Masukkan Firebase API Key dan kredensial resmi sekolah.</p>
             </div>
         </div>
     </div>
@@ -130,8 +134,8 @@
                     <div class="flex items-center space-x-1">
                         <h1 class="font-bold text-[10px] leading-tight">Kurir BNS</h1>
                         <div id="firebase-status-badge" class="flex items-center space-x-0.5 bg-emerald-900/40 text-emerald-300 text-[7.5px] px-1 py-0.2 rounded-full font-medium border border-emerald-500/30">
-                            <span id="connection-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block"></span>
-                            <span id="connection-text">Cloud Sync (Terhubung)</span>
+                            <span id="connection-dot" class="w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block"></span>
+                            <span id="connection-text">Menunggu API Key...</span>
                         </div>
                     </div>
                     <p id="header-user-badge" class="text-[8px] text-indigo-200 truncate max-w-[130px]">Masuk: -</p>
@@ -151,7 +155,7 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-1 md:p-1.5 pb-12 space-y-1">
 
-        <!-- Role 1: Petugas -->
+        <!-- Role 1: Petugas View -->
         <div id="view-petugas" class="tab-view space-y-1">
             <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-40">
                 <button onclick="window.switchPetugasTab('input')" id="petugas-tab-input" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -264,7 +268,7 @@
             </div>
         </div>
 
-        <!-- Role 2: Kurir -->
+        <!-- Role 2: Kurir View -->
         <div id="view-kurir" class="tab-view space-y-1">
             <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-40">
                 <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -324,7 +328,7 @@
             </div>
         </div>
 
-        <!-- Role 3: Penerima -->
+        <!-- Role 3: Penerima View -->
         <div id="view-penerima" class="tab-view space-y-1">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-xl p-2 shadow-sm flex flex-wrap justify-between items-center gap-1">
                 <div>
@@ -350,7 +354,7 @@
             </div>
         </div>
 
-        <!-- Role 4: Admin -->
+        <!-- Role 4: Admin View -->
         <div id="view-admin" class="tab-view space-y-1">
             <div class="flex space-x-0.5 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-40">
                 <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-1.5 py-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-0.5"><i class="fa-solid fa-chart-pie mr-0.5"></i><span>Overview</span></button>
@@ -645,41 +649,46 @@
         let charts = {};
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyDummyKeyForLocalSandboxTestingOnly12345",
-            authDomain: "sandbox.firebaseapp.com",
-            projectId: "sandbox-bns",
-            storageBucket: "sandbox.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123:web:abc"
-        };
-
         let db, auth, currentUser = null;
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
 
-            const initAuth = async () => {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                currentUser = auth.currentUser;
-                setupRealtimeSync();
+        function initializeFirebaseConnection(apiKey) {
+            const firebaseConfig = {
+                apiKey: apiKey.trim(),
+                authDomain: "sandbox.firebaseapp.com",
+                projectId: "sandbox-bns",
+                storageBucket: "sandbox.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123:web:abc"
+            };
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    currentUser = auth.currentUser;
+                    setupRealtimeSync();
+                    const statusDot = document.getElementById('connection-dot');
+                    const statusText = document.getElementById('connection-text');
+                    if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block";
+                    if(statusText) statusText.innerText = "Cloud Sync (Terhubung)";
+                };
+                initAuth();
+                showToast('Firebase Cloud Berhasil Terhubung!');
+            } catch (e) {
+                console.log('Firebase connection error:', e);
+                showToast('Gagal terhubung dengan API Key tersebut', 'error');
                 const statusDot = document.getElementById('connection-dot');
                 const statusText = document.getElementById('connection-text');
-                if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block";
-                if(statusText) statusText.innerText = "Cloud Sync (Terhubung)";
-            };
-            initAuth();
-        } catch (e) {
-            console.log('Firebase offline mode running with local state.');
-            const statusDot = document.getElementById('connection-dot');
-            const statusText = document.getElementById('connection-text');
-            if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 inline-block";
-            if(statusText) statusText.innerText = "Cloud Sync (Lokal)";
+                if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 inline-block";
+                if(statusText) statusText.innerText = "Cloud Sync (Gagal)";
+            }
         }
 
         function setupRealtimeSync() {
@@ -818,9 +827,17 @@
 
         function handleLogin(e) {
             e.preventDefault();
+            const apiKey = document.getElementById('login-apikey').value.trim();
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
             const role = loggedUser.role;
+
+            if (!apiKey) {
+                showToast('Masukkan Firebase API Key terlebih dahulu!', 'error');
+                return;
+            }
+
+            initializeFirebaseConnection(apiKey);
 
             const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase() && m.role === role);
             if (foundUser && foundUser.password !== password) {
