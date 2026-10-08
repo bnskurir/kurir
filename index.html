@@ -152,96 +152,113 @@
 
     <main class="flex-1 max-w-4xl w-full mx-auto p-2.5 pb-20 space-y-3">
 
-        <!-- Petugas View -->
-        <div id="view-petugas" class="tab-view space-y-3">
-            <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-2.5">
-                <div class="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-100">
-                    <div>
-                        <h2 class="text-xs font-bold text-slate-800 flex items-center"><i class="fa-solid fa-box-archive text-indigo-500 mr-1.5"></i> Penerimaan Paket Baru</h2>
-                        <p class="text-[10px] text-slate-500">Input paket & foto fisik langsung</p>
-                    </div>
-                    <div class="flex bg-slate-100 p-0.5 rounded-xl">
-                        <button onclick="switchSourceType('external')" id="btn-src-ext" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow"><i class="fa-solid fa-truck-fast mr-1"></i><span>Eksternal</span></button>
-                        <button onclick="switchSourceType('internal')" id="btn-src-int" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow"><i class="fa-solid fa-building mr-1"></i><span>Internal</span></button>
-                    </div>
-                </div>
+        <div id="view-petugas" class="tab-view space-y-2.5">
+            <div class="flex space-x-1.5 bg-white p-1 rounded-2xl shadow-sm border border-slate-100 text-xs">
+                <button onclick="switchPetugasSubTab('input')" id="petugas-subtab-input" class="flex-1 py-1.5 px-3 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-1.5 btn-glow"><i class="fa-solid fa-box-archive"></i><span>Input Paket Baru</span></button>
+                <button onclick="switchPetugasSubTab('status')" id="petugas-subtab-status" class="flex-1 py-1.5 px-3 rounded-xl font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center space-x-1.5 btn-glow"><i class="fa-solid fa-list-check"></i><span>View Status Transaksi</span></button>
+            </div>
 
-                <form id="package-form" onsubmit="handlePackageFormSubmit(event)" class="space-y-2 text-xs">
-                    <div id="source-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200/60"></div>
+            <!-- Petugas Sub-Pane: Input Form -->
+            <div id="petugas-pane-input" class="petugas-sub-pane space-y-3">
+                <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-2.5">
+                    <div class="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-100">
+                        <div>
+                            <h2 class="text-xs font-bold text-slate-800 flex items-center"><i class="fa-solid fa-box-archive text-indigo-500 mr-1.5"></i> Penerimaan Paket Baru</h2>
+                            <p class="text-[10px] text-slate-500">Input paket & foto fisik langsung</p>
+                        </div>
+                        <div class="flex bg-slate-100 p-0.5 rounded-xl">
+                            <button onclick="switchSourceType('external')" id="btn-src-ext" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow"><i class="fa-solid fa-truck-fast mr-1"></i><span>Eksternal</span></button>
+                            <button onclick="switchSourceType('internal')" id="btn-src-int" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1 btn-glow"><i class="fa-solid fa-building mr-1"></i><span>Internal</span></button>
+                        </div>
+                    </div>
 
-                    <!-- Direct Camera Capture Section -->
-                    <div class="p-2 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1.5">
-                        <label class="block font-semibold text-slate-600"><i class="fa-solid fa-camera text-indigo-500 mr-1"></i> Foto Paket Fisik Langsung</label>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden relative cursor-pointer hover:border-indigo-500 transition shadow-inner flex-shrink-0" onclick="openPetugasCameraModal()">
-                                <img id="preview-package-photo" src="" class="w-full h-full object-cover hidden">
-                                <div id="preview-placeholder" class="text-center p-1">
-                                    <i class="fa-solid fa-camera text-indigo-500 text-sm"></i>
+                    <form id="package-form" onsubmit="handlePackageFormSubmit(event)" class="space-y-2 text-xs">
+                        <div id="source-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200/60"></div>
+
+                        <!-- Direct Camera Capture Section -->
+                        <div class="p-2 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1.5">
+                            <label class="block font-semibold text-slate-600"><i class="fa-solid fa-camera text-indigo-500 mr-1"></i> Foto Paket Fisik Langsung</label>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden relative cursor-pointer hover:border-indigo-500 transition shadow-inner flex-shrink-0" onclick="openPetugasCameraModal()">
+                                    <img id="preview-package-photo" src="" class="w-full h-full object-cover hidden">
+                                    <div id="preview-placeholder" class="text-center p-1">
+                                        <i class="fa-solid fa-camera text-indigo-500 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 space-y-1">
+                                    <button type="button" onclick="openPetugasCameraModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded-xl transition flex items-center space-x-1 shadow btn-glow">
+                                        <i class="fa-solid fa-camera"></i>
+                                        <span>Buka Kamera Foto Paket</span>
+                                    </button>
+                                    <p class="text-[9px] text-slate-400 leading-tight">Ambil foto kondisi fisik paket menggunakan kamera.</p>
                                 </div>
                             </div>
-                            <div class="flex-1 space-y-1">
-                                <button type="button" onclick="openPetugasCameraModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-semibold px-2.5 py-1.5 rounded-xl transition flex items-center space-x-1 shadow btn-glow">
-                                    <i class="fa-solid fa-camera"></i>
-                                    <span>Buka Kamera Foto Paket</span>
-                                </button>
-                                <p class="text-[9px] text-slate-400 leading-tight">Ambil foto kondisi fisik paket menggunakan kamera.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima</label>
+                                <input type="text" id="input-recipient" required placeholder="Cth: Aufah Hidayat Tullah" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400/70">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-id-badge text-sky-500 mr-1"></i> Peran Penerima</label>
+                                <select id="input-recipient-role" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                                    <option value="Student">Student (Siswa)</option>
+                                    <option value="Karyawan">Karyawan</option>
+                                    <option value="Teacher">Teacher (Guru)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Tempat Tujuan</label>
+                                <input type="text" id="input-destination" required placeholder="Cth: IT Room" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400/70">
                             </div>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima</label>
-                            <input type="text" id="input-recipient" required placeholder="Cth: Aufah Hidayat Tullah" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400/70">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-boxes-stacked text-purple-500 mr-1"></i> Kategori Paket</label>
+                                <select id="input-category" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                                    <option value="dokumen">Dokumen / Surat</option>
+                                    <option value="makanan">Makanan / Minuman</option>
+                                    <option value="barang">Barang / Paket Umum</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-gauge-high text-amber-500 mr-1"></i> Prioritas SLA</label>
+                                <select id="input-sla" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
+                                    <option value="30 menit (cepat)">30 menit (cepat)</option>
+                                    <option value="2 jam (reguler)">2 jam (reguler)</option>
+                                    <option value="24 jam (besok)">24 jam (besok)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-note-sticky text-emerald-500 mr-1"></i> Catatan</label>
+                                <input type="text" id="input-notes" placeholder="Cth: Jangan dibanting" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 placeholder:text-slate-400/70">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-id-badge text-sky-500 mr-1"></i> Peran Penerima</label>
-                            <select id="input-recipient-role" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
-                                <option value="Student">Student (Siswa)</option>
-                                <option value="Karyawan">Karyawan</option>
-                                <option value="Teacher">Teacher (Guru)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Tempat Tujuan</label>
-                            <input type="text" id="input-destination" required placeholder="Cth: IT Room" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400/70">
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-boxes-stacked text-purple-500 mr-1"></i> Kategori Paket</label>
-                            <select id="input-category" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
-                                <option value="dokumen">Dokumen / Surat</option>
-                                <option value="makanan">Makanan / Minuman</option>
-                                <option value="barang">Barang / Paket Umum</option>
-                            </select>
+                        <div class="pt-1">
+                            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold py-2 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                               <span>Simpan dan Kirim</span>
+                            </button>
                         </div>
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-gauge-high text-amber-500 mr-1"></i> Prioritas SLA</label>
-                            <select id="input-sla" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500">
-                                <option value="30 menit (cepat)">30 menit (cepat)</option>
-                                <option value="2 jam (reguler)">2 jam (reguler)</option>
-                                <option value="24 jam (besok)">24 jam (besok)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-note-sticky text-emerald-500 mr-1"></i> Catatan</label>
-                            <input type="text" id="input-notes" placeholder="Cth: Jangan dibanting" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-indigo-500 placeholder:text-slate-400/70">
-                        </div>
-                    </div>
+                    </form>
+                </div>
+            </div>
 
-                    <div class="pt-1">
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold py-2 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span>Simpan dan Kirim</span>
-                        </button>
+            <!-- Petugas Sub-Pane: Status View -->
+            <div id="petugas-pane-status" class="petugas-sub-pane space-y-2.5 hidden">
+                <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 space-y-2">
+                    <div class="flex justify-between items-center border-b pb-1.5 text-xs">
+                        <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-list-check text-indigo-500 mr-1.5"></i> Status Transaksi Paket</h3>
+                        <input type="text" id="petugas-status-search" oninput="renderPetugasStatusView()" placeholder="Cari resi / penerima..." class="px-2.5 py-1 rounded-xl border border-slate-200 text-xs w-44 focus:outline-none bg-white">
                     </div>
-                </form>
+                    <div id="petugas-status-list" class="space-y-1.5"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Courier View (Mobile Optimized with Sub-menu and modern modern frames) -->
         <div id="view-kurir" class="tab-view space-y-2.5">
             <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 space-y-2 text-xs">
                 <div class="flex flex-wrap gap-2 items-center justify-between">
@@ -308,7 +325,6 @@
             </div>
         </div>
 
-        <!-- Receiver View -->
         <div id="view-penerima" class="tab-view space-y-2.5">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-2xl p-3 shadow-md flex flex-wrap justify-between items-center gap-2">
                 <div>
@@ -350,7 +366,6 @@
             </div>
         </div>
 
-        <!-- Admin View -->
         <div id="view-admin" class="tab-view space-y-2.5">
             <div class="flex space-x-1.5 bg-white p-1 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto text-xs">
                 <button onclick="switchAdminTab('overview')" id="adm-tab-overview" class="px-3 py-1.5 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow whitespace-nowrap"><i class="fa-solid fa-chart-pie mr-1"></i><span>Overview</span></button>
@@ -463,6 +478,7 @@
 
     </main>
 
+    <!-- Summary Confirmation Modal with Smooth Transition -->
     <div id="summary-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden modal-transition">
         <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5 modal-transition border border-slate-100 text-xs scale-95 opacity-0 duration-300" id="summary-modal-card">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -480,6 +496,7 @@
         </div>
     </div>
 
+    <!-- Loading Modal with Smooth Transition -->
     <div id="loading-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden modal-transition">
         <div class="bg-white rounded-3xl max-w-xs w-full p-5 text-center shadow-2xl space-y-3 modal-transition border border-slate-100 scale-95 opacity-0 duration-300" id="loading-modal-card">
             <div class="relative w-12 h-12 mx-auto">
@@ -499,6 +516,7 @@
         </div>
     </div>
 
+    <!-- Barcode Scanner Modal -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs text-center">
             <div class="flex justify-between items-center">
@@ -524,26 +542,28 @@
         </div>
     </div>
 
-    <div id="petugas-camera-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs text-center">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-camera text-indigo-500 mr-1.5"></i> Foto Paket Fisik</h3>
-                <button onclick="closePetugasCameraModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+    <!-- Fullscreen & Compressed Petugas Camera Modal -->
+    <div id="petugas-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col justify-between hidden">
+        <div class="p-3 bg-black/60 backdrop-blur-md flex justify-between items-center text-white z-10">
+            <h3 class="font-bold text-sm flex items-center"><i class="fa-solid fa-camera text-indigo-400 mr-2"></i> Kamera Paket Fisik</h3>
+            <button onclick="closePetUsageCameraModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30"><i class="fa-solid fa-xmark text-base"></i></button>
+        </div>
+        <div class="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
+            <video id="petugas-camera-video" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+            <canvas id="petugas-camera-canvas" class="hidden"></canvas>
+            <div class="absolute inset-0 border-2 border-dashed border-white/30 m-4 rounded-2xl pointer-events-none flex items-center justify-center">
+                <span class="text-white/70 bg-black/50 px-3 py-1 rounded-full text-[11px]">Posisikan paket di dalam kotak</span>
             </div>
-            <div class="relative bg-slate-900 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center">
-                <video id="petugas-camera-video" autoplay playsinline class="w-full h-full object-cover"></video>
-                <canvas id="petugas-camera-canvas" class="hidden"></canvas>
-            </div>
-            <div class="space-y-1.5">
-                <p id="petugas-cam-status" class="text-slate-500 text-[11px]">Posisikan paket di depan kamera...</p>
-                <button onclick="capturePetugasCameraPhoto()" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold py-2 rounded-xl shadow transition flex items-center justify-center space-x-1.5 btn-glow text-xs">
-                    <i class="fa-solid fa-camera-retro"></i>
-                    <span>Ambil Foto Sekarang</span>
-                </button>
-            </div>
+        </div>
+        <div class="p-5 bg-black/70 backdrop-blur-md flex flex-col items-center space-y-2 z-10">
+            <p id="petugas-cam-status" class="text-slate-300 text-xs text-center">Tekan tombol ambil foto untuk memotret</p>
+            <button onclick="capturePetugasCameraPhoto()" class="w-16 h-16 rounded-full bg-white border-4 border-indigo-600 shadow-2xl flex items-center justify-center text-indigo-700 text-xl hover:scale-105 active:scale-95 transition btn-glow">
+                <i class="fa-solid fa-camera"></i>
+            </button>
         </div>
     </div>
 
+    <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs">
             <div class="flex justify-between items-center">
@@ -569,6 +589,7 @@
         </div>
     </div>
 
+    <!-- Edit Package Modal -->
     <div id="edit-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-3.5 shadow-2xl space-y-2.5 text-xs">
             <div class="flex justify-between items-center">
@@ -614,6 +635,7 @@
         </div>
     </div>
 
+    <!-- Member Modal -->
     <div id="member-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-3.5 shadow-2xl space-y-2.5 text-xs">
             <div class="flex justify-between items-center">
@@ -648,6 +670,7 @@
         </div>
     </div>
 
+    <!-- Message Modal -->
     <div id="msg-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-4 text-center shadow-xl space-y-2 text-xs">
             <div id="msg-icon" class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-sm">
@@ -690,6 +713,7 @@
         window.photoCaptured = false;
         window.petugasPackagePhotoUrl = null;
         window.courierSubTab = 'pending';
+        window.petugasSubTab = 'input';
 
         function showToast(title, message, type = 'info') {
             const container = document.getElementById('toast-container');
@@ -957,13 +981,71 @@
             const navTabs = document.getElementById('nav-tabs-container');
             navTabs.style.display = 'flex';
 
-            if (role === 'petugas') renderPetugasForm();
+            if (role === 'petugas') {
+                switchPetugasSubTab('input');
+                renderPetugasForm();
+            }
             if (role === 'kurir') renderCourierView();
             if (role === 'penerima') renderReceiverView();
             if (role === 'admin') {
                 switchAdminTab('overview');
                 renderAdminOverview();
             }
+        };
+
+        window.switchPetugasSubTab = function(subTab) {
+            window.petugasSubTab = subTab;
+            const btnInput = document.getElementById('petugas-subtab-input');
+            const btnStatus = document.getElementById('petugas-subtab-status');
+            const paneInput = document.getElementById('petugas-pane-input');
+            const paneStatus = document.getElementById('petugas-pane-status');
+
+            if (subTab === 'input') {
+                btnInput.className = "flex-1 py-1.5 px-3 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-1.5 btn-glow";
+                btnStatus.className = "flex-1 py-1.5 px-3 rounded-xl font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center space-x-1.5 btn-glow";
+                paneInput.classList.remove('hidden');
+                paneStatus.classList.add('hidden');
+                renderPetugasForm();
+            } else {
+                btnStatus.className = "flex-1 py-1.5 px-3 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-1.5 btn-glow";
+                btnInput.className = "flex-1 py-1.5 px-3 rounded-xl font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center space-x-1.5 btn-glow";
+                paneStatus.classList.remove('hidden');
+                paneInput.classList.add('hidden');
+                renderPetugasStatusView();
+            }
+        };
+
+        window.renderPetugasStatusView = function() {
+            const search = (document.getElementById('petugas-status-search')?.value || '').toLowerCase();
+            const container = document.getElementById('petugas-status-list');
+            if (!container) return;
+
+            const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search)) || p.recipient.toLowerCase().includes(search) || p.destination.toLowerCase().includes(search));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada transaksi paket ditemukan.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => `
+                <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-2 text-xs">
+                    <div class="space-y-0.5 flex-1 min-w-[160px]">
+                        <div class="flex items-center space-x-1.5 flex-wrap gap-1">
+                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded text-[10px]">${p.id}</span>
+                            ${p.resi ? `<span class="font-mono text-slate-500 text-[10px]">Resi: ${p.resi}</span>` : ''}
+                            <span class="px-2 py-0.5 rounded-full font-semibold text-[9px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : (p.status === 'delivering' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700')}">
+                                ${p.status === 'completed' ? 'Selesai' : (p.status === 'delivering' ? 'Dikirim' : 'Antrian')}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">${p.recipient} (${p.role}) - ${p.destination}</h4>
+                        <p class="text-slate-500 text-[10px]">Petugas: <strong>${p.petugas}</strong> | Kategori: <strong>${p.category}</strong> | Waktu: ${p.timestamp || '-'}</p>
+                    </div>
+                    <div class="flex space-x-1.5">
+                        ${p.packagePhotoUrl ? `<div><p class="text-[8px] text-slate-400 mb-0.5">Fisik:</p><img src="${p.packagePhotoUrl}" class="w-10 h-10 object-cover rounded-md border shadow-sm"></div>` : ''}
+                        ${p.photoUrl ? `<div><p class="text-[8px] text-slate-400 mb-0.5">Bukti:</p><img src="${p.photoUrl}" class="w-10 h-10 object-cover rounded-md border shadow-sm"></div>` : ''}
+                    </div>
+                </div>
+            `).join('');
         };
 
         window.switchCourierSubTab = function(subTab) {
@@ -1010,6 +1092,7 @@
 
         window.renderPetugasForm = function() {
             const container = document.getElementById('source-fields-container');
+            if (!container) return;
             const generatedTrxId = generateTransactionId();
             const randomResi = 'JNE-' + Math.floor(100000 + Math.random() * 900000);
 
@@ -1017,9 +1100,11 @@
                 window.petugasPackagePhotoUrl = 'https://placehold.co/300x200/indigo/white?text=Paket+Fisik+' + generatedTrxId;
                 const previewImg = document.getElementById('preview-package-photo');
                 const placeholder = document.getElementById('preview-placeholder');
-                previewImg.src = window.petugasPackagePhotoUrl;
-                previewImg.classList.remove('hidden');
-                placeholder.classList.add('hidden');
+                if (previewImg && placeholder) {
+                    previewImg.src = window.petugasPackagePhotoUrl;
+                    previewImg.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
             }
 
             if (window.sourceType === 'external') {
@@ -1063,15 +1148,15 @@
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Referensi Internal</label>
-                        <input type="text" id="input-resi" required placeholder="Cth: INT-" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 font-mono font-bold bg-white focus:outline-none placeholder:text-slate-400/70 text-slate-700">
+                        <input type="text" id="input-resi" required placeholder="Cth: INT-" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 font-mono font-bold bg-white focus:outline-none placeholder:text-slate-400/50 text-slate-700">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-user-tie text-purple-500 mr-1"></i> Pengirim Internal</label>
-                        <input type="text" id="input-sender-internal" required placeholder="Cth: Adha Sandy Pradana" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none placeholder:text-slate-400/70 text-slate-700">
+                        <input type="text" id="input-sender-internal" required placeholder="Cth: Adha Sandy Pradana" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none placeholder:text-slate-400/50 text-slate-700">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-600 mb-0.5"><i class="fa-solid fa-door-open text-amber-500 mr-1"></i> Ruang Pengirim</label>
-                        <input type="text" id="input-room-sender" required placeholder="Cth: BM Room" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none placeholder:text-slate-400/70 text-slate-700">
+                        <input type="text" id="input-room-sender" required placeholder="Cth: BM Room" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none placeholder:text-slate-400/50 text-slate-700">
                     </div>
                     <input type="hidden" id="input-petugas" value="${window.loggedUser.name}">
                 `;
@@ -1118,18 +1203,18 @@
             const video = document.getElementById('petugas-camera-video');
             const status = document.getElementById('petugas-cam-status');
             modal.classList.remove('hidden');
-            status.innerText = "Mengaktifkan kamera untuk memotret paket...";
+            status.innerText = "Mengaktifkan kamera full-screen...";
 
             try {
                 petugasCameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 video.srcObject = petugasCameraStream;
-                status.innerText = "Kamera aktif. Posisikan paket lalu klik Ambil Foto.";
+                status.innerText = "Kamera aktif. Posisikan paket lalu klik tombol foto.";
             } catch (err) {
                 status.innerText = "Gagal mengakses kamera perangkat.";
             }
         };
 
-        window.closePetugasCameraModal = function() {
+        window.closePetUsageCameraModal = function() {
             if (petugasCameraStream) {
                 petugasCameraStream.getTracks().forEach(track => track.stop());
                 petugasCameraStream = null;
@@ -1142,20 +1227,25 @@
             const canvas = document.getElementById('petugas-camera-canvas');
             if (!video.srcObject) return;
 
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
+            // Full resolution capture scaled down & compressed for small size
+            const maxWidth = 800;
+            const scale = maxWidth / (video.videoWidth || 1280);
+            canvas.width = maxWidth;
+            canvas.height = (video.videoHeight || 720) * scale;
+
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            window.petugasPackagePhotoUrl = canvas.toDataURL('image/jpeg', 0.85);
+            // Compress to JPEG with 0.70 quality for lightweight storage
+            window.petugasPackagePhotoUrl = canvas.toDataURL('image/jpeg', 0.70);
             const previewImg = document.getElementById('preview-package-photo');
             const placeholder = document.getElementById('preview-placeholder');
             previewImg.src = window.petugasPackagePhotoUrl;
             previewImg.classList.remove('hidden');
             placeholder.classList.add('hidden');
 
-            closePetugasCameraModal();
-            window.showMessage('Foto Berhasil!', 'Foto kondisi fisik paket berhasil diambil.');
+            closePetUsageCameraModal();
+            window.showMessage('Foto Berhasil!', 'Foto paket fisik berhasil diambil dan dikompres.');
         };
 
         window.handleScanFromFile = function(e) {
@@ -1287,7 +1377,7 @@
 
             progressBar.style.width = '0%';
             titleEl.innerText = "Menyimpan & Mengirim...";
-            descEl.innerText = "Mengunggah paket ke Firebase cloud...";
+            descEl.innerText = "Menyinkronkan data paket ke Firebase cloud...";
 
             let progress = 0;
             const interval = setInterval(() => {
@@ -1344,74 +1434,86 @@
             const delivering = filtered.filter(p => p.status === 'delivering').slice(0, limitVal);
             const completed = filtered.filter(p => p.status === 'completed').slice(0, limitVal);
 
-            document.getElementById('count-pending').innerText = pending.length;
-            document.getElementById('count-delivering').innerText = delivering.length;
-            document.getElementById('count-completed').innerText = completed.length;
+            const countPendingEl = document.getElementById('count-pending');
+            const countDeliveringEl = document.getElementById('count-delivering');
+            const countCompletedEl = document.getElementById('count-completed');
+            if (countPendingEl) countPendingEl.innerText = pending.length;
+            if (countDeliveringEl) countDeliveringEl.innerText = delivering.length;
+            if (countCompletedEl) countCompletedEl.innerText = completed.length;
 
-            document.getElementById('list-courier-pending').innerHTML = pending.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada antrian paket</p>' : pending.map(p => `
-                <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition space-y-1.5 text-xs shadow-sm">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
-                            ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
+            const listPendingEl = document.getElementById('list-courier-pending');
+            if (listPendingEl) {
+                listPendingEl.innerHTML = pending.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada antrian paket</p>' : pending.map(p => `
+                    <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition space-y-1.5 text-xs shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
+                                ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
+                            </div>
+                            <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full ${p.source === 'external' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700'}">${p.source}</span>
                         </div>
-                        <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full ${p.source === 'external' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700'}">${p.source}</span>
+                        ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Foto Paket Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-20 object-cover rounded-lg border shadow-inner" alt="Foto Fisik"></div>` : ''}
+                        <div>
+                            <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
+                            <p class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1.5">
+                            <span>Pengirim: <strong>${p.senderName || p.senderInternal || 'Eksternal'}</strong></span>
+                            <button onclick="takeOrder('${p.firebaseId || p.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg shadow transition btn-glow text-[10px]">Ambil Tugas</button>
+                        </div>
                     </div>
-                    ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Foto Paket Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-20 object-cover rounded-lg border shadow-inner" alt="Foto Fisik"></div>` : ''}
-                    <div>
-                        <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
-                        <p class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
-                    </div>
-                    <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1.5">
-                        <span>Pengirim: <strong>${p.senderName || p.senderInternal || 'Eksternal'}</strong></span>
-                        <button onclick="takeOrder('${p.firebaseId || p.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg shadow transition btn-glow text-[10px]">Ambil Tugas</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
-            document.getElementById('list-courier-delivering').innerHTML = delivering.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada pengiriman aktif</p>' : delivering.map(p => `
-                <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition space-y-1.5 text-xs shadow-sm">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="font-mono font-bold text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
-                            ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
+            const listDeliveringEl = document.getElementById('list-courier-delivering');
+            if (listDeliveringEl) {
+                listDeliveringEl.innerHTML = delivering.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Tidak ada pengiriman aktif</p>' : delivering.map(p => `
+                    <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition space-y-1.5 text-xs shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-mono font-bold text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
+                                ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
+                            </div>
+                            <span class="text-[9px] font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">Dikirim</span>
                         </div>
-                        <span class="text-[9px] font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">Dikirim</span>
+                        ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Foto Paket Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-20 object-cover rounded-lg border shadow-inner" alt="Foto Fisik"></div>` : ''}
+                        <div>
+                            <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
+                            <p class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1.5">
+                            <span>SLA: ${p.sla}</span>
+                            <button onclick="openCompleteModal('${p.firebaseId || p.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg shadow transition flex items-center space-x-1 btn-glow text-[10px]">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Selesaikan</span>
+                            </button>
+                        </div>
                     </div>
-                    ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Foto Paket Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-20 object-cover rounded-lg border shadow-inner" alt="Foto Fisik"></div>` : ''}
-                    <div>
-                        <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
-                        <p class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
-                    </div>
-                    <div class="flex justify-between items-center text-[10px] text-slate-500 border-t pt-1.5">
-                        <span>SLA: ${p.sla}</span>
-                        <button onclick="openCompleteModal('${p.firebaseId || p.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg shadow transition flex items-center space-x-1 btn-glow text-[10px]">
-                            <i class="fa-solid fa-check"></i>
-                            <span>Selesaikan</span>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
-            document.getElementById('list-courier-completed').innerHTML = completed.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Belum ada riwayat selesai</p>' : completed.map(p => `
-                <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition space-y-1.5 text-xs shadow-sm">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
-                            ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
+            const listCompletedEl = document.getElementById('list-courier-completed');
+            if (listCompletedEl) {
+                listCompletedEl.innerHTML = completed.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-6">Belum ada riwayat selesai</p>' : completed.map(p => `
+                    <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-100/80 transition space-y-1.5 text-xs shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">ID: ${p.id}</span>
+                                ${p.resi ? `<span class="font-mono text-slate-500 ml-1 text-[10px]">Resi: ${p.resi}</span>` : ''}
+                            </div>
+                            <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Selesai</span>
                         </div>
-                        <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Selesai</span>
+                        <div class="grid grid-cols-2 gap-1.5 mt-1">
+                            ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Paket Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-16 object-cover rounded-md border shadow-inner"></div>` : ''}
+                            ${p.photoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Bukti Terima:</p><img src="${p.photoUrl}" class="w-full h-16 object-cover rounded-md border shadow-inner"></div>` : ''}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
+                            <p class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-emerald-500 mr-1"></i> ${p.destination}</p>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-1.5 mt-1">
-                        ${p.packagePhotoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Paket Fisik:</p><img src="${p.packagePhotoUrl}" class="w-full h-16 object-cover rounded-md border shadow-inner"></div>` : ''}
-                        ${p.photoUrl ? `<div><p class="text-[9px] text-slate-400 mb-0.5">Bukti Terima:</p><img src="${p.photoUrl}" class="w-full h-16 object-cover rounded-md border shadow-inner"></div>` : ''}
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-slate-800">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
-                        <p class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-emerald-500 mr-1"></i> ${p.destination}</p>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         };
 
         window.takeOrder = async function(id) {
@@ -1486,6 +1588,7 @@
             const statusFilter = document.getElementById('receiver-filter-status').value;
             const sortBy = document.getElementById('receiver-sort-by').value;
             const container = document.getElementById('receiver-packages-list');
+            if(!container) return;
 
             let filtered = packages.filter(p => {
                 const matchSearch = p.recipient.toLowerCase().includes(search) || p.id.toLowerCase().includes(search) || p.destination.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search));
@@ -1538,6 +1641,7 @@
             ['overview', 'packages', 'members', 'audit'].forEach(t => {
                 const btn = document.getElementById(`adm-tab-${t}`);
                 const content = document.getElementById(`admin-content-${t}`);
+                if (!btn || !content) return;
                 if (t === tab) {
                     btn.className = "px-3 py-1.5 rounded-xl font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1 btn-glow whitespace-nowrap";
                     content.classList.remove('hidden');
@@ -1559,10 +1663,14 @@
             const completed = packages.filter(p => p.status === 'completed').length;
             const successRate = total > 0 ? Math.round((completed / total) * 100) : 100;
 
-            document.getElementById('stat-total-pkg').innerText = total;
-            document.getElementById('stat-deliv-pkg').innerText = delivering;
-            document.getElementById('stat-comp-pkg').innerText = completed;
-            document.getElementById('stat-success-rate').innerText = successRate + '%';
+            const stTot = document.getElementById('stat-total-pkg');
+            const stDel = document.getElementById('stat-deliv-pkg');
+            const stCom = document.getElementById('stat-comp-pkg');
+            const stSuc = document.getElementById('stat-success-rate');
+            if (stTot) stTot.innerText = total;
+            if (stDel) stDel.innerText = delivering;
+            if (stCom) stCom.innerText = completed;
+            if (stSuc) stSuc.innerText = successRate + '%';
 
             ['chartSource', 'chartCategory', 'chartRole', 'chartExpedition'].forEach(id => {
                 if (charts[id]) charts[id].destroy();
@@ -1570,40 +1678,53 @@
 
             const extCount = packages.filter(p => p.source === 'external').length;
             const intCount = packages.filter(p => p.source === 'internal').length;
-            charts['chartSource'] = new Chart(document.getElementById('chartSource'), {
-                type: 'doughnut',
-                data: { labels: ['Eksternal', 'Internal'], datasets: [{ data: [extCount, intCount], backgroundColor: ['#6366f1', '#10b981'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+            const elSrc = document.getElementById('chartSource');
+            if (elSrc) {
+                charts['chartSource'] = new Chart(elSrc, {
+                    type: 'doughnut',
+                    data: { labels: ['Eksternal', 'Internal'], datasets: [{ data: [extCount, intCount], backgroundColor: ['#6366f1', '#10b981'] }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
 
             const catDoc = packages.filter(p => p.category === 'dokumen').length;
             const catFood = packages.filter(p => p.category === 'makanan').length;
             const catItem = packages.filter(p => p.category === 'barang').length;
-            charts['chartCategory'] = new Chart(document.getElementById('chartCategory'), {
-                type: 'bar',
-                data: { labels: ['Dokumen', 'Makanan', 'Barang'], datasets: [{ label: 'Jumlah', data: [catDoc, catFood, catItem], backgroundColor: ['#8b5cf6', '#f59e0b', '#0ea5e9'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+            const elCat = document.getElementById('chartCategory');
+            if (elCat) {
+                charts['chartCategory'] = new Chart(elCat, {
+                    type: 'bar',
+                    data: { labels: ['Dokumen', 'Makanan', 'Barang'], datasets: [{ label: 'Jumlah', data: [catDoc, catFood, catItem], backgroundColor: ['#8b5cf6', '#f59e0b', '#0ea5e9'] }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
 
             const roleStudent = packages.filter(p => p.role === 'Student').length;
             const roleKaryawan = packages.filter(p => p.role === 'Karyawan').length;
             const roleTeacher = packages.filter(p => p.role === 'Teacher').length;
-            charts['chartRole'] = new Chart(document.getElementById('chartRole'), {
-                type: 'pie',
-                data: { labels: ['Student', 'Karyawan', 'Teacher'], datasets: [{ data: [roleStudent, roleKaryawan, roleTeacher], backgroundColor: ['#ec4899', '#3b82f6', '#14b8a6'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+            const elRole = document.getElementById('chartRole');
+            if (elRole) {
+                charts['chartRole'] = new Chart(elRole, {
+                    type: 'pie',
+                    data: { labels: ['Student', 'Karyawan', 'Teacher'], datasets: [{ data: [roleStudent, roleKaryawan, roleTeacher], backgroundColor: ['#ec4899', '#3b82f6', '#14b8a6'] }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
 
-            charts['chartExpedition'] = new Chart(document.getElementById('chartExpedition'), {
-                type: 'bar',
-                data: { labels: ['JNE', 'J&T', 'SiCepat', 'Internal'], datasets: [{ label: 'Volume', data: [2, 1, 1, 1], backgroundColor: ['#f43f5e', '#eab308', '#06b6d4', '#84cc16'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+            const elExp = document.getElementById('chartExpedition');
+            if (elExp) {
+                charts['chartExpedition'] = new Chart(elExp, {
+                    type: 'bar',
+                    data: { labels: ['JNE', 'J&T', 'SiCepat', 'Internal'], datasets: [{ label: 'Volume', data: [2, 1, 1, 1], backgroundColor: ['#f43f5e', '#eab308', '#06b6d4', '#84cc16'] }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
         };
 
         window.renderAdminPackages = function() {
-            const search = document.getElementById('filter-admin-search').value.toLowerCase();
+            const search = (document.getElementById('filter-admin-search')?.value || '').toLowerCase();
             const tbody = document.getElementById('admin-packages-table-body');
+            if (!tbody) return;
             const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search)) || p.recipient.toLowerCase().includes(search));
 
             if (filtered.length === 0) {
@@ -1631,6 +1752,7 @@
 
         window.renderAdminMembers = function() {
             const tbody = document.getElementById('admin-members-table-body');
+            if (!tbody) return;
             if (members.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400">Tidak ada anggota.</td></tr>`;
                 return;
@@ -1853,6 +1975,9 @@
         };
 
         function refreshActiveViews() {
+            if (window.currentRole === 'petugas') {
+                if (window.petugasSubTab === 'status') renderPetugasStatusView();
+            }
             if (window.currentRole === 'kurir') renderCourierView();
             if (window.currentRole === 'penerima') renderReceiverView();
             if (window.currentRole === 'admin') {
