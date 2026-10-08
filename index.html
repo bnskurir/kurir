@@ -15,9 +15,9 @@
         .tab-view.active { display: block; }
 
         @keyframes subtle-glow {
-            0% { box-shadow: 0 0 2px rgba(99, 102, 241, 0.2), inset 0 0 1px rgba(99, 102, 241, 0.1); }
-            50% { box-shadow: 0 0 4px rgba(168, 85, 247, 0.25), inset 0 0 2px rgba(99, 102, 241, 0.1); }
-            100% { box-shadow: 0 0 2px rgba(99, 102, 241, 0.2), inset 0 0 1px rgba(99, 102, 241, 0.1); }
+            0% { box-shadow: 0 0 2px rgba(99, 102, 241, 0.15), inset 0 0 1px rgba(99, 102, 241, 0.1); }
+            50% { box-shadow: 0 0 4px rgba(168, 85, 247, 0.2), inset 0 0 2px rgba(99, 102, 241, 0.1); }
+            100% { box-shadow: 0 0 2px rgba(99, 102, 241, 0.15), inset 0 0 1px rgba(99, 102, 241, 0.1); }
         }
 
         .btn-glow {
@@ -27,13 +27,13 @@
 
         .btn-glow:hover, .btn-glow:active {
             transform: translateY(-1px);
-            box-shadow: 0 0 5px rgba(236, 72, 153, 0.3), inset 0 0 2px rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 5px rgba(236, 72, 153, 0.25), inset 0 0 2px rgba(99, 102, 241, 0.15);
             filter: brightness(1.03);
         }
 
         @keyframes pulse-slow {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.15); }
+            50% { opacity: 0.4; transform: scale(1.15); }
         }
         .connection-indicator {
             animation: pulse-slow 2s infinite ease-in-out;
@@ -136,7 +136,7 @@
                             <span id="connection-text">Connected</span>
                         </div>
                     </div>
-                    <p id="header-user-badge" class="text-[10px] text-indigo-200">Masuk sebagai: -</p>
+                    <p id="header-user-badge" class="text-[10px] text-indigo-200">Masuk: -</p>
                 </div>
             </div>
 
@@ -157,6 +157,7 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-3 pb-20 space-y-4">
 
+        <!-- PETUGAS VIEW -->
         <div id="view-petugas" class="tab-view space-y-4">
             <!-- Petugas Sub-Navigation -->
             <div class="flex space-x-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
@@ -164,7 +165,7 @@
                     <i class="fa-solid fa-plus-circle mr-1"></i><span>Input Paket Baru</span>
                 </button>
                 <button onclick="switchPetugasTab('status')" id="petugas-tab-status" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-1">
-                    <i class="fa-solid fa-list-check mr-1"></i><span>View Status Transaksi</span>
+                    <i class="fa-solid fa-list-check mr-1"></i><span>Status Transaksi</span>
                 </button>
             </div>
 
@@ -184,7 +185,7 @@
 
                     <form id="package-form" onsubmit="handlePreparePackageSummary(event)" class="space-y-3">
                         <div id="source-fields-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200/60">
-                            <!-- Populated dynamically -->
+                            <!-- Populated dynamically with semi-transparent placeholders -->
                         </div>
 
                         <!-- Physical Package Photo Capture Section -->
@@ -208,7 +209,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima</label>
-                                <input type="text" id="input-recipient" required placeholder="Cth: Aufah Hidayat Tullah" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 text-slate-500 placeholder:text-slate-400 placeholder:font-light">
+                                <input type="text" id="input-recipient" required placeholder="Cth: Aufah Hidayat Tullah" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400 placeholder:opacity-60">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-id-badge text-sky-500 mr-1"></i> Peran Penerima</label>
@@ -220,7 +221,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Tempat Tujuan</label>
-                                <input type="text" id="input-destination" required placeholder="Cth: IT Room" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 text-slate-500 placeholder:text-slate-400 placeholder:font-light">
+                                <input type="text" id="input-destination" required placeholder="Cth: IT Room" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400 placeholder:opacity-60">
                             </div>
                         </div>
 
@@ -243,7 +244,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-note-sticky text-emerald-500 mr-1"></i> Catatan (Opsional)</label>
-                                <input type="text" id="input-notes" placeholder="Cth: Jangan dibanting / Pecah belah" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500">
+                                <input type="text" id="input-notes" placeholder="Cth: Jangan dibanting / Pecah belah" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-400 placeholder:opacity-60">
                             </div>
                         </div>
 
@@ -257,18 +258,22 @@
                 </div>
             </div>
 
-            <!-- Petugas Status View Panel -->
+            <!-- Petugas Status View Panel with Refined Frame & Layout -->
             <div id="petugas-content-status" class="petugas-tab-panel space-y-3 hidden">
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3">
-                    <div class="flex flex-wrap justify-between items-center gap-2">
-                        <h3 class="font-bold text-slate-800 text-xs flex items-center"><i class="fa-solid fa-list-check text-indigo-500 mr-2"></i> Status Seluruh Transaksi Paket</h3>
-                        <input type="text" id="filter-petugas-search" oninput="renderPetugasStatusView()" placeholder="Pencarian paket..." class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs w-full md:w-56 focus:outline-none">
+                <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-100 space-y-3.5">
+                    <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-xs md:text-sm flex items-center"><i class="fa-solid fa-list-check text-indigo-500 mr-2"></i> Status Transaksi</h3>
+                            <p class="text-[11px] text-slate-500">Monitoring seluruh ID Transaksi dan No Resi paket sekolah secara real-time</p>
+                        </div>
+                        <input type="text" id="filter-petugas-search" oninput="renderPetugasStatusView()" placeholder="Pencarian paket..." class="px-3 py-2 rounded-xl border border-slate-200 text-xs w-full md:w-60 focus:outline-none focus:border-indigo-500">
                     </div>
-                    <div id="petugas-status-list" class="space-y-2 max-h-[500px] overflow-y-auto pr-1"></div>
+                    <div id="petugas-status-list" class="space-y-2.5 max-h-[520px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </div>
 
+        <!-- KURIR VIEW -->
         <div id="view-kurir" class="tab-view space-y-3">
             <!-- Courier Mobile Sub-Menu Tabs -->
             <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl">
@@ -332,6 +337,7 @@
             </div>
         </div>
 
+        <!-- PENERIMA VIEW -->
         <div id="view-penerima" class="tab-view space-y-4">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-2xl p-4 md:p-5 shadow-md flex flex-wrap justify-between items-center gap-3">
                 <div>
@@ -341,7 +347,7 @@
                 </div>
                 <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm">
                     <label class="block text-[9px] uppercase font-bold text-emerald-200 mb-0.5">Nama Penerima / Tujuan</label>
-                    <input type="text" id="receiver-session-name" oninput="renderReceiverView()" placeholder="Cth: Aufah / IT Room" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 text-xs font-semibold focus:outline-none w-48">
+                    <input type="text" id="receiver-session-name" oninput="renderReceiverView()" placeholder="Cth: Aufah / IT Room" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 text-xs font-semibold focus:outline-none w-48 placeholder:text-slate-400 placeholder:opacity-60">
                 </div>
             </div>
 
@@ -358,6 +364,7 @@
             </div>
         </div>
 
+        <!-- ADMIN VIEW -->
         <div id="view-admin" class="tab-view space-y-4">
             <div class="flex space-x-1.5 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
                 <button onclick="switchAdminTab('overview')" id="adm-tab-overview" class="px-3 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-chart-pie mr-1"></i><span>Overview</span></button>
@@ -411,7 +418,7 @@
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[10px]">
                                 <tr>
-                                    <th class="p-2.5">No Resi / Tanggal & Jam</th>
+                                    <th class="p-2.5">ID Transaksi / Resi & Waktu</th>
                                     <th class="p-2.5">Sumber</th>
                                     <th class="p-2.5">Penerima & Tujuan</th>
                                     <th class="p-2.5">Kategori / SLA</th>
@@ -455,23 +462,25 @@
         </div>
     </div>
 
+    <!-- Summary Confirmation Modal with Smooth Animation -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 modal-transition border border-slate-100">
             <div class="text-center space-y-1">
                 <div id="summary-modal-icon" class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-lg shadow-inner">
                     <i class="fa-solid fa-box-check"></i>
                 </div>
-                <h3 id="summary-modal-title" class="font-bold text-slate-800 text-sm">Konfirmasi Simpan & Kirim</h3>
-                <p id="summary-modal-desc" class="text-[11px] text-slate-500">Periksa ringkasan data paket berikut sebelum dikirim ke Firebase Cloud.</p>
+                <h3 id="summary-modal-title" class="font-bold text-slate-800 text-sm">Konfirmasi Simpan dan Kirim</h3>
+                <p id="summary-modal-desc" class="text-[11px] text-slate-500">Periksa ringkasan data paket berikut sebelum dikirim ke sistem.</p>
             </div>
 
             <!-- Summary Data Card -->
             <div id="summary-data-card" class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5 text-[11px]">
-                <div class="flex justify-between"><span class="text-slate-400">ID Resi:</span> <strong id="sum-id" class="font-mono text-indigo-600"></strong></div>
+                <div class="flex justify-between"><span class="text-slate-400">ID Transaksi:</span> <strong id="sum-id" class="font-mono text-indigo-600"></strong></div>
+                <div class="flex justify-between"><span class="text-slate-400">No Resi:</span> <strong id="sum-resi" class="font-mono text-slate-700"></strong></div>
                 <div class="flex justify-between"><span class="text-slate-400">Tanggal & Jam:</span> <strong id="sum-time" class="text-slate-700"></strong></div>
                 <div class="flex justify-between"><span class="text-slate-400">Sumber:</span> <strong id="sum-source" class="capitalize"></strong></div>
                 <div class="flex justify-between"><span class="text-slate-400">Penerima:</span> <strong id="sum-recipient"></strong></div>
-                <div class="flex justify-between"><span class="text-slate-400">Tujuan:</span> <strong id="sum-dest"></strong></div>
+                <div class="flex justify-between"><span class="text-slate-400">Tempat Tujuan:</span> <strong id="sum-dest"></strong></div>
                 <div class="flex justify-between"><span class="text-slate-400">Petugas:</span> <strong id="sum-petugas"></strong></div>
                 <div class="flex justify-between items-center"><span class="text-slate-400">Foto Fisik:</span> <img id="sum-photo" src="" class="w-10 h-10 object-cover rounded-md border zoomable-img" onclick="openZoomModal(this.src)"></div>
             </div>
@@ -479,7 +488,7 @@
             <!-- Animated Loading Progress Bar -->
             <div id="summary-loading-section" class="space-y-1.5 hidden">
                 <div class="flex justify-between text-[10px] text-slate-500 font-medium">
-                    <span id="summary-progress-label">Menghubungkan ke Firebase...</span>
+                    <span id="summary-progress-label">Menghubungkan ke Server...</span>
                     <span id="summary-progress-percent">0%</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -531,7 +540,7 @@
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Penerima Langsung</label>
-                    <input type="text" id="confirm-receiver-name" placeholder="Cth: Diterima oleh ybs" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none">
+                    <input type="text" id="confirm-receiver-name" placeholder="Cth: Diterima oleh ybs" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none placeholder:text-slate-400 placeholder:opacity-60">
                 </div>
                 <button onclick="submitCompleteDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-1">
                     <i class="fa-solid fa-check-circle mr-1"></i>
@@ -548,17 +557,6 @@
         </div>
     </div>
 
-    <div id="msg-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-5 text-center shadow-xl space-y-2.5 modal-transition">
-            <div id="msg-icon" class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-base">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <h4 id="msg-title" class="font-bold text-slate-800 text-xs">Berhasil!</h4>
-            <p id="msg-text" class="text-[11px] text-slate-500">Aksi berhasil diproses.</p>
-            <button onclick="closeMsgModal()" class="w-full bg-indigo-600 text-white py-2 rounded-xl text-xs font-semibold hover:bg-indigo-700 transition">OK</button>
-        </div>
-    </div>
-
     <script>
         let loggedUser = { role: 'petugas', name: 'Gari (Petugas)' };
         let currentRole = 'petugas';
@@ -572,7 +570,8 @@
 
         let packages = [
             {
-                id: 'TRX-9821',
+                id: 'TRX-081026-1001',
+                resi: 'RES-882149',
                 source: 'external',
                 vendor: 'JNE Express',
                 petugas: 'Gari (Petugas)',
@@ -589,9 +588,10 @@
                 timestamp: '08:30 WIB, 08 Okt 2026'
             },
             {
-                id: 'TRX-9822',
+                id: 'TRX-081026-1002',
+                resi: 'RES-882150',
                 source: 'internal',
-                senderInternal: 'Pak Joko (Wakakur)',
+                senderInternal: 'Adha Sandy Pradana',
                 roomSender: 'BM Room',
                 petugas: 'Gari (Petugas)',
                 recipient: 'Ibu Dr. Ratna',
@@ -606,7 +606,8 @@
                 timestamp: '09:15 WIB, 08 Okt 2026'
             },
             {
-                id: 'TRX-9820',
+                id: 'TRX-081026-1000',
+                resi: 'RES-882148',
                 source: 'external',
                 vendor: 'SiCepat',
                 petugas: 'Gari (Petugas)',
@@ -624,9 +625,9 @@
         ];
 
         let auditLogs = [
-            { time: '08:30 WIB, 08 Okt 2026', actor: 'Petugas (Gari)', action: 'Menerima paket Eksternal (TRX-9821) untuk Siti Rahma' },
-            { time: '09:15 WIB, 08 Okt 2026', actor: 'Petugas (Gari)', action: 'Menerima paket Internal (TRX-9822) untuk Ibu Dr. Ratna' },
-            { time: '07:45 WIB, 08 Okt 2026', actor: 'Kurir (Rizky)', action: 'Menyelesaikan pengiriman TRX-9820 ke Andi Pratama' }
+            { time: '08:30 WIB, 08 Okt 2026', actor: 'Petugas (Gari)', action: 'Menerima paket Eksternal (TRX-081026-1001) untuk Siti Rahma' },
+            { time: '09:15 WIB, 08 Okt 2026', actor: 'Petugas (Gari)', action: 'Menerima paket Internal (TRX-081026-1002) untuk Ibu Dr. Ratna' },
+            { time: '07:45 WIB, 08 Okt 2026', actor: 'Kurir (Rizky)', action: 'Menyelesaikan pengiriman TRX-081026-1000 ke Andi Pratama' }
         ];
 
         let charts = {};
@@ -787,19 +788,27 @@
             const container = document.getElementById('source-fields-container');
             const now = new Date();
             const dateCode = String(now.getDate()).padStart(2, '0') + String(now.getMonth() + 1).padStart(2, '0') + String(now.getFullYear()).slice(-2);
-            const randomTrx = 'TRX-' + dateCode + '-' + Math.floor(1000 + Math.random() * 9000);
+            
+            // Generate Transaction ID based on date and count of packages today
+            const todayCount = packages.filter(p => p.id && p.id.includes(dateCode)).length + 1001;
+            const generatedTrxId = `TRX-${dateCode}-${todayCount}`;
+            const randomResi = 'RES-' + Math.floor(100000 + Math.random() * 900000);
 
             if (sourceType === 'external') {
                 container.innerHTML = `
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-barcode text-indigo-500 mr-1"></i> ID Transaksi / No Resi</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-fingerprint text-indigo-500 mr-1"></i> ID Transaksi (Auto)</label>
+                        <input type="text" id="input-trx" value="${generatedTrxId}" readonly class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-slate-100 text-indigo-700">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Resi</label>
                         <div class="flex space-x-2">
-                            <input type="text" id="input-trx" value="${randomTrx}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-white">
+                            <input type="text" id="input-resi" value="${randomResi}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-white">
                             <button type="button" onclick="openBarcodeModal()" class="bg-indigo-100 text-indigo-700 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-indigo-200 transition whitespace-nowrap"><i class="fa-solid fa-barcode mr-1"></i> Scan</button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-truck text-sky-500 mr-1"></i> Pengirim / Vendor</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-truck text-sky-500 mr-1"></i> Pengirim (Vendor / Lainnya)</label>
                         <select id="input-vendor" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
                             <option value="JNE Express">JNE Express</option>
                             <option value="J&T Express">J&T Express</option>
@@ -809,10 +818,6 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user-shield text-purple-500 mr-1"></i> Petugas Penerima</label>
-                        <input type="text" id="input-petugas" value="${loggedUser.name}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
-                    </div>
-                    <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-building-shield text-emerald-500 mr-1"></i> Lokasi Asal</label>
                         <input type="text" id="input-origin" value="Pos 3" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
                     </div>
@@ -820,23 +825,23 @@
             } else {
                 container.innerHTML = `
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-barcode text-indigo-500 mr-1"></i> ID Transaksi Internal</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-fingerprint text-indigo-500 mr-1"></i> ID Transaksi (Auto)</label>
+                        <input type="text" id="input-trx" value="${generatedTrxId}" readonly class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-slate-100 text-indigo-700">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-barcode text-sky-500 mr-1"></i> No Referensi Internal</label>
                         <div class="flex space-x-2">
-                            <input type="text" id="input-trx" value="${randomTrx}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-white">
+                            <input type="text" id="input-resi" placeholder="Cth INT-" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-white placeholder:text-slate-400 placeholder:opacity-60">
                             <button type="button" onclick="openBarcodeModal()" class="bg-indigo-100 text-indigo-700 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-indigo-200 transition whitespace-nowrap"><i class="fa-solid fa-barcode mr-1"></i> Scan</button>
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user-tie text-sky-500 mr-1"></i> Pengirim Internal</label>
-                        <input type="text" id="input-sender-internal" placeholder="Cth: Adha Sandy Pradana" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-500 placeholder:text-slate-400 placeholder:font-light">
+                        <input type="text" id="input-sender-internal" placeholder="Cth Adha Sandy Pradana" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 placeholder:text-slate-400 placeholder:opacity-60">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-door-open text-amber-500 mr-1"></i> Ruang Pengirim</label>
-                        <input type="text" id="input-room-sender" placeholder="Cth: BM Room" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-500 placeholder:text-slate-400 placeholder:font-light">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-user-shield text-purple-500 mr-1"></i> Petugas Input</label>
-                        <input type="text" id="input-petugas" value="${loggedUser.name}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                        <input type="text" id="input-room-sender" placeholder="Cth BM Room" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 placeholder:text-slate-400 placeholder:opacity-60">
                     </div>
                 `;
             }
@@ -875,7 +880,6 @@
             canvas.height = 480;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Compress image to JPEG format with 0.7 quality to keep size small
             physicalPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
             document.getElementById('physical-photo-thumb').src = physicalPhotoDataUrl;
@@ -887,7 +891,6 @@
             showToast('Foto paket fisik berhasil diambil & dikompres');
         }
 
-        // Barcode Scanner Modal with Camera and Gallery Upload Fallback
         function openBarcodeModal() {
             document.getElementById('barcode-modal').classList.remove('hidden');
             const video = document.getElementById('barcode-video');
@@ -910,10 +913,10 @@
         function handleBarcodeFileUpload(e) {
             const file = e.target.files[0];
             if (file) {
-                const simulatedTrx = 'RES-' + Math.floor(100000 + Math.random() * 900000);
-                document.getElementById('input-trx').value = simulatedTrx;
+                const simulatedResi = 'RES-' + Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('input-resi').value = simulatedResi;
                 closeBarcodeModal();
-                showToast('Barcode/Resi berhasil dideteksi dari file: ' + simulatedTrx);
+                showToast('Resi berhasil dideteksi dari file: ' + simulatedResi);
             }
         }
 
@@ -926,13 +929,15 @@
             }
 
             const trx = document.getElementById('input-trx').value;
+            const resi = document.getElementById('input-resi').value;
             const recipient = document.getElementById('input-recipient').value;
             const destination = document.getElementById('input-destination').value;
-            const petugas = document.getElementById('input-petugas').value;
+            const petugas = loggedUser.name;
             const nowFormatted = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' WIB, ' + new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 
             pendingPackagePayload = {
                 id: trx,
+                resi: resi,
                 source: sourceType,
                 petugas: petugas,
                 recipient: recipient,
@@ -955,8 +960,8 @@
                 pendingPackagePayload.roomSender = document.getElementById('input-room-sender').value;
             }
 
-            // Populate summary modal
             document.getElementById('sum-id').innerText = trx;
+            document.getElementById('sum-resi').innerText = resi;
             document.getElementById('sum-time').innerText = nowFormatted;
             document.getElementById('sum-source').innerText = sourceType;
             document.getElementById('sum-recipient').innerText = recipient;
@@ -989,11 +994,11 @@
                 progressBar.style.width = progress + '%';
                 progressPercent.innerText = progress + '%';
 
-                if (progress === 50) progressLabel.innerText = "Mengunggah foto paket fisik ke Firebase Cloud...";
+                if (progress === 50) progressLabel.innerText = "Mengunggah foto paket fisik ke server...";
                 if (progress === 75) progressLabel.innerText = "Sinkronisasi data real-time...";
                 if (progress >= 100) {
                     clearInterval(interval);
-                    progressLabel.innerText = "Berhasil tersimpan ke Firebase!";
+                    progressLabel.innerText = "Berhasil tersimpan!";
                     setTimeout(() => {
                         packages.unshift(pendingPackagePayload);
                         addAuditLog(`Petugas (${pendingPackagePayload.petugas}) Menerima paket ${sourceType.toUpperCase()} (${pendingPackagePayload.id})`);
@@ -1004,13 +1009,13 @@
                         document.getElementById('photo-status-badge').className = "text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium";
                         document.getElementById('photo-status-badge').innerText = "Belum Diambil";
                         renderPetugasForm();
-                        showToast('Paket berhasil disimpan & disinkronkan ke Firebase!');
+                        showToast('Paket berhasil disimpan dan dikirim!');
                     }, 600);
                 }
             }, 300);
         }
 
-        // Courier View & Sub-tabs with Newest First sorting and pagination
+        // Courier View & Sub-tabs
         function switchCourierSubTab(tab) {
             ['pending', 'delivering', 'completed'].forEach(t => {
                 const btn = document.getElementById(`courier-subtab-${t}`);
@@ -1031,7 +1036,7 @@
             const limit = parseInt(document.getElementById('courier-row-limit').value) || 10;
 
             const filtered = packages.filter(p => {
-                return p.id.toLowerCase().includes(search) || p.recipient.toLowerCase().includes(search) || p.destination.toLowerCase().includes(search);
+                return p.id.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search)) || p.recipient.toLowerCase().includes(search) || p.destination.toLowerCase().includes(search);
             });
 
             const pending = filtered.filter(p => p.status === 'pending');
@@ -1045,7 +1050,10 @@
             document.getElementById('list-courier-pending').innerHTML = pending.length === 0 ? '<p class="text-xs text-slate-400 text-center py-6">Tidak ada antrian paket</p>' : pending.slice(0, limit).map(p => `
                 <div class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/70 space-y-2 text-xs">
                     <div class="flex justify-between items-start">
-                        <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${p.id}</span>
+                        <div class="space-x-1">
+                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${p.id}</span>
+                            <span class="font-mono text-[10px] text-slate-500">Resi: ${p.resi || '-'}</span>
+                        </div>
                         <span class="text-[10px] text-slate-400">${p.timestamp}</span>
                     </div>
                     <div class="grid grid-cols-3 gap-2 items-center">
@@ -1068,7 +1076,10 @@
             document.getElementById('list-courier-delivering').innerHTML = delivering.length === 0 ? '<p class="text-xs text-slate-400 text-center py-6">Tidak ada paket dikirim</p>' : delivering.slice(0, limit).map(p => `
                 <div class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/70 space-y-2 text-xs">
                     <div class="flex justify-between items-start">
-                        <span class="font-mono font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded">${p.id}</span>
+                        <div class="space-x-1">
+                            <span class="font-mono font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded">${p.id}</span>
+                            <span class="font-mono text-[10px] text-slate-500">Resi: ${p.resi || '-'}</span>
+                        </div>
                         <span class="text-[10px] text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full font-semibold">Sedang Dikirim</span>
                     </div>
                     <div class="grid grid-cols-3 gap-2 items-center">
@@ -1094,7 +1105,10 @@
             document.getElementById('list-courier-completed').innerHTML = completed.length === 0 ? '<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat selesai</p>' : completed.slice(0, limit).map(p => `
                 <div class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/70 space-y-2 text-xs">
                     <div class="flex justify-between items-start">
-                        <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${p.id}</span>
+                        <div class="space-x-1">
+                            <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${p.id}</span>
+                            <span class="font-mono text-[10px] text-slate-500">Resi: ${p.resi || '-'}</span>
+                        </div>
                         <span class="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-semibold">Selesai</span>
                     </div>
                     <div class="grid grid-cols-3 gap-2 items-center">
@@ -1155,12 +1169,12 @@
             }
         }
 
-        // Petugas Status View
+        // Status Transaksi View for Petugas with refined layout & frame
         function renderPetugasStatusView() {
             const search = document.getElementById('filter-petugas-search').value.toLowerCase();
             const container = document.getElementById('petugas-status-list');
 
-            const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || p.recipient.toLowerCase().includes(search) || p.destination.toLowerCase().includes(search));
+            const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search)) || p.recipient.toLowerCase().includes(search) || p.destination.toLowerCase().includes(search));
 
             if (filtered.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Tidak ada transaksi ditemukan.</p>';
@@ -1168,21 +1182,34 @@
             }
 
             container.innerHTML = filtered.map(p => `
-                <div class="p-3 rounded-xl border border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-3 text-xs">
-                    <div class="space-y-1">
+                <div class="p-4 rounded-2xl border border-slate-200/80 bg-white shadow-sm hover:shadow transition space-y-3 text-xs">
+                    <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-100 pb-2.5">
                         <div class="flex items-center space-x-2">
-                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${p.id}</span>
-                            <span class="px-2 py-0.5 rounded-full font-semibold text-[10px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : (p.status === 'delivering' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700')}">
+                            <span class="font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg text-xs"><i class="fa-solid fa-fingerprint mr-1"></i>${p.id}</span>
+                            <span class="font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[11px]">Resi: ${p.resi || '-'}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-0.5 rounded-full font-bold text-[10px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : (p.status === 'delivering' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700')}">
                                 ${p.status.toUpperCase()}
                             </span>
-                            <span class="text-[10px] text-slate-400 font-mono">${p.timestamp}</span>
+                            <span class="text-[10px] text-slate-400 font-mono"><i class="fa-regular fa-clock mr-1"></i>${p.timestamp}</span>
                         </div>
-                        <h4 class="font-bold text-slate-800">${p.recipient} (${p.role}) - ${p.destination}</h4>
-                        <p class="text-[11px] text-slate-500">Kategori: <strong>${p.category}</strong> | SLA: <strong>${p.sla}</strong></p>
                     </div>
-                    <div class="flex space-x-1">
-                        ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-12 h-12 object-cover rounded-lg border zoomable-img" onclick="openZoomModal(this.src)">` : ''}
-                        ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Bukti Terima" class="w-12 h-12 object-cover rounded-lg border zoomable-img" onclick="openZoomModal(this.src)">` : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+                        <div class="space-y-1">
+                            <p class="text-slate-500 text-[11px]">Penerima & Tujuan:</p>
+                            <h4 class="font-bold text-slate-800 text-sm">${p.recipient} <span class="text-indigo-600 font-normal">(${p.role})</span></h4>
+                            <p class="text-slate-600"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${p.destination}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-slate-500 text-[11px]">Detail Logistik:</p>
+                            <p class="text-slate-700">Kategori: <strong class="capitalize">${p.category}</strong></p>
+                            <p class="text-slate-700">SLA: <strong>${p.sla}</strong> | Petugas: <strong>${p.petugas}</strong></p>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            ${p.physicalPhotoUrl ? `<div class="text-center"><span class="text-[9px] text-slate-400 block mb-0.5">Foto Fisik</span><img src="${p.physicalPhotoUrl}" class="w-14 h-14 object-cover rounded-xl border shadow-sm zoomable-img" onclick="openZoomModal(this.src)"></div>` : ''}
+                            ${p.proofPhotoUrl ? `<div class="text-center"><span class="text-[9px] text-slate-400 block mb-0.5">Bukti Terima</span><img src="${p.proofPhotoUrl}" class="w-14 h-14 object-cover rounded-xl border shadow-sm zoomable-img" onclick="openZoomModal(this.src)"></div>` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -1210,6 +1237,7 @@
                     <div class="space-y-1">
                         <div class="flex items-center space-x-2">
                             <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${p.id}</span>
+                            <span class="font-mono text-[10px] text-slate-500">Resi: ${p.resi || '-'}</span>
                             <span class="px-2 py-0.5 rounded-full font-semibold text-[10px] ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}">
                                 ${p.status === 'completed' ? 'Sudah Diterima' : 'Sedang Diproses'}
                             </span>
@@ -1297,7 +1325,7 @@
         function renderAdminPackages() {
             const search = document.getElementById('filter-admin-search').value.toLowerCase();
             const tbody = document.getElementById('admin-packages-table-body');
-            const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || p.recipient.toLowerCase().includes(search));
+            const filtered = packages.filter(p => p.id.toLowerCase().includes(search) || (p.resi && p.resi.toLowerCase().includes(search)) || p.recipient.toLowerCase().includes(search));
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Tidak ada data paket.</td></tr>`;
@@ -1308,7 +1336,8 @@
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-2.5">
                         <span class="font-mono font-bold text-indigo-600 block">${p.id}</span>
-                        <span class="text-[10px] text-slate-400 font-mono">${p.timestamp}</span>
+                        <span class="font-mono text-[10px] text-slate-500">Resi: ${p.resi || '-'}</span>
+                        <span class="text-[10px] text-slate-400 font-mono block">${p.timestamp}</span>
                     </td>
                     <td class="p-2.5 capitalize">${p.source}</td>
                     <td class="p-2.5">
@@ -1368,16 +1397,6 @@
             auditLogs = [];
             renderAuditLogs();
             showToast('Audit log dibersihkan');
-        }
-
-        function showMessage(title, text) {
-            document.getElementById('msg-title').innerText = title;
-            document.getElementById('msg-text').innerText = text;
-            document.getElementById('msg-modal').classList.remove('hidden');
-        }
-
-        function closeMsgModal() {
-            document.getElementById('msg-modal').classList.add('hidden');
         }
 
         window.onload = function() {
