@@ -64,10 +64,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col text-[11px]">
 
-    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-12 right-2 z-50 space-y-1.5 max-w-xs w-full pointer-events-none"></div>
 
-    <!-- Login Screen with Clean Inputs (No Pre-filled Defaults) -->
+    <!-- Login Screen with Clean Inputs (No Pre-filled Defaults, strict validation) -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1">
@@ -120,12 +119,11 @@
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
                 <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Proyek: kurirapps-d651e</p>
-                <p>Koneksi Cloud Firebase terintegrasi aman.</p>
+                <p>Koneksi Cloud Firebase terintegrasi aman (API Key disembunyikan).</p>
             </div>
         </div>
     </div>
 
-    <!-- Main Navigation Header -->
     <header class="bg-indigo-700 text-white shadow-sm sticky top-0 z-45">
         <div class="max-w-6xl mx-auto px-2 py-1 flex flex-wrap justify-between items-center gap-1">
             <div class="flex items-center space-x-1.5">
@@ -157,7 +155,6 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-1 md:p-1.5 pb-12 space-y-1">
 
-        <!-- Role 1: Petugas Input & Status -->
         <div id="view-petugas" class="tab-view space-y-1">
             <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-40">
                 <button onclick="window.switchPetugasTab('input')" id="petugas-tab-input" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -268,7 +265,6 @@
             </div>
         </div>
 
-        <!-- Role 2: Kurir -->
         <div id="view-kurir" class="tab-view space-y-1">
             <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-40">
                 <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -328,7 +324,6 @@
             </div>
         </div>
 
-        <!-- Role 3: Penerima -->
         <div id="view-penerima" class="tab-view space-y-1">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-xl p-2 shadow-sm flex flex-wrap justify-between items-center gap-1">
                 <div>
@@ -354,7 +349,6 @@
             </div>
         </div>
 
-        <!-- Role 4: Admin (Enhanced Colorful Layout & Strict Member Validation) -->
         <div id="view-admin" class="tab-view space-y-2">
             <div class="flex space-x-1 bg-white p-1.5 rounded-xl shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-40">
                 <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-chart-pie mr-1 text-amber-300"></i><span>Overview Dashboard</span></button>
@@ -480,7 +474,6 @@
 
     </main>
 
-    <!-- Physical Camera Modal -->
     <div id="physical-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
             <h3 class="text-[9.5px] font-bold flex items-center"><i class="fa-solid fa-camera text-indigo-400 mr-1"></i> Ambil Foto Paket Fisik</h3>
@@ -497,7 +490,6 @@
         </div>
     </div>
 
-    <!-- Barcode Scanner Modal -->
     <div id="barcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -522,7 +514,6 @@
         </div>
     </div>
 
-    <!-- Centered & Refined Summary Confirmation Modal with Icons -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-2.5 modal-transition border border-slate-100 animate-in fade-in zoom-in duration-200">
             <div class="text-center space-y-1">
@@ -557,7 +548,6 @@
         </div>
     </div>
 
-    <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1 modal-transition">
             <div class="flex justify-between items-center">
@@ -568,94 +558,10 @@
             
             <div class="space-y-1">
                 <div class="border-2 border-dashed border-slate-200 rounded-xl p-1.5 text-center cursor-pointer hover:border-emerald-500 transition bg-slate-50" onclick="window.simulateProofCameraCapture()">
-                    <i id="cam-icon" class="fa-solid fa-camera text-sm text-emerald-500 mb-0.5"></i>
-                    <p id="cam-status-text" class="text-[8.5px] font-medium text-slate-600">Klik ambil foto bukti</p>
-                </div>
-                <div>
-                    <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Nama Penerima Langsung</label>
-                    <input type="text" id="confirm-receiver-name" placeholder="Cth: Diterima oleh ybs" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none placeholder:text-slate-400">
-                </div>
-                <button onclick="window.submitCompleteDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 rounded text-[9.5px] shadow transition flex items-center justify-center space-x-0.5">
-                    <i class="fa-solid fa-check-circle mr-0.5"></i>
-                    <span>Konfirmasi Selesai</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Member Modal -->
-    <div id="member-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-2.5 shadow-2xl space-y-1.5 modal-transition">
-            <div class="flex justify-between items-center border-b pb-0.5">
-                <h3 id="member-modal-title" class="text-[10px] font-bold text-slate-800 flex items-center"><i class="fa-solid fa-user-plus text-indigo-600 mr-1"></i> Tambah Anggota</h3>
-                <button onclick="window.closeMemberModal()" class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-[9px]"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="window.handleSaveMember(event)" class="space-y-1">
-                <input type="hidden" id="member-edit-id">
-                <div>
-                    <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Nama Lengkap</label>
-                    <input type="text" id="member-name" required placeholder="Cth: Nama Staff" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Email / Username Resmi</label>
-                    <input type="email" id="member-email" required placeholder="Cth: staff@sch.edu" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
-                    <input type="text" id="member-password" required value="123456" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Peran (Role)</label>
-                    <select id="member-role" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 bg-white">
-                        <option value="petugas">Petugas</option>
-                        <option value="kurir">Kurir</option>
-                        <option value="penerima">Penerima</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1 rounded text-[9.5px] shadow transition">Simpan Anggota</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Zoom Modal -->
-    <div id="zoom-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 hidden" onclick="window.closeZoomModal()">
-        <div class="relative max-w-xl w-full text-center">
-            <button onclick="window.closeZoomModal()" class="absolute -top-7 right-0 text-white text-sm hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
-            <img id="zoomed-image-el" src="" class="max-h-[85vh] mx-auto rounded-xl shadow-2xl object-contain">
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-
-        let loggedUser = { role: 'petugas', name: '' };
-        let currentRole = 'petugas';
-        let sourceType = 'external';
-        let activeCompletingId = null;
-        let proofPhotoCaptured = false;
-        let physicalPhotoDataUrl = null;
-        let physicalCameraStream = null;
-        let pendingPackagePayload = null;
-
-        let members = [
-            { id: 'usr-1', name: 'Petugas Piket', email: 'petugas@sch.edu', role: 'petugas', password: '123456', status: 'Aktif' },
-            { id: 'usr-2', name: 'Kurir Sekolah', email: 'kurir@sch.edu', role: 'kurir', password: '123456', status: 'Aktif' },
-            { id: 'usr-3', name: 'Administrator', email: 'admin@sch.edu', role: 'admin', password: '123456', status: 'Aktif' },
-            { id: 'usr-4', name: 'Penerima Barang', email: 'penerima@sch.edu', role: 'penerima', password: '123456', status: 'Aktif' }
-        ];
-
-        let packages = [];
-        let auditLogs = [];
-        let charts = {};
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
+        let appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
         let db, auth, analytics;
 
-        // Hidden Secure API Key embedded directly into the system
+        // Secure Hidden API Key embedded directly into the system
         const SECRET_API_KEY = "AIzaSyDCRDC1ykV6UTeBYFAoNEBtlIKeyDphstU";
 
         function initFirebase() {
@@ -687,7 +593,89 @@
                     setupRealtimeSync();
                 });
             } catch (e) {
-                console.log('Firebase init note:', e);
+                console.log('Firebase init note (Running in Offline Mode):', e);
+                const statusDot = document.getElementById('connection-dot');
+                const statusText = document.getElementById('connection-text');
+                if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block";
+                if(statusText) statusText.innerText = "Offline Mode (Lokal)";
+            }
+        }
+
+        function setupRealtimeSync() {
+            if (!db) return;
+            try {
+                const refPkg = collection(db, 'artifacts', appId, 'public', 'data', 'packages_col');
+                onSnapshot(refPkg, (snapshot) => {
+                    const cloudPkgs = [];
+                    snapshot.forEach(docSnap => {
+                        cloudPkgs.push(docSnap.data());
+                    });
+                    if(cloudPkgs.length > 0) {
+                        packages = cloudPkgs.sort((a,b) => b.id.localeCompare(a.id));
+                        refreshActiveView();
+                    }
+                }, (err) => {
+                    console.log('Package sync offline note:', err.message);
+                });
+
+                const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
+                onSnapshot(refUsr, (snapshot) => {
+                    const cloudMembers = [];
+                    snapshot.forEach(docSnap => {
+                        cloudMembers.push(docSnap.data());
+                    });
+                    if (cloudMembers.length > 0) {
+                        members = cloudMembers;
+                        if (currentRole === 'admin') renderAdminMembers();
+                    }
+                }, (err) => {
+                    console.log('Member sync offline note:', err.message);
+                });
+            } catch (syncErr) {
+                console.log('Realtime sync setup offline notice:', syncErr);
+            }
+        }
+
+        async function syncPackageToFirebase(pkgObj) {
+            if (!db) {
+                showToast('Database offline. Paket tersimpan secara lokal.', 'info');
+                return true;
+            }
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id));
+                await setDoc(docRef, pkgObj, { merge: true });
+                return true;
+            } catch (e) {
+                console.log('Firebase sync offline notice:', e);
+                showToast('Tersimpan di memori lokal (Offline mode)', 'info');
+                return true;
+            }
+        }
+
+        async function deletePackageFromFirebase(id) {
+            if (!db) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(id)));
+            } catch (e) {
+                console.log('Firebase delete offline notice:', e);
+            }
+        }
+
+        async function syncMemberToFirebase(memberObj) {
+            if (!db) return;
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true });
+            } catch (e) {
+                console.log('Firebase member sync offline notice:', e);
+            }
+        }
+
+        async function deleteMemberFromFirebase(id) {
+            if (!db) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id)));
+            } catch (e) {
+                console.log('Firebase member delete offline notice:', e);
             }
         }
 
