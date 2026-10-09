@@ -122,7 +122,7 @@
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
                 <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Proyek: kurirapps-d651e</p>
-                <p>Koneksi Cloud Firebase terintegrasi aman.</p>
+                <p>Koneksi Cloud & Google Sheets terintegrasi aman.</p>
             </div>
         </div>
     </div>
@@ -392,9 +392,13 @@
                     <button onclick="window.switchAdminTab('audit')" id="adm-tab-audit" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-clipboard-list mr-1 text-sky-500"></i><span>Audit Log</span></button>
                 </div>
                 <div class="flex items-center space-x-1 px-1">
-                    <button onclick="window.exportAdminReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
+                    <button onclick="window.openGoogleSheetsModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
                         <i class="fa-solid fa-file-excel"></i>
-                        <span>Export Laporan</span>
+                        <span>Google Sheets</span>
+                    </button>
+                    <button onclick="window.exportAdminReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Export CSV</span>
                     </button>
                 </div>
             </div>
@@ -468,7 +472,7 @@
                                     <th class="p-1.5">ID / Resi / Waktu</th>
                                     <th class="p-1.5">Sumber</th>
                                     <th class="p-1.5">Penerima & Tujuan</th>
-                                    <th class="p-1.5">Kategori / SLA</th>
+                                    <th class="p-1.5">Petugas & Kurir</th>
                                     <th class="p-1.5">Foto</th>
                                     <th class="p-1.5">Status</th>
                                     <th class="p-1.5 text-right">Aksi</th>
@@ -561,6 +565,34 @@
         </div>
     </div>
 
+    <!-- Google Sheets Integration Modal -->
+    <div id="google-sheets-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100">
+            <div class="flex justify-between items-center border-b pb-1">
+                <h3 class="font-bold text-slate-800 text-xs flex items-center"><i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Integrasi Google Sheets (Otomatis)</h3>
+                <button onclick="window.closeGoogleSheetsModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[8.5px] text-slate-500">Hubungkan Google Apps Script Web App URL Anda untuk menyinkronkan data paket secara otomatis ke Google Spreadsheet.</p>
+            
+            <div class="space-y-1.5">
+                <div>
+                    <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Google Apps Script Web App URL</label>
+                    <input type="text" id="google-sheets-webhook-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-2 py-1 rounded border border-slate-200 text-[9px] font-mono">
+                </div>
+                <div class="bg-sky-50 p-2 rounded border border-sky-100 text-[8px] text-sky-800 space-y-0.5">
+                    <p class="font-bold">Panduan Singkat:</p>
+                    <p>1. Buat Google Sheet baru.</p>
+                    <p>2. Buka <b>Extensions > Apps Script</b>, paste kode webhook, lalu Deploy sebagai <i>Web App</i> (Access: Anyone).</p>
+                    <p>3. Masukkan URL Web App di atas dan simpan.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-1 pt-1">
+                    <button type="button" onclick="window.saveGoogleSheetsUrl()" class="py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-bold text-[9px] shadow transition">Simpan URL</button>
+                    <button type="button" onclick="window.syncNowToGoogleSheets()" class="py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9px] shadow transition">Sync Data Sekarang</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-2.5 modal-transition border border-slate-100 animate-in fade-in zoom-in duration-200">
             <div class="text-center space-y-1">
@@ -568,7 +600,7 @@
                     <i class="fa-solid fa-clipboard-check"></i>
                 </div>
                 <h3 class="font-bold text-slate-800 text-xs">Konfirmasi Simpan & Kirim Paket</h3>
-                <p class="text-[9px] text-slate-500">Periksa ringkasan data paket berikut sebelum dikirim ke Cloud.</p>
+                <p class="text-[9px] text-slate-500">Periksa ringkasan data paket berikut sebelum dikirim ke Cloud & Google Sheets.</p>
             </div>
 
             <div id="summary-data-card" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 space-y-1 text-[9.5px]">
@@ -882,6 +914,9 @@
         }
 
         async function syncPackageToFirebase(pkgObj) {
+            // Also trigger automatic Google Sheets Webhook sync if configured
+            syncToGoogleSheets(pkgObj);
+
             if (!db) {
                 showToast('Database offline. Paket tersimpan secara lokal.', 'info');
                 return true;
@@ -896,6 +931,64 @@
                 return true;
             }
         }
+
+        // Google Sheets Auto-Sync Helper
+        function syncToGoogleSheets(pkgObj) {
+            const webhookUrl = localStorage.getItem('kurir_bns_gsheets_url');
+            if (!webhookUrl) return;
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pkgObj)
+            }).then(() => {
+                console.log('Synced to Google Sheets successfully');
+            }).catch(err => {
+                console.log('Google Sheets sync error:', err);
+            });
+        }
+
+        function openGoogleSheetsModal() {
+            const modal = document.getElementById('google-sheets-modal');
+            if(modal) modal.classList.remove('hidden');
+            const urlInput = document.getElementById('google-sheets-webhook-url');
+            const saved = localStorage.getItem('kurir_bns_gsheets_url');
+            if(urlInput && saved) urlInput.value = saved;
+        }
+        window.openGoogleSheetsModal = openGoogleSheetsModal;
+
+        function closeGoogleSheetsModal() {
+            const modal = document.getElementById('google-sheets-modal');
+            if(modal) modal.classList.add('hidden');
+        }
+        window.closeGoogleSheetsModal = closeGoogleSheetsModal;
+
+        function saveGoogleSheetsUrl() {
+            const url = document.getElementById('google-sheets-webhook-url').value.trim();
+            if(!url) {
+                showToast('Masukkan URL Web App yang valid', 'error');
+                return;
+            }
+            localStorage.setItem('kurir_bns_gsheets_url', url);
+            showToast('URL Google Sheets berhasil disimpan!');
+            closeGoogleSheetsModal();
+        }
+        window.saveGoogleSheetsUrl = saveGoogleSheetsUrl;
+
+        function syncNowToGoogleSheets() {
+            const webhookUrl = localStorage.getItem('kurir_bns_gsheets_url');
+            if (!webhookUrl) {
+                showToast('Simpan URL Web App terlebih dahulu!', 'error');
+                return;
+            }
+            showToast('Menyinkronkan seluruh paket ke Google Sheets...', 'info');
+            packages.forEach(p => syncToGoogleSheets(p));
+            setTimeout(() => {
+                showToast('Sinkronisasi massal ke Google Sheets selesai!');
+            }, 1500);
+        }
+        window.syncNowToGoogleSheets = syncNowToGoogleSheets;
 
         async function deletePackageFromFirebase(id) {
             if (!db) return;
@@ -1393,7 +1486,7 @@
 
         function openBarcodeModal() {
             const modal = document.getElementById('barcode-modal');
-            if(modal) modal.classList.add('hidden'); // placeholder or open scanner
+            if(modal) modal.classList.add('hidden');
 
             try {
                 if (!codeReader) {
@@ -2019,10 +2112,12 @@
                     <td class="p-1.5">
                         <span class="font-semibold block">${p.recipient} (${p.role})</span>
                         <span class="text-[7px] text-slate-500">${p.destination}</span>
-                        <span class="text-[7px] text-indigo-600 block">Petugas: ${p.petugas} | Kurir: ${p.courier || '-'}</span>
+                    </td>
+                    <td class="p-1.5">
+                        <span class="text-[7.5px] text-indigo-600 block"><span class="font-semibold">Petugas:</span> ${p.petugas}</span>
+                        <span class="text-[7.5px] text-sky-600 block"><span class="font-semibold">Kurir:</span> ${p.courier || '-'}</span>
                         ${p.completionOption ? '<span class="text-[7px] text-emerald-600 font-semibold block">' + p.completionOption + '</span>' : ''}
                     </td>
-                    <td class="p-1.5 capitalize">${p.category} / ${p.sla}</td>
                     <td class="p-1.5">
                         <div class="flex space-x-1">
                             ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-6 h-6 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
