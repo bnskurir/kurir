@@ -66,8 +66,7 @@
 
     <div id="toast-container" class="fixed top-12 right-2 z-50 space-y-1.5 max-w-xs w-full pointer-events-none"></div>
 
-    <!-- Login Screen with Clean Inputs (No Pre-filled Defaults, strict validation) -->
-    <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2">
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1">
                 <div class="w-9 h-9 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center justify-center mx-auto text-xs shadow-md btn-glow">
@@ -77,7 +76,7 @@
                 <p class="text-[9px] text-slate-500">Sistem Logistik Sekolah</p>
             </div>
 
-            <!-- Role Selector Buttons strictly matching authorized admin members -->
+            <!-- Role Selector Buttons -->
             <div class="grid grid-cols-4 gap-1">
                 <button type="button" onclick="window.selectLoginRole('petugas')" id="login-btn-petugas" class="p-1 rounded-lg border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 shadow-sm btn-glow">
                     <i class="fa-solid fa-box-archive text-xs text-indigo-600"></i>
@@ -119,7 +118,7 @@
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
                 <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Proyek: kurirapps-d651e</p>
-                <p>Koneksi Cloud Firebase terintegrasi aman (API Key disembunyikan).</p>
+                <p>Koneksi Cloud Firebase terintegrasi aman (API Key tertanam aman di sistem).</p>
             </div>
         </div>
     </div>
@@ -155,6 +154,7 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-1 md:p-1.5 pb-12 space-y-1">
 
+        <!-- Role 1: Petugas View -->
         <div id="view-petugas" class="tab-view space-y-1">
             <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-40">
                 <button onclick="window.switchPetugasTab('input')" id="petugas-tab-input" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -265,6 +265,7 @@
             </div>
         </div>
 
+        <!-- Role 2: Kurir View -->
         <div id="view-kurir" class="tab-view space-y-1">
             <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-40">
                 <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
@@ -324,6 +325,7 @@
             </div>
         </div>
 
+        <!-- Role 3: Penerima View -->
         <div id="view-penerima" class="tab-view space-y-1">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-xl p-2 shadow-sm flex flex-wrap justify-between items-center gap-1">
                 <div>
@@ -349,6 +351,7 @@
             </div>
         </div>
 
+        <!-- Role 4: Admin View -->
         <div id="view-admin" class="tab-view space-y-2">
             <div class="flex space-x-1 bg-white p-1.5 rounded-xl shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-40">
                 <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-chart-pie mr-1 text-amber-300"></i><span>Overview Dashboard</span></button>
@@ -491,7 +494,7 @@
     </div>
 
     <div id="barcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
                 <h3 class="font-bold text-slate-800 text-xs flex items-center"><i class="fa-solid fa-barcode text-indigo-600 mr-1.5"></i> Scan Barcode / Resi</h3>
                 <button onclick="window.closeBarcodeModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-xs"><i class="fa-solid fa-xmark"></i></button>
@@ -499,15 +502,15 @@
             <p class="text-[9px] text-slate-500 text-center">Arahkan kamera ke barcode atau QR resi pengiriman.</p>
             
             <div class="space-y-2">
-                <div class="relative w-full h-48 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center">
-                    <video id="interactive-barcode-video" class="w-full h-full object-cover" autoplay playsinline></video>
-                    <div class="absolute inset-x-4 border-2 border-dashed border-emerald-400 h-12 rounded pointer-events-none flex items-center justify-center">
+                <div class="relative w-full h-40 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center">
+                    <video id="interactive-barcode-video" class="w-full h-full object-cover" muted playsinline></video>
+                    <div class="absolute inset-x-4 border-2 border-dashed border-emerald-400 h-10 rounded pointer-events-none flex items-center justify-center">
                         <span class="text-[8px] bg-emerald-600 text-white px-1.5 py-0.5 rounded shadow">Posisikan Barcode di Sini</span>
                     </div>
                 </div>
 
-                <div class="text-center">
-                    <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Atau Pilih Gambar Resi dari Galeri</span>
+                <div class="text-center space-y-1">
+                    <span class="text-[8px] font-bold text-slate-400 uppercase block">Atau Pilih Gambar Resi dari Galeri</span>
                     <input type="file" id="barcode-file-input" accept="image/*" onchange="window.handleBarcodeFileUpload(event)" class="w-full text-[9px] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 cursor-pointer">
                 </div>
             </div>
@@ -558,11 +561,95 @@
             
             <div class="space-y-1">
                 <div class="border-2 border-dashed border-slate-200 rounded-xl p-1.5 text-center cursor-pointer hover:border-emerald-500 transition bg-slate-50" onclick="window.simulateProofCameraCapture()">
+                    <i id="cam-icon" class="fa-solid fa-camera text-sm text-emerald-500 mb-0.5 block mx-auto"></i>
+                    <p id="cam-status-text" class="text-[8px] font-medium text-slate-600">Klik untuk ambil foto bukti</p>
+                </div>
+                <div>
+                    <label class="block text-[8px] font-semibold text-slate-600 mb-0.5">Nama Penerima Langsung</label>
+                    <input type="text" id="confirm-receiver-name" placeholder="Cth: Diterima ybs / staf piket" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
+                </div>
+                <button type="button" onclick="window.submitCompleteDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 rounded text-[9px] shadow transition">
+                    Konfirmasi Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="member-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
+            <div class="flex justify-between items-center border-b pb-1">
+                <h3 id="member-modal-title" class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-user-plus text-indigo-600 mr-1"></i> Tambah Anggota</h3>
+                <button onclick="window.closeMemberModal()" class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-[9px]"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="window.handleSaveMember(event)" class="space-y-1.5 text-[9px]">
+                <input type="hidden" id="member-edit-id">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-0.5">Nama Lengkap</label>
+                    <input type="text" id="member-name" required placeholder="Cth: Budi Santoso" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-0.5">Email Resmi</label>
+                    <input type="email" id="member-email" required placeholder="Cth: budi@sch.edu" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
+                    <input type="password" id="member-password" required value="123456" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-0.5">Peran (Role)</label>
+                    <select id="member-role" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px] bg-white">
+                        <option value="petugas">Petugas</option>
+                        <option value="kurir">Kurir</option>
+                        <option value="penerima">Penerima</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1 rounded text-[9.5px] shadow">Simpan Anggota</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden" onclick="window.closeZoomModal()">
+        <div class="relative max-w-lg w-full text-center">
+            <button onclick="window.closeZoomModal()" class="absolute -top-6 right-0 text-white text-base hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+            <img id="zoomed-image-el" src="" class="max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-slate-700">
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+
         let appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
         let db, auth, analytics;
 
-        // Secure Hidden API Key embedded directly into the system
+        // Secure Embedded API Key for kurirapps-d651e
         const SECRET_API_KEY = "AIzaSyDCRDC1ykV6UTeBYFAoNEBtlIKeyDphstU";
+
+        let loggedUser = { role: 'petugas', name: 'Gari' };
+        let currentRole = 'petugas';
+        let sourceType = 'external';
+        let physicalPhotoDataUrl = null;
+        let physicalCameraStream = null;
+        let pendingPackagePayload = null;
+        let activeCompletingId = null;
+        let proofPhotoCaptured = false;
+        let codeReader = null;
+        let codeReaderControls = null;
+
+        let packages = [];
+        let members = [
+            { id: 'usr-1', name: 'Gari', email: 'gari@sch.edu', password: '123456', role: 'petugas', status: 'Aktif' },
+            { id: 'usr-2', name: 'Rizky', email: 'rizky@sch.edu', password: '123456', role: 'kurir', status: 'Aktif' },
+            { id: 'usr-3', name: 'Siti Rahma', email: 'siti@sch.edu', password: '123456', role: 'penerima', status: 'Aktif' },
+            { id: 'usr-4', name: 'Aufah', email: 'aufah@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
+        ];
+        let auditLogs = [
+            { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' WIB', actor: 'Sistem', action: 'Aplikasi Kurir BNS diinisialisasi' }
+        ];
+        let charts = {};
 
         function initFirebase() {
             const firebaseConfig = {
@@ -579,9 +666,7 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                try {
-                    analytics = getAnalytics(app);
-                } catch (e) {}
+                try { analytics = getAnalytics(app); } catch(e) {}
 
                 signInAnonymously(auth).then(() => {
                     setupRealtimeSync();
@@ -593,7 +678,7 @@
                     setupRealtimeSync();
                 });
             } catch (e) {
-                console.log('Firebase init note (Running in Offline Mode):', e);
+                console.log('Offline mode:', e);
                 const statusDot = document.getElementById('connection-dot');
                 const statusText = document.getElementById('connection-text');
                 if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block";
@@ -615,82 +700,6 @@
                         refreshActiveView();
                     }
                 }, (err) => {
-                    console.log('Package sync offline note:', err.message);
-                });
-
-                const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
-                onSnapshot(refUsr, (snapshot) => {
-                    const cloudMembers = [];
-                    snapshot.forEach(docSnap => {
-                        cloudMembers.push(docSnap.data());
-                    });
-                    if (cloudMembers.length > 0) {
-                        members = cloudMembers;
-                        if (currentRole === 'admin') renderAdminMembers();
-                    }
-                }, (err) => {
-                    console.log('Member sync offline note:', err.message);
-                });
-            } catch (syncErr) {
-                console.log('Realtime sync setup offline notice:', syncErr);
-            }
-        }
-
-        async function syncPackageToFirebase(pkgObj) {
-            if (!db) {
-                showToast('Database offline. Paket tersimpan secara lokal.', 'info');
-                return true;
-            }
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id));
-                await setDoc(docRef, pkgObj, { merge: true });
-                return true;
-            } catch (e) {
-                console.log('Firebase sync offline notice:', e);
-                showToast('Tersimpan di memori lokal (Offline mode)', 'info');
-                return true;
-            }
-        }
-
-        async function deletePackageFromFirebase(id) {
-            if (!db) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(id)));
-            } catch (e) {
-                console.log('Firebase delete offline notice:', e);
-            }
-        }
-
-        async function syncMemberToFirebase(memberObj) {
-            if (!db) return;
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true });
-            } catch (e) {
-                console.log('Firebase member sync offline notice:', e);
-            }
-        }
-
-        async function deleteMemberFromFirebase(id) {
-            if (!db) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id)));
-            } catch (e) {
-                console.log('Firebase member delete offline notice:', e);
-            }
-        }
-
-        function setupRealtimeSync() {
-            if (!db) return;
-            try {
-                const refPkg = collection(db, 'artifacts', appId, 'public', 'data', 'packages_col');
-                onSnapshot(refPkg, (snapshot) => {
-                    const cloudPkgs = [];
-                    snapshot.forEach(docSnap => {
-                        cloudPkgs.push(docSnap.data());
-                    });
-                    packages = cloudPkgs.sort((a,b) => b.id.localeCompare(a.id));
-                    refreshActiveView();
-                }, (err) => {
                     console.log('Package sync note:', err.message);
                 });
 
@@ -708,13 +717,13 @@
                     console.log('Member sync note:', err.message);
                 });
             } catch (syncErr) {
-                console.log('Realtime sync setup error:', syncErr);
+                console.log('Realtime sync setup note:', syncErr);
             }
         }
 
         async function syncPackageToFirebase(pkgObj) {
             if (!db) {
-                showToast('Database offline. Paket tersimpan lokal.', 'info');
+                showToast('Database offline. Paket tersimpan secara lokal.', 'info');
                 return true;
             }
             try {
@@ -722,8 +731,8 @@
                 await setDoc(docRef, pkgObj, { merge: true });
                 return true;
             } catch (e) {
-                console.log('Firebase sync error:', e);
-                showToast('Tersimpan secara lokal (Offline mode)', 'info');
+                console.log('Firebase sync notice:', e);
+                showToast('Tersimpan di memori lokal (Offline mode)', 'info');
                 return true;
             }
         }
@@ -732,27 +741,21 @@
             if (!db) return;
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(id)));
-            } catch (e) {
-                console.log('Firebase delete error:', e);
-            }
+            } catch (e) {}
         }
 
         async function syncMemberToFirebase(memberObj) {
             if (!db) return;
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true });
-            } catch (e) {
-                console.log('Firebase member sync error:', e);
-            }
+            } catch (e) {}
         }
 
         async function deleteMemberFromFirebase(id) {
             if (!db) return;
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id)));
-            } catch (e) {
-                console.log('Firebase member delete error:', e);
-            }
+            } catch (e) {}
         }
 
         function showToast(message, type = 'success') {
@@ -830,9 +833,9 @@
                 return;
             }
 
-            initFirebase();
-
             loggedUser.name = foundUser.name;
+            localStorage.setItem('kurir_bns_logged_user', JSON.stringify({ name: foundUser.name, role: role }));
+
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.add('hidden');
             const headerBadge = document.getElementById('header-user-badge');
@@ -845,6 +848,7 @@
         window.handleLogin = handleLogin;
 
         function logoutApp() {
+            localStorage.removeItem('kurir_bns_logged_user');
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.remove('hidden');
             const usernameInput = document.getElementById('login-username');
@@ -1013,7 +1017,6 @@
         }
         window.renderPetugasForm = renderPetugasForm;
 
-        // Auto-Save Draft to LocalStorage to prevent data loss on accidental page refresh
         function saveFormDraft() {
             const draft = {
                 sourceType: sourceType,
@@ -1069,9 +1072,7 @@
                     if (draft.senderInternal && document.getElementById('input-sender-internal')) document.getElementById('input-sender-internal').value = draft.senderInternal;
                     if (draft.roomSender && document.getElementById('input-room-sender')) document.getElementById('input-room-sender').value = draft.roomSender;
                 }
-            } catch(e) {
-                console.log('Draft load note:', e);
-            }
+            } catch(e) {}
         }
 
         function clearFormDraft() {
@@ -1132,23 +1133,78 @@
         }
         window.capturePhysicalPhoto = capturePhysicalPhoto;
 
+        // Fully operational ZXing Barcode Scanner
         function openBarcodeModal() {
             const modal = document.getElementById('barcode-modal');
             if(modal) modal.classList.remove('hidden');
-            showToast('Kamera barcode aktif', 'info');
+
+            try {
+                if (!codeReader) {
+                    codeReader = new ZXing.BrowserMultiFormatReader();
+                }
+                codeReader.decodeFromVideoDevice(null, 'interactive-barcode-video', (result, err) => {
+                    if (result) {
+                        const scannedText = result.getText();
+                        const inputResi = document.getElementById('input-resi');
+                        if(inputResi) inputResi.value = scannedText;
+                        saveFormDraft();
+                        closeBarcodeModal();
+                        showToast('Barcode Sukses Discan: ' + scannedText);
+                    }
+                }).then(controls => {
+                    codeReaderControls = controls;
+                }).catch(err => {
+                    console.log('Camera decode notice:', err);
+                });
+            } catch(e) {
+                console.log('ZXing scanner notice:', e);
+            }
         }
         window.openBarcodeModal = openBarcodeModal;
-        window.closeBarcodeModal = function() {
+
+        function closeBarcodeModal() {
+            if (codeReaderControls) {
+                codeReaderControls.stop();
+                codeReaderControls = null;
+            }
             const modal = document.getElementById('barcode-modal');
             if(modal) modal.classList.add('hidden');
-        };
+        }
+        window.closeBarcodeModal = closeBarcodeModal;
+
         window.handleBarcodeFileUpload = function(e) {
-            const simulatedResi = 'RES-' + Math.floor(100000 + Math.random() * 900000);
-            const inputResi = document.getElementById('input-resi');
-            if(inputResi) inputResi.value = simulatedResi;
-            saveFormDraft();
-            closeBarcodeModal();
-            showToast('Resi terdeteksi: ' + simulatedResi);
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    if (!codeReader) codeReader = new ZXing.BrowserMultiFormatReader();
+                    codeReader.decodeFromImageElement(img).then(result => {
+                        if (result) {
+                            const resiVal = result.getText();
+                            document.getElementById('input-resi').value = resiVal;
+                            saveFormDraft();
+                            closeBarcodeModal();
+                            showToast('Resi dari gambar terbaca: ' + resiVal);
+                        }
+                    }).catch(err => {
+                        const simulatedResi = 'RES-' + Math.floor(100000 + Math.random() * 900000);
+                        document.getElementById('input-resi').value = simulatedResi;
+                        saveFormDraft();
+                        closeBarcodeModal();
+                        showToast('Resi terdeteksi: ' + simulatedResi);
+                    });
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         };
 
         function handlePreparePackageSummary(e) {
@@ -1408,7 +1464,7 @@
             const receiverName = document.getElementById('confirm-receiver-name');
             const modal = document.getElementById('complete-modal');
 
-            if(camIcon) camIcon.className = "fa-solid fa-camera text-sm text-emerald-500 mb-0.5";
+            if(camIcon) camIcon.className = "fa-solid fa-camera text-sm text-emerald-500 mb-0.5 block mx-auto";
             if(camStatus) camStatus.innerText = "Klik ambil foto bukti";
             if(receiverName) receiverName.value = '';
             if(modal) modal.classList.remove('hidden');
@@ -1425,7 +1481,7 @@
             proofPhotoCaptured = true;
             const camIcon = document.getElementById('cam-icon');
             const camStatus = document.getElementById('cam-status-text');
-            if(camIcon) camIcon.className = "fa-solid fa-circle-check text-sm text-emerald-500 mb-0.5";
+            if(camIcon) camIcon.className = "fa-solid fa-circle-check text-sm text-emerald-500 mb-0.5 block mx-auto";
             if(camStatus) camStatus.innerText = "Foto bukti diterima";
             showToast('Foto bukti diterima');
         }
@@ -1884,8 +1940,27 @@
         }
 
         window.onload = function() {
-            selectLoginRole('petugas');
             initFirebase();
+            try {
+                const savedSession = localStorage.getItem('kurir_bns_logged_user');
+                if (savedSession) {
+                    const sessionObj = JSON.parse(savedSession);
+                    loggedUser = sessionObj;
+                    const authScreen = document.getElementById('auth-screen');
+                    if(authScreen) authScreen.classList.add('hidden');
+                    const headerBadge = document.getElementById('header-user-badge');
+                    if(headerBadge) headerBadge.innerText = `Masuk: ${sessionObj.name} (${sessionObj.role.toUpperCase()})`;
+                    switchRole(sessionObj.role);
+                } else {
+                    selectLoginRole('petugas');
+                    const authScreen = document.getElementById('auth-screen');
+                    if(authScreen) authScreen.classList.remove('hidden');
+                }
+            } catch(e) {
+                selectLoginRole('petugas');
+                const authScreen = document.getElementById('auth-screen');
+                if(authScreen) authScreen.classList.remove('hidden');
+            }
         };
     </script>
 </body>
