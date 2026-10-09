@@ -120,8 +120,7 @@
                     <span>Hubungkan & Login</span>
                 </button>
             </form>
-            <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5">
-                <p class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Proyek: kurirapps-d651e</p>
+            <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5 text-center">
                 <p>Koneksi Cloud & Google Sheets terintegrasi aman.</p>
             </div>
         </div>
@@ -525,6 +524,7 @@
 
     </main>
 
+    <!-- Physical Camera Capture Modal -->
     <div id="physical-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
             <h3 class="text-[9.5px] font-bold flex items-center"><i class="fa-solid fa-camera text-indigo-400 mr-1"></i> Ambil Foto Paket Fisik</h3>
@@ -541,6 +541,7 @@
         </div>
     </div>
 
+    <!-- Barcode Scanner Modal -->
     <div id="barcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -565,11 +566,11 @@
         </div>
     </div>
 
-    <!-- Google Sheets Integration Modal -->
+    <!-- Google Sheets Integration Modal & Apps Script Webhook Instructions -->
     <div id="google-sheets-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100">
+        <div class="bg-white rounded-2xl max-w-md w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-1">
-                <h3 class="font-bold text-slate-800 text-xs flex items-center"><i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Integrasi Google Sheets (Otomatis)</h3>
+                <h3 class="font-bold text-slate-800 text-xs flex items-center"><i class="fa-solid fa-file-excel text-emerald-600 mr-1.5"></i> Integrasi Google Sheets Otomatis</h3>
                 <button onclick="window.closeGoogleSheetsModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p class="text-[8.5px] text-slate-500">Hubungkan Google Apps Script Web App URL Anda untuk menyinkronkan data paket secara otomatis ke Google Spreadsheet.</p>
@@ -579,12 +580,41 @@
                     <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.5">Google Apps Script Web App URL</label>
                     <input type="text" id="google-sheets-webhook-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-2 py-1 rounded border border-slate-200 text-[9px] font-mono">
                 </div>
-                <div class="bg-sky-50 p-2 rounded border border-sky-100 text-[8px] text-sky-800 space-y-0.5">
-                    <p class="font-bold">Panduan Singkat:</p>
-                    <p>1. Buat Google Sheet baru.</p>
-                    <p>2. Buka <b>Extensions > Apps Script</b>, paste kode webhook, lalu Deploy sebagai <i>Web App</i> (Access: Anyone).</p>
-                    <p>3. Masukkan URL Web App di atas dan simpan.</p>
+
+                <div class="bg-slate-50 p-2 rounded border border-slate-200 text-[8px] text-slate-700 space-y-1">
+                    <p class="font-bold text-slate-800"><i class="fa-solid fa-code text-indigo-600 mr-1"></i> Script Google Apps (Salin & Paste ke Extensions > Apps Script):</p>
+                    <textarea readonly rows="5" class="w-full p-1 font-mono text-[7px] bg-white border border-slate-300 rounded select-all" onclick="this.select()">
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    data.id, 
+    data.resi || '', 
+    data.source, 
+    data.petugas, 
+    data.courier || '', 
+    data.recipient, 
+    data.role, 
+    data.destination, 
+    data.category, 
+    data.sla, 
+    data.status, 
+    data.completionOption || '', 
+    data.timestamp
+  ]);
+  return ContentService.createTextOutput(JSON.stringify({"status":"success"})).setMimeType(ContentService.MimeType.JSON);
+}
+                    </textarea>
                 </div>
+
+                <div class="bg-sky-50 p-2 rounded border border-sky-100 text-[8px] text-sky-800 space-y-0.5">
+                    <p class="font-bold">Panduan:</p>
+                    <p>1. Buat Google Sheet baru.</p>
+                    <p>2. Buka <b>Extensions > Apps Script</b>, hapus kode lama, paste script di atas.</p>
+                    <p>3. Klik <b>Deploy > New deployment</b> (Type: Web App, Execute as: Me, Who has access: Anyone).</p>
+                    <p>4. Salin URL Web App dan paste di kolom atas, lalu simpan.</p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-1 pt-1">
                     <button type="button" onclick="window.saveGoogleSheetsUrl()" class="py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-bold text-[9px] shadow transition">Simpan URL</button>
                     <button type="button" onclick="window.syncNowToGoogleSheets()" class="py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9px] shadow transition">Sync Data Sekarang</button>
@@ -593,6 +623,7 @@
         </div>
     </div>
 
+    <!-- Centered Summary Confirmation Modal -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-2.5 modal-transition border border-slate-100 animate-in fade-in zoom-in duration-200">
             <div class="text-center space-y-1">
@@ -627,7 +658,7 @@
         </div>
     </div>
 
-    <!-- Complete Delivery Modal (Enhanced with Options & Photo Proof) -->
+    <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100">
             <div class="flex justify-between items-center border-b pb-1">
@@ -637,7 +668,6 @@
             <p class="text-[8px] text-slate-500">Ambil foto bukti tanda terima dan pilih opsi keterangan penyelesaian.</p>
             
             <div class="space-y-1.5">
-                <!-- Proof Photo Box -->
                 <div class="border-2 border-dashed border-slate-200 rounded-xl p-1.5 text-center cursor-pointer hover:border-emerald-500 transition bg-slate-50 flex items-center justify-center space-x-2" onclick="window.openProofCameraModal()">
                     <div id="proof-thumb-container" class="hidden">
                         <img id="proof-thumb-img" src="" class="w-7 h-7 object-cover rounded border border-emerald-300">
@@ -688,6 +718,7 @@
         </div>
     </div>
 
+    <!-- Member Modal -->
     <div id="member-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -722,6 +753,7 @@
         </div>
     </div>
 
+    <!-- Zoom Modal -->
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden" onclick="window.closeZoomModal()">
         <div class="relative max-w-lg w-full text-center">
             <button onclick="window.closeZoomModal()" class="absolute -top-6 right-0 text-white text-base hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
@@ -755,6 +787,7 @@
 
         let packages = [];
         let members = [
+            { id: 'usr-admin', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' },
             { id: 'usr-1', name: 'Gari', email: 'gari@sch.edu', password: '123456', role: 'petugas', status: 'Aktif' },
             { id: 'usr-2', name: 'Rizky', email: 'rizky@sch.edu', password: '123456', role: 'kurir', status: 'Aktif' },
             { id: 'usr-3', name: 'Siti Rahma', email: 'siti@sch.edu', password: '123456', role: 'penerima', status: 'Aktif' },
@@ -903,6 +936,9 @@
                     });
                     if (cloudMembers.length > 0) {
                         members = cloudMembers;
+                        if (!members.some(m => m.email === 'adm@sch.edu')) {
+                            members.unshift({ id: 'usr-admin', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' });
+                        }
                         if (currentRole === 'admin') renderAdminMembers();
                     }
                 }, (err) => {
@@ -914,9 +950,7 @@
         }
 
         async function syncPackageToFirebase(pkgObj) {
-            // Also trigger automatic Google Sheets Webhook sync if configured
             syncToGoogleSheets(pkgObj);
-
             if (!db) {
                 showToast('Database offline. Paket tersimpan secara lokal.', 'info');
                 return true;
@@ -932,7 +966,6 @@
             }
         }
 
-        // Google Sheets Auto-Sync Helper
         function syncToGoogleSheets(pkgObj) {
             const webhookUrl = localStorage.getItem('kurir_bns_gsheets_url');
             if (!webhookUrl) return;
@@ -1103,7 +1136,7 @@
             } else if (role === 'kurir') {
                 if(labelName) labelName.innerText = "Email Kurir";
             } else if (role === 'admin') {
-                if(labelName) labelName.innerText = "Email Administrator";
+                if(labelName) labelName.innerText = "Email Administrator (Cth: adm@sch.edu)";
             } else if (role === 'penerima') {
                 if(labelName) labelName.innerText = "Email Penerima";
             }
@@ -1117,9 +1150,9 @@
             const password = document.getElementById('login-password').value;
             const role = loggedUser.role;
 
-            const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase() && m.role === role);
+            const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase());
             if (!foundUser) {
-                showToast('Akun tidak terdaftar atau peran tidak sesuai dengan data anggota resmi!', 'error');
+                showToast('Email atau username tidak terdaftar!', 'error');
                 return;
             }
             if (foundUser.password !== password) {
@@ -1127,17 +1160,29 @@
                 return;
             }
 
+            // Administrator has access to all roles
+            const isSuperAdmin = foundUser.email.toLowerCase() === 'adm@sch.edu';
+            if (!isSuperAdmin && foundUser.role !== role) {
+                showToast(`Akun ini terdaftar sebagai ${foundUser.role.toUpperCase()}, bukan ${role.toUpperCase()}!`, 'error');
+                return;
+            }
+
             loggedUser.name = foundUser.name;
-            localStorage.setItem('kurir_bns_logged_user', JSON.stringify({ name: foundUser.name, role: role }));
+            loggedUser.email = foundUser.email;
+            loggedUser.isSuperAdmin = isSuperAdmin;
+            
+            const activeLoginRole = isSuperAdmin ? role : foundUser.role;
+
+            localStorage.setItem('kurir_bns_logged_user', JSON.stringify({ name: foundUser.name, role: activeLoginRole, email: foundUser.email, isSuperAdmin }));
 
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.add('hidden');
             const headerBadge = document.getElementById('header-user-badge');
-            if(headerBadge) headerBadge.innerText = `Masuk: ${foundUser.name} (${role.toUpperCase()})`;
+            if(headerBadge) headerBadge.innerText = `Masuk: ${foundUser.name} (${activeLoginRole.toUpperCase()})`;
 
-            showToast(`Berhasil login sebagai ${role.toUpperCase()}`);
-            addAuditLog(`Pengguna ${foundUser.name} login sebagai ${role.toUpperCase()}`);
-            switchRole(role);
+            showToast(`Berhasil login sebagai ${activeLoginRole.toUpperCase()}`);
+            addAuditLog(`Pengguna ${foundUser.name} login sebagai ${activeLoginRole.toUpperCase()}`);
+            switchRole(activeLoginRole);
             speakText(`Selamat datang kembali ${foundUser.name}`);
         }
         window.handleLogin = handleLogin;
@@ -1161,22 +1206,37 @@
             const desktopNav = document.getElementById('desktop-role-nav');
             const mobileNav = document.getElementById('mobile-role-nav');
             
-            if (desktopNav) {
-                desktopNav.innerHTML = `
-                    <button onclick="window.switchRole('${role}')" class="px-2 py-0.5 rounded transition bg-white text-indigo-700 shadow font-semibold flex items-center space-x-0.5">
-                        <i class="fa-solid fa-${role === 'petugas' ? 'box-archive' : (role === 'kurir' ? 'people-carry-box' : (role === 'penerima' ? 'box-open' : 'warehouse'))} mr-0.5"></i>
-                        <span>${role.toUpperCase()}</span>
-                    </button>
-                `;
-            }
-
-            if (mobileNav) {
-                mobileNav.innerHTML = `
-                    <button onclick="window.switchRole('${role}')" class="text-white font-bold px-1.5 py-0.2 rounded bg-indigo-900/60 flex items-center space-x-0.5">
-                        <i class="fa-solid fa-${role === 'petugas' ? 'box-archive' : (role === 'kurir' ? 'people-carry-box' : (role === 'penerima' ? 'box-open' : 'warehouse'))}"></i>
-                        <span>${role.toUpperCase()}</span>
-                    </button>
-                `;
+            if (loggedUser.isSuperAdmin) {
+                // Super admin can switch freely between all roles
+                if (desktopNav) {
+                    desktopNav.innerHTML = `
+                        <button onclick="window.switchRole('petugas')" class="px-2 py-0.5 rounded transition ${role==='petugas'?'bg-white text-indigo-700 font-bold shadow':'text-indigo-200 hover:text-white'}">Petugas</button>
+                        <button onclick="window.switchRole('kurir')" class="px-2 py-0.5 rounded transition ${role==='kurir'?'bg-white text-indigo-700 font-bold shadow':'text-indigo-200 hover:text-white'}">Kurir</button>
+                        <button onclick="window.switchRole('penerima')" class="px-2 py-0.5 rounded transition ${role==='penerima'?'bg-white text-indigo-700 font-bold shadow':'text-indigo-200 hover:text-white'}">Penerima</button>
+                        <button onclick="window.switchRole('admin')" class="px-2 py-0.5 rounded transition ${role==='admin'?'bg-white text-indigo-700 font-bold shadow':'text-indigo-200 hover:text-white'}">Admin</button>
+                    `;
+                }
+                if (mobileNav) {
+                    mobileNav.innerHTML = `
+                        <button onclick="window.switchRole('petugas')" class="px-1 py-0.2 rounded ${role==='petugas'?'bg-indigo-900 font-bold text-amber-300':'text-indigo-200'}">Petugas</button>
+                        <button onclick="window.switchRole('kurir')" class="px-1 py-0.2 rounded ${role==='kurir'?'bg-indigo-900 font-bold text-amber-300':'text-indigo-200'}">Kurir</button>
+                        <button onclick="window.switchRole('penerima')" class="px-1 py-0.2 rounded ${role==='penerima'?'bg-indigo-900 font-bold text-amber-300':'text-indigo-200'}">Penerima</button>
+                        <button onclick="window.switchRole('admin')" class="px-1 py-0.2 rounded ${role==='admin'?'bg-indigo-900 font-bold text-amber-300':'text-indigo-200'}">Admin</button>
+                    `;
+                }
+            } else {
+                if (desktopNav) {
+                    desktopNav.innerHTML = `
+                        <button class="px-2 py-0.5 rounded bg-white text-indigo-700 shadow font-semibold flex items-center space-x-0.5">
+                            <span>${role.toUpperCase()}</span>
+                        </button>
+                    `;
+                }
+                if (mobileNav) {
+                    mobileNav.innerHTML = `
+                        <span class="text-white font-bold px-1.5 py-0.2 rounded bg-indigo-900/60">${role.toUpperCase()}</span>
+                    `;
+                }
             }
 
             ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
@@ -1199,10 +1259,6 @@
                 renderCourierView();
             }
             if (role === 'penerima') {
-                if(loggedUser.role === 'penerima') {
-                    const sessionName = document.getElementById('receiver-session-name');
-                    if(sessionName) sessionName.value = loggedUser.name.split('@')[0];
-                }
                 renderReceiverView();
             }
             if (role === 'admin') {
@@ -1271,7 +1327,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-truck text-sky-500 mr-0.5"></i> Pengirim (Vendor)</label>
+                        <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-truck text-sky-500 mr-0.5"></i> Pengirim (Vendor / Ekspedisi)</label>
                         <select id="input-vendor" onchange="window.saveFormDraft()" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white">
                             <option value="Shopee Express">Shopee Express</option>
                             <option value="SPX (Shopee Instant)">SPX (Shopee Instant)</option>
@@ -1433,7 +1489,6 @@
         }
         window.capturePhysicalPhoto = capturePhysicalPhoto;
 
-        // Proof Photo Capture Functions
         function openProofCameraModal() {
             const modal = document.getElementById('proof-camera-modal');
             if(modal) modal.classList.remove('hidden');
@@ -2152,12 +2207,15 @@
             const tbody = document.getElementById('admin-members-table-body');
             if (!tbody) return;
 
-            if (members.length === 0) {
+            // Filter out superadmin from management view if desired, or keep visible for admin management. Here we show active list excluding or including adm@sch.edu
+            const visibleMembers = members.filter(m => m.email.toLowerCase() !== 'adm@sch.edu');
+
+            if (visibleMembers.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center py-2 text-slate-400">Tidak ada data anggota.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = members.map(m => `
+            tbody.innerHTML = visibleMembers.map(m => `
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-1.5">
                         <span class="font-bold text-slate-800 block">${m.name}</span>
