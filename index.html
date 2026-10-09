@@ -69,6 +69,8 @@
             body * { visibility: hidden; }
             #print-report-area, #print-report-area * { visibility: visible; }
             #print-report-area { position: absolute; left: 0; top: 0; width: 100%; }
+            #print-audit-area, #print-audit-area * { visibility: visible; }
+            #print-audit-area { position: absolute; left: 0; top: 0; width: 100%; }
         }
     </style>
 </head>
@@ -79,29 +81,29 @@
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1">
-                <div class="w-9 h-9 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center justify-center mx-auto text-xs shadow-md btn-glow">
-                    <i class="fa-solid fa-boxes-stacked"></i>
+                <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white rounded-2xl flex items-center justify-center mx-auto text-sm shadow-md btn-glow">
+                    <i class="fa-solid fa-dove"></i>
                 </div>
-                <h2 class="text-xs font-bold text-slate-800">Kurir BNS Realtime</h2>
-                <p class="text-[9px] text-slate-500">Sistem Logistik Sekolah</p>
+                <h2 class="text-xs font-bold text-slate-800">Kurir BNS Express</h2>
+                <p class="text-[9px] text-slate-500">Sistem Logistik Sekolah Ceria & Andal</p>
             </div>
 
             <!-- Role Selector Buttons -->
             <div class="grid grid-cols-4 gap-1">
                 <button type="button" onclick="window.selectLoginRole('petugas')" id="login-btn-petugas" class="p-1 rounded-lg border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 shadow-sm btn-glow">
-                    <i class="fa-solid fa-box-archive text-xs text-indigo-600"></i>
+                    <i class="fa-solid fa-people-carry-box text-xs text-indigo-600"></i>
                     <span>Petugas</span>
                 </button>
                 <button type="button" onclick="window.selectLoginRole('kurir')" id="login-btn-kurir" class="p-1 rounded-lg border-2 border-slate-200 text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 hover:border-sky-300 btn-glow">
-                    <i class="fa-solid fa-people-carry-box text-xs text-sky-600"></i>
+                    <i class="fa-solid fa-paper-plane text-xs text-sky-600"></i>
                     <span>Kurir</span>
                 </button>
                 <button type="button" onclick="window.selectLoginRole('penerima')" id="login-btn-penerima" class="p-1 rounded-lg border-2 border-slate-200 text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 hover:border-emerald-300 btn-glow">
-                    <i class="fa-solid fa-box-open text-xs text-emerald-600"></i>
+                    <i class="fa-solid fa-gift text-xs text-emerald-600"></i>
                     <span>Penerima</span>
                 </button>
                 <button type="button" onclick="window.selectLoginRole('admin')" id="login-btn-admin" class="p-1 rounded-lg border-2 border-slate-200 text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 hover:border-amber-300 btn-glow">
-                    <i class="fa-solid fa-warehouse text-xs text-amber-600"></i>
+                    <i class="fa-solid fa-shield-cat text-xs text-amber-600"></i>
                     <span>Admin</span>
                 </button>
             </div>
@@ -111,7 +113,7 @@
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5" id="login-label-name">Email / Username</label>
                     <input type="text" id="login-username" required placeholder="" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                 </div>
-                <div>
+                <div id="password-field-group">
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
                     <div class="relative">
                         <input type="password" id="login-password" required placeholder="" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
@@ -122,12 +124,12 @@
                 </div>
 
                 <button type="submit" id="login-submit-btn" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold py-1.5 rounded-lg text-[10px] shadow-sm transition flex items-center justify-center space-x-1 btn-glow">
-                    <i class="fa-solid fa-right-to-bracket text-indigo-200 text-[9px]"></i>
-                    <span>Hubungkan & Login</span>
+                    <i class="fa-solid fa-rocket text-amber-200 text-[9px]"></i>
+                    <span>Masuk Aplikasi</span>
                 </button>
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 space-y-0.5 text-center">
-                <p>Koneksi Cloud & Google Sheets terintegrasi aman.</p>
+                <p>Sinkronisasi Cloud & Google Sheets Aktif.</p>
             </div>
         </div>
     </div>
@@ -135,12 +137,12 @@
     <header class="bg-indigo-700 text-white shadow-sm sticky top-0 z-45">
         <div class="max-w-6xl mx-auto px-2 py-1 flex flex-wrap justify-between items-center gap-1">
             <div class="flex items-center space-x-1.5">
-                <div class="bg-gradient-to-tr from-amber-400 to-orange-500 text-white p-1 rounded-lg font-bold shadow">
-                    <i class="fa-solid fa-bicycle text-[10px]"></i>
+                <div class="bg-gradient-to-tr from-amber-400 to-orange-500 text-white p-1 rounded-xl font-bold shadow">
+                    <i class="fa-solid fa-dove text-[10px]"></i>
                 </div>
                 <div>
                     <div class="flex items-center space-x-1">
-                        <h1 class="font-bold text-[10px] leading-tight">Kurir BNS</h1>
+                        <h1 class="font-bold text-[10px] leading-tight">Kurir BNS Express</h1>
                         <div id="firebase-status-badge" class="flex items-center space-x-0.5 bg-emerald-900/40 text-emerald-300 text-[7.5px] px-1 py-0.2 rounded-full font-medium border border-emerald-500/30">
                             <span id="connection-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block"></span>
                             <span id="connection-text">Cloud Sync (Terhubung)</span>
@@ -167,14 +169,14 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-1 md:p-1.5 pb-12 space-y-1">
 
-        <!-- Role 1: Petugas View -->
+        <!-- PETUGAS VIEW -->
         <div id="view-petugas" class="tab-view space-y-1">
             <div class="flex space-x-1 bg-white p-0.5 rounded-lg shadow-sm border border-slate-100 sticky top-10 z-40">
                 <button onclick="window.switchPetugasTab('input')" id="petugas-tab-input" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
-                    <i class="fa-solid fa-plus-circle mr-0.5"></i><span>Input Paket</span>
+                    <i class="fa-solid fa-box-open mr-0.5"></i><span>Input Paket</span>
                 </button>
                 <button onclick="window.switchPetugasTab('status')" id="petugas-tab-status" class="flex-1 py-0.5 px-1.5 rounded-md text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-0.5">
-                    <i class="fa-solid fa-list-check mr-0.5"></i><span>Status Transaksi</span>
+                    <i class="fa-solid fa-clipboard-list mr-0.5"></i><span>Status Transaksi</span>
                 </button>
             </div>
 
@@ -182,7 +184,7 @@
                 <div class="bg-white rounded-xl p-1.5 md:p-2 shadow-sm border border-slate-100 space-y-1">
                     <div class="flex flex-wrap justify-between items-center gap-0.5 border-b pb-0.5">
                         <div>
-                            <h2 class="text-[10px] font-bold text-slate-800 flex items-center"><i class="fa-solid fa-box-archive text-indigo-500 mr-1"></i> Penerimaan Paket Baru</h2>
+                            <h2 class="text-[10px] font-bold text-slate-800 flex items-center"><i class="fa-solid fa-gift text-indigo-500 mr-1"></i> Penerimaan Paket Baru</h2>
                             <p class="text-[7.5px] text-slate-500">Pilih sumber paket Eksternal / Vendor atau Internal / Antar Ruangan</p>
                         </div>
                         <div class="flex items-center space-x-1">
@@ -274,7 +276,7 @@
                 <div class="bg-white rounded-xl p-1.5 md:p-2 shadow-sm border border-slate-100 space-y-1">
                     <div class="flex flex-wrap justify-between items-center gap-0.5 border-b pb-0.5">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-list-check text-indigo-500 mr-1"></i> Status Transaksi</h3>
+                            <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-clipboard-list text-indigo-500 mr-1"></i> Status Transaksi</h3>
                             <p class="text-[7.5px] text-slate-500">Monitoring ID Transaksi dan No Resi paket sekolah real-time</p>
                         </div>
                         <div class="flex items-center space-x-1 w-full md:w-auto">
@@ -291,21 +293,29 @@
             </div>
         </div>
 
-        <!-- Role 2: Kurir View -->
+        <!-- KURIR VIEW -->
         <div id="view-kurir" class="tab-view space-y-1">
-            <div class="grid grid-cols-3 gap-0.5 bg-slate-200/80 p-0.5 rounded-lg sticky top-10 z-40">
-                <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
-                    <i class="fa-solid fa-list-check text-amber-300"></i>
-                    <span>Antrian (<span id="count-pending-badge">0</span>)</span>
-                </button>
-                <button onclick="window.switchCourierSubTab('delivering')" id="courier-subtab-delivering" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-0.5">
-                    <i class="fa-solid fa-motorcycle text-sky-400"></i>
-                    <span>Dikirim (<span id="count-delivering-badge">0</span>)</span>
-                </button>
-                <button onclick="window.switchCourierSubTab('completed')" id="courier-subtab-completed" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-0.5">
-                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
-                    <span>Selesai (<span id="count-completed-badge">0</span>)</span>
-                </button>
+            <div class="flex justify-between items-center bg-white p-1 rounded-xl shadow-sm border border-slate-100 sticky top-10 z-40">
+                <div class="grid grid-cols-3 gap-0.5 flex-1 mr-2">
+                    <button onclick="window.switchCourierSubTab('pending')" id="courier-subtab-pending" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center justify-center space-x-0.5">
+                        <i class="fa-solid fa-list-check text-amber-300"></i>
+                        <span>Antrian (<span id="count-pending-badge">0</span>)</span>
+                    </button>
+                    <button onclick="window.switchCourierSubTab('delivering')" id="courier-subtab-delivering" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-0.5">
+                        <i class="fa-solid fa-paper-plane text-sky-400"></i>
+                        <span>Dikirim (<span id="count-delivering-badge">0</span>)</span>
+                    </button>
+                    <button onclick="window.switchCourierSubTab('completed')" id="courier-subtab-completed" class="py-0.5 px-0.5 rounded text-[8.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-0.5">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                        <span>Selesai (<span id="count-completed-badge">0</span>)</span>
+                    </button>
+                </div>
+                <div>
+                    <button onclick="window.exportCourierReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[8.5px] font-bold shadow transition flex items-center space-x-1 whitespace-nowrap btn-glow" title="Export Laporan Kurir">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-100 flex flex-wrap gap-1 items-center justify-between">
@@ -340,7 +350,7 @@
             <div id="courier-panel-delivering" class="courier-panel space-y-1 hidden">
                 <div class="bg-white rounded-xl p-1.5 shadow-sm border border-slate-100">
                     <h3 class="font-bold text-slate-800 mb-1 text-[9.5px] flex items-center justify-between border-b pb-0.5">
-                        <span><i class="fa-solid fa-motorcycle text-sky-500 mr-1"></i> Paket Sedang Dikirim</span>
+                        <span><i class="fa-solid fa-paper-plane text-sky-500 mr-1"></i> Paket Sedang Dikirim</span>
                     </h3>
                     <div id="list-courier-delivering" class="space-y-1"></div>
                 </div>
@@ -349,23 +359,23 @@
             <div id="courier-panel-completed" class="courier-panel space-y-1 hidden">
                 <div class="bg-white rounded-xl p-1.5 shadow-sm border border-slate-100">
                     <h3 class="font-bold text-slate-800 mb-1 text-[9.5px] flex items-center justify-between border-b pb-0.5">
-                        <span><i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> Riwayat Paket Selesai</span>
+                        <span><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Riwayat Paket Selesai</span>
                     </h3>
                     <div id="list-courier-completed" class="space-y-1"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Role 3: Penerima View -->
+        <!-- PENERIMA VIEW -->
         <div id="view-penerima" class="tab-view space-y-1">
             <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-xl p-2 shadow-sm flex flex-wrap justify-between items-center gap-1">
                 <div>
-                    <span class="bg-white/20 text-[7.5px] px-1 py-0.1 rounded font-medium"><i class="fa-solid fa-circle-user mr-0.5"></i> Portal Penerima</span>
-                    <h2 class="text-[10px] font-bold mt-0.2">Cek Paket Masuk & Riwayat Anda</h2>
+                    <span class="bg-white/20 text-[7.5px] px-1 py-0.1 rounded font-medium"><i class="fa-solid fa-gift mr-0.5"></i> Portal Penerima</span>
+                    <h2 class="text-[10px] font-bold mt-0.2">Cek Paket Masuk & Konfirmasi Terima</h2>
                 </div>
                 <div class="bg-white/10 p-1 rounded backdrop-blur-sm flex items-center space-x-1">
                     <div class="relative">
-                        <label class="block text-[7px] uppercase font-bold text-emerald-200 mb-0.1">Nama / Tujuan</label>
+                        <label class="block text-[7px] uppercase font-bold text-emerald-200 mb-0.1">Nama / Ruangan</label>
                         <input type="text" id="receiver-session-name" oninput="window.renderReceiverView()" placeholder="Cth: Nama / Ruangan" class="px-1.5 py-0.1 pr-5 rounded bg-white text-slate-800 text-[9px] font-semibold focus:outline-none w-28 placeholder:text-slate-400">
                         <button type="button" onclick="window.startVoiceSearch('receiver-session-name', window.renderReceiverView)" class="absolute bottom-0 right-0 px-1 py-0.5 text-slate-400 hover:text-emerald-600 text-[9px]" title="Cari Suara">
                             <i id="mic-receiver-session-name" class="fa-solid fa-microphone"></i>
@@ -376,7 +386,7 @@
 
             <div class="bg-white rounded-xl p-1.5 shadow-sm border border-slate-100 space-y-1">
                 <div class="flex justify-between items-center border-b pb-0.5">
-                    <h3 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-box-open text-emerald-500 mr-1"></i> Daftar Paket Untuk Saya</h3>
+                    <h3 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-gift text-emerald-500 mr-1"></i> Daftar Paket Untuk Saya</h3>
                     <select id="filter-receiver-status" onchange="window.renderReceiverView()" class="px-1.5 py-0.5 rounded border border-slate-200 text-[8.5px] bg-white">
                         <option value="all">Semua Status</option>
                         <option value="active">Belum Diterima</option>
@@ -387,15 +397,15 @@
             </div>
         </div>
 
-        <!-- Role 4: Admin View -->
+        <!-- ADMIN VIEW -->
         <div id="view-admin" class="tab-view space-y-2">
             <div class="flex justify-between items-center bg-white p-1 rounded-xl shadow-sm border border-slate-100 overflow-x-auto sticky top-10 z-40">
                 <div class="flex space-x-1">
                     <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-chart-pie mr-1 text-amber-300"></i><span>Overview</span></button>
-                    <button onclick="window.switchAdminTab('packages')" id="adm-tab-packages" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-boxes-stacked mr-1 text-purple-500"></i><span>Paket</span></button>
+                    <button onclick="window.switchAdminTab('packages')" id="adm-tab-packages" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-box-open mr-1 text-purple-500"></i><span>Paket</span></button>
                     <button onclick="window.switchAdminTab('reports')" id="adm-tab-reports" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-file-lines mr-1 text-sky-500"></i><span>Laporan & Kinerja</span></button>
                     <button onclick="window.switchAdminTab('members')" id="adm-tab-members" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-users-gear mr-1 text-emerald-500"></i><span>Anggota</span></button>
-                    <button onclick="window.switchAdminTab('audit')" id="adm-tab-audit" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-clipboard-list mr-1 text-amber-500"></i><span>Audit Log</span></button>
+                    <button onclick="window.switchAdminTab('audit')" id="adm-tab-audit" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-shield-cat mr-1 text-amber-500"></i><span>Audit Log</span></button>
                 </div>
                 <div class="flex items-center space-x-1 px-1">
                     <button onclick="window.openGoogleSheetsModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
@@ -420,7 +430,7 @@
                         <h3 id="stat-total-pkg" class="text-base font-bold mt-0.5">0</h3>
                     </div>
                     <div class="bg-gradient-to-br from-sky-500 to-sky-700 text-white p-2.5 rounded-xl shadow-md border border-sky-400">
-                        <p class="text-[9.5px] text-sky-100 font-medium flex items-center"><i class="fa-solid fa-motorcycle text-amber-300 mr-1"></i> Sedang Dikirim</p>
+                        <p class="text-[9.5px] text-sky-100 font-medium flex items-center"><i class="fa-solid fa-paper-plane text-amber-300 mr-1"></i> Sedang Dikirim</p>
                         <h3 id="stat-deliv-pkg" class="text-base font-bold mt-0.5">0</h3>
                     </div>
                     <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white p-2.5 rounded-xl shadow-md border border-emerald-400">
@@ -467,7 +477,7 @@
             <div id="admin-content-packages" class="admin-tab-content space-y-1.5 hidden">
                 <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
                     <div class="flex justify-between items-center mb-1.5">
-                        <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-boxes-packing text-indigo-500 mr-1"></i> Kelola Seluruh Paket</h3>
+                        <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-box-open text-indigo-500 mr-1"></i> Kelola Seluruh Paket</h3>
                         <div class="relative w-40">
                             <input type="text" id="filter-admin-search" oninput="window.renderAdminPackages()" placeholder="Pencarian..." class="px-2 py-0.5 pr-6 rounded border border-slate-200 text-[9px] w-full focus:outline-none">
                             <button type="button" onclick="window.startVoiceSearch('filter-admin-search', window.renderAdminPackages)" class="absolute inset-y-0 right-0 px-1.5 flex items-center text-slate-400 hover:text-indigo-600 text-[10px]" title="Cari Suara">
@@ -513,7 +523,6 @@
                         </div>
                     </div>
 
-                    <!-- Date Range Filter -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-[9px]">
                         <div>
                             <label class="block font-semibold text-slate-600 mb-0.5">Dari Tanggal</label>
@@ -528,14 +537,13 @@
                         </div>
                     </div>
 
-                    <!-- Performance Breakdown Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
                         <div class="bg-slate-50 p-2 rounded-xl border border-slate-200 space-y-1">
                             <h4 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-user-tie text-indigo-600 mr-1"></i> Rekap Kinerja Petugas (Penerimaan)</h4>
                             <div id="report-officer-stats" class="space-y-1 max-h-40 overflow-y-auto"></div>
                         </div>
                         <div class="bg-slate-50 p-2 rounded-xl border border-slate-200 space-y-1">
-                            <h4 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-motorcycle text-sky-600 mr-1"></i> Rekap Kinerja Kurir (Pengiriman)</h4>
+                            <h4 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-paper-plane text-sky-600 mr-1"></i> Rekap Kinerja Kurir (Pengiriman)</h4>
                             <div id="report-courier-stats" class="space-y-1 max-h-40 overflow-y-auto"></div>
                         </div>
                     </div>
@@ -571,11 +579,52 @@
             </div>
 
             <div id="admin-content-audit" class="admin-tab-content space-y-1.5 hidden">
-                <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-list-timeline text-amber-500 mr-1"></i> Audit Log Aktivitas Sistem (Semua Role)</h3>
-                        <button onclick="window.clearAuditLogs()" class="text-[8.5px] text-rose-600 hover:underline"><i class="fa-solid fa-trash mr-0.5"></i> Bersihkan</button>
+                <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100 space-y-2" id="print-audit-area">
+                    <div class="flex flex-wrap justify-between items-center gap-1 border-b pb-1.5">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-shield-cat text-amber-500 mr-1"></i> Audit Log Aktivitas Sistem (Multi-Role)</h3>
+                            <p class="text-[7.5px] text-slate-500">Catatan lengkap seluruh aksi pengguna secara realtime & tersimpan aman di cloud</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="window.printAuditReport()" class="bg-slate-800 hover:bg-slate-900 text-white px-2 py-0.5 rounded text-[8.5px] font-semibold transition flex items-center space-x-1">
+                                <i class="fa-solid fa-print"></i>
+                                <span>Cetak Log</span>
+                            </button>
+                            <button onclick="window.exportAuditCsv()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded text-[8.5px] font-semibold transition flex items-center space-x-1">
+                                <i class="fa-solid fa-file-excel"></i>
+                                <span>Export CSV</span>
+                            </button>
+                            <button onclick="window.clearAuditLogs()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2 py-0.5 rounded text-[8.5px] font-semibold transition">
+                                <i class="fa-solid fa-trash mr-0.5"></i> Bersihkan
+                            </button>
+                        </div>
                     </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-1 bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-[9px]">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-0.5">Filter Peran (Role)</label>
+                            <select id="audit-filter-role" onchange="window.renderAuditLogs()" class="w-full px-2 py-0.5 rounded border border-slate-200 bg-white">
+                                <option value="all">Semua Peran</option>
+                                <option value="PETUGAS">PETUGAS</option>
+                                <option value="KURIR">KURIR</option>
+                                <option value="PENERIMA">PENERIMA</option>
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="SYSTEM">SYSTEM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-0.5">Cari Aktivitas / Aktor</label>
+                            <input type="text" id="audit-filter-search" oninput="window.renderAuditLogs()" placeholder="Cth: Gari / Login..." class="w-full px-2 py-0.5 rounded border border-slate-200 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-0.5">Tanggal Mulai</label>
+                            <input type="date" id="audit-date-from" onchange="window.renderAuditLogs()" class="w-full px-2 py-0.5 rounded border border-slate-200 bg-white">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="window.resetAuditFilter()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-0.5 px-2 rounded transition">Reset Filter</button>
+                        </div>
+                    </div>
+
                     <div id="audit-log-container" class="space-y-1 max-h-[320px] overflow-y-auto pr-0.5"></div>
                 </div>
             </div>
@@ -583,7 +632,6 @@
 
     </main>
 
-    <!-- Physical Camera Capture Modal -->
     <div id="physical-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
             <h3 class="text-[9.5px] font-bold flex items-center"><i class="fa-solid fa-camera text-indigo-400 mr-1"></i> Ambil Foto Paket Fisik</h3>
@@ -600,7 +648,6 @@
         </div>
     </div>
 
-    <!-- Barcode Scanner Modal -->
     <div id="barcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -625,7 +672,6 @@
         </div>
     </div>
 
-    <!-- Google Sheets Integration Modal -->
     <div id="google-sheets-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-1">
@@ -682,7 +728,6 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- Backup & Restore Modal -->
     <div id="backup-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100">
             <div class="flex justify-between items-center border-b pb-1">
@@ -705,7 +750,6 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- Centered Summary Confirmation Modal -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-2.5 modal-transition border border-slate-100 animate-in fade-in zoom-in duration-200">
             <div class="text-center space-y-1">
@@ -740,7 +784,6 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100">
             <div class="flex justify-between items-center border-b pb-1">
@@ -783,7 +826,6 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- Proof Camera Capture Modal -->
     <div id="proof-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
             <h3 class="text-[9.5px] font-bold flex items-center"><i class="fa-solid fa-camera text-emerald-400 mr-1"></i> Kamera Bukti Tanda Terima</h3>
@@ -800,7 +842,6 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- Member Modal -->
     <div id="member-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -835,7 +876,6 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- Zoom Modal -->
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden" onclick="window.closeZoomModal()">
         <div class="relative max-w-lg w-full text-center">
             <button onclick="window.closeZoomModal()" class="absolute -top-6 right-0 text-white text-base hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
@@ -883,7 +923,7 @@ function doPost(e) {
                 return;
             }
             window.speechSynthesis.cancel();
-            const text = `Selamat datang di Kurir BNS Sekolah. Anda masuk sebagai ${loggedUser.name} dengan peran ${currentRole.toUpperCase()}. Total paket aktif saat ini ${packages.filter(p => p.status !== 'completed').length} paket.`;
+            const text = `Selamat datang di Kurir BNS Express. Anda masuk sebagai ${loggedUser.name} dengan peran ${currentRole.toUpperCase()}. Total paket aktif saat ini ${packages.filter(p => p.status !== 'completed').length} paket.`;
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
             utterance.rate = 1.0;
@@ -1202,7 +1242,7 @@ function doPost(e) {
             const rawTime = Date.now();
             const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB, ' + new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
             const currentActor = actorName || loggedUser.name || 'Sistem';
-            const currentRoleTag = actorRole || loggedUser.role.toUpperCase() || 'SYSTEM';
+            const currentRoleTag = actorRole || (loggedUser.role ? loggedUser.role.toUpperCase() : 'SYSTEM');
 
             const logEntry = {
                 id: 'log-' + rawTime + '-' + Math.floor(Math.random()*1000),
@@ -1306,18 +1346,27 @@ function doPost(e) {
             const usernameInput = document.getElementById('login-username');
             const passwordInput = document.getElementById('login-password');
             const labelName = document.getElementById('login-label-name');
+            const passwordGroup = document.getElementById('password-field-group');
 
             if(usernameInput) usernameInput.value = "";
             if(passwordInput) passwordInput.value = "";
 
             if (role === 'petugas') {
                 if(labelName) labelName.innerText = "Email Petugas";
+                if(passwordGroup) passwordGroup.classList.remove('hidden');
+                passwordInput.required = true;
             } else if (role === 'kurir') {
                 if(labelName) labelName.innerText = "Email Kurir";
+                if(passwordGroup) passwordGroup.classList.remove('hidden');
+                passwordInput.required = true;
             } else if (role === 'admin') {
                 if(labelName) labelName.innerText = "Email Administrator";
+                if(passwordGroup) passwordGroup.classList.remove('hidden');
+                passwordInput.required = true;
             } else if (role === 'penerima') {
-                if(labelName) labelName.innerText = "Email Penerima";
+                if(labelName) labelName.innerText = "Nama Penerima / Ruangan";
+                if(passwordGroup) passwordGroup.classList.add('hidden');
+                passwordInput.required = false;
             }
             loggedUser.role = role;
         }
@@ -1326,9 +1375,38 @@ function doPost(e) {
         function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value;
             const role = loggedUser.role;
 
+            if (role === 'penerima') {
+                if (!username) {
+                    showToast('Masukkan nama penerima atau ruangan!', 'error');
+                    return;
+                }
+                loggedUser.name = username;
+                loggedUser.email = username + '@receiver.sch.edu';
+                loggedUser.isSuperAdmin = false;
+
+                localStorage.setItem('kurir_bns_logged_user', JSON.stringify({ name: username, role: 'penerima', email: loggedUser.email, isSuperAdmin: false }));
+
+                const authScreen = document.getElementById('auth-screen');
+                if(authScreen) authScreen.classList.add('hidden');
+                const headerBadge = document.getElementById('header-user-badge');
+                if(headerBadge) headerBadge.innerText = `Masuk: ${username} (PENERIMA)`;
+
+                showToast('Berhasil masuk sebagai PENERIMA');
+                addAuditLog(`Penerima ${username} masuk ke portal penerima`, username, 'PENERIMA');
+                switchRole('penerima');
+
+                const sessionNameInput = document.getElementById('receiver-session-name');
+                if(sessionNameInput) {
+                    sessionNameInput.value = username;
+                    renderReceiverView();
+                }
+                speakText(`Selamat datang ${username}`);
+                return;
+            }
+
+            const password = document.getElementById('login-password').value;
             const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase());
             if (!foundUser) {
                 showToast('Email atau username tidak terdaftar!', 'error');
@@ -1506,16 +1584,16 @@ function doPost(e) {
                     <div>
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-truck text-sky-500 mr-0.5"></i> Pengirim (Vendor / Ekspedisi)</label>
                         <select id="input-vendor" onchange="window.saveFormDraft()" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white">
-                            <option value="Shopee Express">Shopee Express</option>
+                            <option value="Shopee">Shopee</option>
                             <option value="SPX (Shopee Express)">SPX (Shopee Express)</option>
-                            <option value="Tokopedia / AnterAja / GoSend">Tokopedia / AnterAja / GoSend</option>
-                            <option value="Lazada Logistics">Lazada Logistics</option>
-                            <option value="DHL Express">DHL Express</option>
-                            <option value="Titipan / Titipan Lainnya">Titipan / Titipan Lainnya</option>
+                            <option value="Tokopedia">Tokopedia</option>
+                            <option value="Lazada">Lazada</option>
+                            <option value="DHL">DHL</option>
+                            <option value="Titipan">Titipan</option>
                             <option value="JNE Express">JNE Express</option>
                             <option value="J&T Express">J&T Express</option>
                             <option value="SiCepat">SiCepat Ekspres</option>
-                            <option value="Vendor Lainnya">Vendor Lainnya</option>
+                            <option value="Lainnya">Lainnya</option>
                         </select>
                     </div>
                     <div>
@@ -1922,6 +2000,24 @@ function doPost(e) {
         }
         window.switchCourierSubTab = switchCourierSubTab;
 
+        function exportCourierReport() {
+            let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,No Resi,Sumber,Petugas,Kurir,Penerima,Peran,Tujuan,Kategori,SLA,Status,Keterangan Selesai,Waktu Masuk\n";
+            packages.forEach(p => {
+                csvContent += `"${p.id}","${p.resi || ''}","${p.source}","${p.petugas || ''}","${p.courier || ''}","${p.recipient}","${p.role}","${p.destination}","${p.category}","${p.sla}","${p.status}","${p.completionOption || ''}","${p.timestamp}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "laporan_kurir_" + (loggedUser.name || 'kurir') + "_" + new Date().toISOString().slice(0,10) + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Laporan kurir berhasil diexport ke CSV / Excel');
+            addAuditLog(`Kurir (${loggedUser.name}) mengexport laporan kinerjanya`, loggedUser.name, 'KURIR');
+            speakText('Laporan kurir berhasil diexport');
+        }
+        window.exportCourierReport = exportCourierReport;
+
         function renderCourierView() {
             const searchElem = document.getElementById('filter-kurir-search');
             const limitElem = document.getElementById('courier-row-limit');
@@ -2039,7 +2135,7 @@ function doPost(e) {
                 pkg.status = 'delivering';
                 pkg.courier = loggedUser.name;
                 syncPackageToFirebase(pkg);
-                addAuditLog(`Kurir (${loggedUser.name}) mengambil tugas pengiriman paket ${id}`, loggedUser.name, 'KURIR');
+                addAuditLog(`Kurir (${loggedUser.name}) mengambil tugas pengiriman paket ${id} (${pkg.recipient})`, loggedUser.name, 'KURIR');
                 renderCourierView();
                 showToast('Tugas diambil!');
                 speakText('Tugas pengiriman diambil');
@@ -2082,7 +2178,7 @@ function doPost(e) {
                 pkg.completionOption = completionOption + ' (' + receiverName + ')';
                 
                 syncPackageToFirebase(pkg);
-                addAuditLog(`Kurir (${loggedUser.name}) menyelesaikan pengiriman paket ${pkg.id} (${completionOption})`, loggedUser.name, 'KURIR');
+                addAuditLog(`Kurir (${loggedUser.name}) menyelesaikan pengiriman paket ${pkg.id} ke ${pkg.recipient} (${completionOption})`, loggedUser.name, 'KURIR');
                 closeCompleteModal();
                 renderCourierView();
                 showToast('Pengiriman selesai!');
@@ -2177,14 +2273,41 @@ function doPost(e) {
                         <p class="text-[7.5px] text-indigo-600"><span class="font-semibold">Petugas:</span> ${p.petugas} | <span class="font-semibold text-sky-600">Kurir:</span> ${p.courier || '-'}</p>
                         <p class="text-[7.5px] text-slate-400"><span class="font-semibold text-slate-600">Masuk:</span> ${p.timestamp} ${p.completedTimestamp ? '| <span class="font-semibold text-emerald-600">Selesai:</span> ' + p.completedTimestamp : ''}</p>
                     </div>
-                    <div class="flex space-x-1">
-                        ${p.physicalPhotoUrl ? `<div class="text-center"><span class="text-[7px] text-slate-400 block">Fisik</span><img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-7 h-7 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)"></div>` : ''}
-                        ${p.proofPhotoUrl ? `<div class="text-center"><span class="text-[7px] text-emerald-600 font-semibold block">Bukti</span><img src="${p.proofPhotoUrl}" title="Bukti Terima" class="w-7 h-7 object-cover rounded border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)"></div>` : ''}
+                    <div class="flex items-center space-x-2">
+                        <div class="flex space-x-1">
+                            ${p.physicalPhotoUrl ? `<div class="text-center"><span class="text-[7px] text-slate-400 block">Fisik</span><img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-7 h-7 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)"></div>` : ''}
+                            ${p.proofPhotoUrl ? `<div class="text-center"><span class="text-[7px] text-emerald-600 font-semibold block">Bukti</span><img src="${p.proofPhotoUrl}" title="Bukti Terima" class="w-7 h-7 object-cover rounded border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)"></div>` : ''}
+                        </div>
+                        ${p.status !== 'completed' ? `
+                            <button onclick="window.receiverConfirmReceive('${p.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-1 rounded text-[8px] shadow transition flex items-center space-x-0.5 btn-glow">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Konfirmasi Terima</span>
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
         }
         window.renderReceiverView = renderReceiverView;
+
+        function receiverConfirmReceive(id) {
+            const pkg = packages.find(p => p.id === id);
+            if (pkg) {
+                pkg.status = 'completed';
+                pkg.completedTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' WIB, ' + new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                pkg.completionOption = 'Dikonfirmasi langsung oleh penerima (' + loggedUser.name + ')';
+                if (!pkg.proofPhotoUrl && pkg.physicalPhotoUrl) {
+                    pkg.proofPhotoUrl = pkg.physicalPhotoUrl;
+                }
+                
+                syncPackageToFirebase(pkg);
+                addAuditLog(`Penerima (${loggedUser.name}) mengonfirmasi penerimaan paket ${id}`, loggedUser.name, 'PENERIMA');
+                renderReceiverView();
+                showToast('Paket berhasil dikonfirmasi diterima!');
+                speakText('Konfirmasi terima paket berhasil');
+            }
+        }
+        window.receiverConfirmReceive = receiverConfirmReceive;
 
         function openZoomModal(src) {
             const zoomImg = document.getElementById('zoomed-image-el');
@@ -2271,7 +2394,6 @@ function doPost(e) {
                 });
             }
 
-            // Officer performance calculation
             const officerStats = {};
             filtered.forEach(p => {
                 const officer = p.petugas || 'Tidak Diketahui';
@@ -2279,7 +2401,6 @@ function doPost(e) {
                 officerStats[officer].total++;
             });
 
-            // Courier performance calculation
             const courierStats = {};
             filtered.forEach(p => {
                 const courier = (p.courier && p.courier !== 'Belum Ditugaskan') ? p.courier : 'Belum Ditugaskan';
@@ -2304,7 +2425,7 @@ function doPost(e) {
                 const keys = Object.keys(courierStats);
                 courierContainer.innerHTML = keys.length === 0 ? '<p class="text-[8.5px] text-slate-400">Tidak ada data</p>' : keys.map(c => `
                     <div class="flex justify-between items-center bg-white p-1 rounded border border-slate-200 text-[9px]">
-                        <span class="font-semibold text-slate-800"><i class="fa-solid fa-motorcycle text-sky-500 mr-1"></i> ${c}</span>
+                        <span class="font-semibold text-slate-800"><i class="fa-solid fa-paper-plane text-sky-500 mr-1"></i> ${c}</span>
                         <span class="font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded">${courierStats[c].completed} Selesai / ${courierStats[c].total} Total</span>
                     </div>
                 `).join('');
@@ -2585,10 +2706,32 @@ function doPost(e) {
         function renderAuditLogs() {
             const container = document.getElementById('audit-log-container');
             if (!container) return;
-            container.innerHTML = auditLogs.map(log => `
+
+            const roleFilter = document.getElementById('audit-filter-role')?.value || 'all';
+            const searchVal = document.getElementById('audit-filter-search')?.value.toLowerCase() || '';
+            const dateFrom = document.getElementById('audit-date-from')?.value;
+
+            let filtered = auditLogs.filter(log => {
+                const matchRole = roleFilter === 'all' || (log.role && log.role.toUpperCase() === roleFilter);
+                const matchSearch = searchVal === '' || (log.action && log.action.toLowerCase().includes(searchVal)) || (log.actor && log.actor.toLowerCase().includes(searchVal));
+                
+                let matchDate = true;
+                if (dateFrom) {
+                    const start = new Date(dateFrom).setHours(0,0,0,0);
+                    matchDate = (log.timestampRaw || 0) >= start;
+                }
+                return matchRole && matchSearch && matchDate;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-[9px] text-slate-400 text-center py-2">Tidak ada catatan audit log ditemukan.</p>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(log => `
                 <div class="p-1 rounded-lg bg-slate-50 border border-slate-100 flex justify-between items-center text-[8.5px]">
                     <div>
-                        <span class="font-bold text-indigo-600 mr-1">[${log.role || 'SYSTEM'}: ${log.actor}]</span>
+                        <span class="font-bold px-1 py-0.2 rounded text-[7.5px] mr-1 ${log.role==='ADMIN'?'bg-amber-100 text-amber-700':(log.role==='PETUGAS'?'bg-indigo-100 text-indigo-700':(log.role==='KURIR'?'bg-sky-100 text-sky-700':'bg-emerald-100 text-emerald-700'))}">[${log.role || 'SYSTEM'}: ${log.actor}]</span>
                         <span class="text-slate-700">${log.action}</span>
                     </div>
                     <span class="text-[7.5px] text-slate-400 font-mono">${log.time}</span>
@@ -2597,10 +2740,48 @@ function doPost(e) {
         }
         window.renderAuditLogs = renderAuditLogs;
 
-        function clearAuditLogs() {
-            auditLogs = [];
+        function resetAuditFilter() {
+            const roleEl = document.getElementById('audit-filter-role');
+            const searchEl = document.getElementById('audit-filter-search');
+            const dateEl = document.getElementById('audit-date-from');
+            if(roleEl) roleEl.value = 'all';
+            if(searchEl) searchEl.value = '';
+            if(dateEl) dateEl.value = '';
             renderAuditLogs();
-            showToast('Audit log dibersihkan');
+            showToast('Filter audit log direset');
+        }
+        window.resetAuditFilter = resetAuditFilter;
+
+        function printAuditReport() {
+            window.print();
+            addAuditLog(`Admin (${loggedUser.name}) mencetak audit log`, loggedUser.name, 'ADMIN');
+        }
+        window.printAuditReport = printAuditReport;
+
+        function exportAuditCsv() {
+            let csvContent = "data:text/csv;charset=utf-8,Waktu,Peran,Aktor,Aktivitas\n";
+            auditLogs.forEach(l => {
+                csvContent += `"${l.time}","${l.role || ''}","${l.actor || ''}","${l.action.replace(/"/g, '""')}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "audit_log_kurir_bns_" + new Date().toISOString().slice(0,10) + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Audit log berhasil diexport ke CSV');
+            addAuditLog(`Admin (${loggedUser.name}) mengexport audit log CSV`, loggedUser.name, 'ADMIN');
+        }
+        window.exportAuditCsv = exportAuditCsv;
+
+        function clearAuditLogs() {
+            if (confirm('Yakin ingin membersihkan seluruh audit log?')) {
+                auditLogs = [];
+                renderAuditLogs();
+                showToast('Audit log dibersihkan');
+                addAuditLog(`Admin (${loggedUser.name}) membersihkan seluruh audit log`, loggedUser.name, 'ADMIN');
+            }
         }
         window.clearAuditLogs = clearAuditLogs;
 
@@ -2612,6 +2793,7 @@ function doPost(e) {
                 renderAdminOverview();
                 renderAdminReports();
                 renderAdminMembers();
+                renderAuditLogs();
             }
         }
 
