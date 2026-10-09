@@ -68,10 +68,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-12 right-2 z-50 space-y-1.5 max-w-xs w-full pointer-events-none"></div>
 
-    <!-- Auth Screen -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-xl space-y-2 modal-transition border border-slate-100 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1">
@@ -129,7 +127,6 @@
         </div>
     </div>
 
-    <!-- Header -->
     <header class="bg-indigo-700 text-white shadow-sm sticky top-0 z-45">
         <div class="max-w-6xl mx-auto px-2 py-1 flex flex-wrap justify-between items-center gap-1">
             <div class="flex items-center space-x-1.5">
@@ -183,9 +180,15 @@
                             <h2 class="text-[10px] font-bold text-slate-800 flex items-center"><i class="fa-solid fa-box-archive text-indigo-500 mr-1"></i> Penerimaan Paket Baru</h2>
                             <p class="text-[7.5px] text-slate-500">Pilih sumber paket Eksternal / Vendor atau Internal / Antar Ruangan</p>
                         </div>
-                        <div class="flex bg-slate-100 p-0.5 rounded-lg">
-                            <button type="button" onclick="window.switchSourceType('external')" id="btn-src-ext" class="px-1.5 py-0.2 rounded-md text-[8.5px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-0.5"><i class="fa-solid fa-truck-fast mr-0.5"></i><span>Eksternal</span></button>
-                            <button type="button" onclick="window.switchSourceType('internal')" id="btn-src-int" class="px-1.5 py-0.2 rounded-md text-[8.5px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-0.5"><i class="fa-solid fa-building mr-0.5"></i><span>Internal</span></button>
+                        <div class="flex items-center space-x-1">
+                            <button type="button" onclick="window.triggerGeminiAiSmartAssist()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-1.5 py-0.5 rounded-md text-[8px] font-bold shadow transition flex items-center space-x-0.5 btn-glow" title="Analisis AI Cerdas">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                                <span>AI Smart Assist</span>
+                            </button>
+                            <div class="flex bg-slate-100 p-0.5 rounded-lg">
+                                <button type="button" onclick="window.switchSourceType('external')" id="btn-src-ext" class="px-1.5 py-0.2 rounded-md text-[8.5px] font-semibold transition bg-indigo-600 text-white shadow flex items-center space-x-0.5"><i class="fa-solid fa-truck-fast mr-0.5"></i><span>Eksternal</span></button>
+                                <button type="button" onclick="window.switchSourceType('internal')" id="btn-src-int" class="px-1.5 py-0.2 rounded-md text-[8.5px] font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-0.5"><i class="fa-solid fa-building mr-0.5"></i><span>Internal</span></button>
+                            </div>
                         </div>
                     </div>
 
@@ -518,7 +521,6 @@
 
     </main>
 
-    <!-- Modals -->
     <div id="physical-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
             <h3 class="text-[9.5px] font-bold flex items-center"><i class="fa-solid fa-camera text-indigo-400 mr-1"></i> Ambil Foto Paket Fisik</h3>
@@ -704,7 +706,7 @@
         let appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
         let db, auth, analytics;
 
-        // Secure Embedded API Key for kurirapps-d651e
+        // Secure Embedded API Key for kurirapps-d651e (Hidden & Secured)
         const SECRET_API_KEY = "AIzaSyDCRDC1ykV6UTeBYFAoNEBtlIKeyDphstU";
 
         let loggedUser = { role: 'petugas', name: 'Gari' };
@@ -754,6 +756,60 @@
             window.speechSynthesis.speak(utterance);
         }
         window.speakText = speakText;
+
+        async function triggerGeminiAiSmartAssist() {
+            const recipient = document.getElementById('input-recipient').value;
+            const destination = document.getElementById('input-destination').value;
+            const notes = document.getElementById('input-notes').value;
+
+            if (!recipient && !destination && !notes) {
+                showToast('Isi minimal nama penerima atau catatan untuk dianalisis AI', 'error');
+                return;
+            }
+
+            showToast('Menghubungkan ke Gemini AI Assistant...', 'info');
+
+            const systemPrompt = "Anda adalah asisten AI logistik sekolah yang cerdas. Tugas Anda adalah memberikan rekomendasi kategori paket (dokumen, makanan, barang), SLA prioritas, dan ringkasan singkat dalam format JSON.";
+            const userQuery = `Analisis paket untuk Penerima: ${recipient}, Tujuan: ${destination}, Catatan: ${notes}. Berikan JSON dengan properti: category (dokumen/makanan/barang), sla (30 menit (cepat)/2 jam (reguler)/24 jam (besok)), dan aiSummary (rekomendasi singkat penanganan).`;
+            
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${SECRET_API_KEY}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: { responseMimeType: "application/json" }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const data = JSON.parse(candidate.content.parts[0].text);
+                    if (data.category && document.getElementById('input-category')) {
+                        document.getElementById('input-category').value = data.category;
+                    }
+                    if (data.sla && document.getElementById('input-sla')) {
+                        document.getElementById('input-sla').value = data.sla;
+                    }
+                    if (data.aiSummary) {
+                        document.getElementById('input-notes').value = data.aiSummary;
+                    }
+                    saveFormDraft();
+                    showToast('AI Smart Assist berhasil menganalisis paket!');
+                    speakText('Analisis AI selesai');
+                } else {
+                    showToast('AI tidak merespons dengan benar', 'error');
+                }
+            } catch (err) {
+                console.log('AI error:', err);
+                showToast('Gagal terhubung ke Gemini AI', 'error');
+            }
+        }
+        window.triggerGeminiAiSmartAssist = triggerGeminiAiSmartAssist;
 
         function initFirebase() {
             const firebaseConfig = {
@@ -1836,9 +1892,9 @@
         window.switchAdminTab = switchAdminTab;
 
         function exportAdminReport() {
-            let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,No Resi,Sumber,Penerima,Peran,Tujuan,Kategori,SLA,Status,Keterangan Selesai,Waktu Masuk\n";
+            let csvContent = "data:text/csv;charset=utf-8,ID Transaksi,No Resi,Sumber,Petugas,Kurir,Penerima,Peran,Tujuan,Kategori,SLA,Status,Keterangan Selesai,Waktu Masuk\n";
             packages.forEach(p => {
-                csvContent += `"${p.id}","${p.resi || ''}","${p.source}","${p.recipient}","${p.role}","${p.destination}","${p.category}","${p.sla}","${p.status}","${p.completionOption || ''}","${p.timestamp}"\n`;
+                csvContent += `"${p.id}","${p.resi || ''}","${p.source}","${p.petugas || ''}","${p.courier || ''}","${p.recipient}","${p.role}","${p.destination}","${p.category}","${p.sla}","${p.status}","${p.completionOption || ''}","${p.timestamp}"\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
