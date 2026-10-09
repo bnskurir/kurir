@@ -64,6 +64,12 @@
         .zoomable-img:hover {
             filter: brightness(1.05);
         }
+
+        @media print {
+            body * { visibility: hidden; }
+            #print-report-area, #print-report-area * { visibility: visible; }
+            #print-report-area { position: absolute; left: 0; top: 0; width: 100%; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
@@ -103,12 +109,12 @@
             <form onsubmit="window.handleLogin(event)" class="space-y-1.5">
                 <div>
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5" id="login-label-name">Email / Username</label>
-                    <input type="text" id="login-username" required placeholder="Masukkan email terdaftar" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
+                    <input type="text" id="login-username" required placeholder="" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                 </div>
                 <div>
                     <label class="block text-[9px] font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
                     <div class="relative">
-                        <input type="password" id="login-password" required placeholder="••••••" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
+                        <input type="password" id="login-password" required placeholder="" class="w-full px-2 py-1 pr-6 rounded-lg border border-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 bg-slate-50">
                         <button type="button" onclick="window.togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-1.5 flex items-center text-slate-400 hover:text-slate-700 text-[10px] focus:outline-none" title="Lihat / Sembunyikan">
                             <i id="password-toggle-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -387,13 +393,18 @@
                 <div class="flex space-x-1">
                     <button onclick="window.switchAdminTab('overview')" id="adm-tab-overview" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-chart-pie mr-1 text-amber-300"></i><span>Overview</span></button>
                     <button onclick="window.switchAdminTab('packages')" id="adm-tab-packages" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-boxes-stacked mr-1 text-purple-500"></i><span>Paket</span></button>
+                    <button onclick="window.switchAdminTab('reports')" id="adm-tab-reports" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-file-lines mr-1 text-sky-500"></i><span>Laporan & Kinerja</span></button>
                     <button onclick="window.switchAdminTab('members')" id="adm-tab-members" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-users-gear mr-1 text-emerald-500"></i><span>Anggota</span></button>
-                    <button onclick="window.switchAdminTab('audit')" id="adm-tab-audit" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-clipboard-list mr-1 text-sky-500"></i><span>Audit Log</span></button>
+                    <button onclick="window.switchAdminTab('audit')" id="adm-tab-audit" class="px-2.5 py-1 rounded-lg text-[9.5px] font-bold transition text-slate-600 hover:bg-slate-100 flex items-center space-x-1"><i class="fa-solid fa-clipboard-list mr-1 text-amber-500"></i><span>Audit Log</span></button>
                 </div>
                 <div class="flex items-center space-x-1 px-1">
                     <button onclick="window.openGoogleSheetsModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
                         <i class="fa-solid fa-file-excel"></i>
                         <span>Google Sheets</span>
+                    </button>
+                    <button onclick="window.openBackupModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
+                        <i class="fa-solid fa-database"></i>
+                        <span>Backup</span>
                     </button>
                     <button onclick="window.exportAdminReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg text-[9px] font-semibold shadow transition flex items-center space-x-1">
                         <i class="fa-solid fa-download"></i>
@@ -483,6 +494,54 @@
                 </div>
             </div>
 
+            <div id="admin-content-reports" class="admin-tab-content space-y-2 hidden">
+                <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100 space-y-2" id="print-report-area">
+                    <div class="flex flex-wrap justify-between items-center gap-1 border-b pb-1.5">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-file-lines text-sky-500 mr-1"></i> Laporan & Analisis Kinerja Logistik Sekolah</h3>
+                            <p class="text-[7.5px] text-slate-500">Filter berdasarkan rentang tanggal dan evaluasi performa petugas & kurir</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="window.printAdminReport()" class="bg-slate-800 hover:bg-slate-900 text-white px-2 py-1 rounded text-[9px] font-semibold transition flex items-center space-x-1">
+                                <i class="fa-solid fa-print"></i>
+                                <span>Cetak Laporan</span>
+                            </button>
+                            <button onclick="window.exportAdminReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[9px] font-semibold transition flex items-center space-x-1">
+                                <i class="fa-solid fa-file-excel"></i>
+                                <span>Export Excel (CSV)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-[9px]">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-0.5">Dari Tanggal</label>
+                            <input type="date" id="report-date-from" onchange="window.renderAdminReports()" class="w-full px-2 py-0.5 rounded border border-slate-200 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-0.5">Sampai Tanggal</label>
+                            <input type="date" id="report-date-to" onchange="window.renderAdminReports()" class="w-full px-2 py-0.5 rounded border border-slate-200 bg-white">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="window.resetReportFilter()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-0.5 px-2 rounded transition">Reset Filter</button>
+                        </div>
+                    </div>
+
+                    <!-- Performance Breakdown Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
+                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-200 space-y-1">
+                            <h4 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-user-tie text-indigo-600 mr-1"></i> Rekap Kinerja Petugas (Penerimaan)</h4>
+                            <div id="report-officer-stats" class="space-y-1 max-h-40 overflow-y-auto"></div>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-200 space-y-1">
+                            <h4 class="font-bold text-slate-800 text-[9.5px] flex items-center"><i class="fa-solid fa-motorcycle text-sky-600 mr-1"></i> Rekap Kinerja Kurir (Pengiriman)</h4>
+                            <div id="report-courier-stats" class="space-y-1 max-h-40 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="admin-content-members" class="admin-tab-content space-y-1.5 hidden">
                 <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100 space-y-2">
                     <div class="flex justify-between items-center border-b pb-1">
@@ -514,7 +573,7 @@
             <div id="admin-content-audit" class="admin-tab-content space-y-1.5 hidden">
                 <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-100">
                     <div class="flex justify-between items-center mb-1.5">
-                        <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-list-timeline text-amber-500 mr-1"></i> Audit Log Aktivitas Sistem</h3>
+                        <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-list-timeline text-amber-500 mr-1"></i> Audit Log Aktivitas Sistem (Semua Role)</h3>
                         <button onclick="window.clearAuditLogs()" class="text-[8.5px] text-rose-600 hover:underline"><i class="fa-solid fa-trash mr-0.5"></i> Bersihkan</button>
                     </div>
                     <div id="audit-log-container" class="space-y-1 max-h-[320px] overflow-y-auto pr-0.5"></div>
@@ -566,7 +625,7 @@
         </div>
     </div>
 
-    <!-- Google Sheets Integration Modal & Apps Script Webhook Instructions -->
+    <!-- Google Sheets Integration Modal -->
     <div id="google-sheets-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-1">
@@ -618,6 +677,29 @@ function doPost(e) {
                 <div class="grid grid-cols-2 gap-1 pt-1">
                     <button type="button" onclick="window.saveGoogleSheetsUrl()" class="py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-bold text-[9px] shadow transition">Simpan URL</button>
                     <button type="button" onclick="window.syncNowToGoogleSheets()" class="py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9px] shadow transition">Sync Data Sekarang</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup & Restore Modal -->
+    <div id="backup-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2 modal-transition border border-slate-100">
+            <div class="flex justify-between items-center border-b pb-1">
+                <h3 class="font-bold text-slate-800 text-xs flex items-center"><i class="fa-solid fa-database text-purple-600 mr-1.5"></i> Backup & Restore Database</h3>
+                <button onclick="window.closeBackupModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[8.5px] text-slate-500">Unduh seluruh database aplikasi (Paket, Anggota, Audit Log) sebagai file cadangan JSON, atau pulihkan dari file cadangan sebelumnya.</p>
+            
+            <div class="space-y-2 pt-1">
+                <button type="button" onclick="window.downloadDatabaseBackup()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 rounded-lg text-[9.5px] shadow transition flex items-center justify-center space-x-1">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download Backup Database (.json)</span>
+                </button>
+
+                <div class="border-t pt-1.5 space-y-1">
+                    <label class="block text-[8.5px] font-semibold text-slate-600">Restore / Pulihkan dari File Backup</label>
+                    <input type="file" id="restore-file-input" accept=".json" onchange="window.handleRestoreDatabase(event)" class="w-full text-[9px] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-semibold file:bg-purple-50 file:text-purple-700 cursor-pointer">
                 </div>
             </div>
         </div>
@@ -770,7 +852,6 @@ function doPost(e) {
         let appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
         let db, auth, analytics;
 
-        // Secure Embedded API Key for kurirapps-d651e (Hidden & Secured)
         const SECRET_API_KEY = "AIzaSyDCRDC1ykV6UTeBYFAoNEBtlIKeyDphstU";
 
         let loggedUser = { role: 'petugas', name: 'Gari' };
@@ -787,15 +868,13 @@ function doPost(e) {
 
         let packages = [];
         let members = [
-            { id: 'usr-admin', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' },
+            { id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' },
             { id: 'usr-1', name: 'Gari', email: 'gari@sch.edu', password: '123456', role: 'petugas', status: 'Aktif' },
             { id: 'usr-2', name: 'Rizky', email: 'rizky@sch.edu', password: '123456', role: 'kurir', status: 'Aktif' },
             { id: 'usr-3', name: 'Siti Rahma', email: 'siti@sch.edu', password: '123456', role: 'penerima', status: 'Aktif' },
             { id: 'usr-4', name: 'Aufah', email: 'aufah@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
         ];
-        let auditLogs = [
-            { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' WIB', actor: 'Sistem', action: 'Aplikasi Kurir BNS diinisialisasi' }
-        ];
+        let auditLogs = [];
         let charts = {};
 
         function speakAppWelcome() {
@@ -937,12 +1016,26 @@ function doPost(e) {
                     if (cloudMembers.length > 0) {
                         members = cloudMembers;
                         if (!members.some(m => m.email === 'adm@sch.edu')) {
-                            members.unshift({ id: 'usr-admin', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' });
+                            members.unshift({ id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' });
                         }
                         if (currentRole === 'admin') renderAdminMembers();
                     }
                 }, (err) => {
                     console.log('Member sync note:', err.message);
+                });
+
+                const refAudit = collection(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col');
+                onSnapshot(refAudit, (snapshot) => {
+                    const cloudLogs = [];
+                    snapshot.forEach(docSnap => {
+                        cloudLogs.push(docSnap.data());
+                    });
+                    if (cloudLogs.length > 0) {
+                        auditLogs = cloudLogs.sort((a,b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
+                        renderAuditLogs();
+                    }
+                }, (err) => {
+                    console.log('Audit sync note:', err.message);
                 });
             } catch (syncErr) {
                 console.log('Realtime sync setup note:', syncErr);
@@ -951,17 +1044,12 @@ function doPost(e) {
 
         async function syncPackageToFirebase(pkgObj) {
             syncToGoogleSheets(pkgObj);
-            if (!db) {
-                showToast('Database offline. Paket tersimpan secara lokal.', 'info');
-                return true;
-            }
+            if (!db) return true;
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id));
                 await setDoc(docRef, pkgObj, { merge: true });
                 return true;
             } catch (e) {
-                console.log('Firebase sync notice:', e);
-                showToast('Tersimpan di memori lokal (Offline mode)', 'info');
                 return true;
             }
         }
@@ -975,11 +1063,7 @@ function doPost(e) {
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(pkgObj)
-            }).then(() => {
-                console.log('Synced to Google Sheets successfully');
-            }).catch(err => {
-                console.log('Google Sheets sync error:', err);
-            });
+            }).then(() => {}).catch(err => {});
         }
 
         function openGoogleSheetsModal() {
@@ -1023,6 +1107,76 @@ function doPost(e) {
         }
         window.syncNowToGoogleSheets = syncNowToGoogleSheets;
 
+        function openBackupModal() {
+            const modal = document.getElementById('backup-modal');
+            if(modal) modal.classList.remove('hidden');
+        }
+        window.openBackupModal = openBackupModal;
+
+        function closeBackupModal() {
+            const modal = document.getElementById('backup-modal');
+            if(modal) modal.classList.add('hidden');
+        }
+        window.closeBackupModal = closeBackupModal;
+
+        function downloadDatabaseBackup() {
+            const backupData = {
+                app: 'Kurir BNS Sekolah',
+                version: '1.0',
+                exportedAt: new Date().toISOString(),
+                packages: packages,
+                members: members,
+                auditLogs: auditLogs
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "kurir_bns_backup_" + new Date().toISOString().slice(0,10) + ".json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Backup database berhasil diunduh!');
+            addAuditLog(`Admin (${loggedUser.name}) mengunduh cadangan database sistem`, loggedUser.name, 'ADMIN');
+        }
+        window.downloadDatabaseBackup = downloadDatabaseBackup;
+
+        window.handleRestoreDatabase = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                try {
+                    const parsed = JSON.parse(event.target.result);
+                    if (parsed.packages && Array.isArray(parsed.packages)) {
+                        packages = parsed.packages;
+                    }
+                    if (parsed.members && Array.isArray(parsed.members)) {
+                        members = parsed.members;
+                    }
+                    if (parsed.auditLogs && Array.isArray(parsed.auditLogs)) {
+                        auditLogs = parsed.auditLogs;
+                    }
+
+                    if (db) {
+                        for(const p of packages) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(p.id)), p, { merge: true });
+                        }
+                        for(const m of members) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(m.id)), m, { merge: true });
+                        }
+                    }
+
+                    addAuditLog(`Admin (${loggedUser.name}) memulihkan database dari file cadangan`, loggedUser.name, 'ADMIN');
+                    showToast('Database berhasil dipulihkan!');
+                    closeBackupModal();
+                    refreshActiveView();
+                } catch(err) {
+                    showToast('Format file backup tidak valid!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+
         async function deletePackageFromFirebase(id) {
             if (!db) return;
             try {
@@ -1042,6 +1196,31 @@ function doPost(e) {
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id)));
             } catch (e) {}
+        }
+
+        async function addAuditLog(actionText, actorName = null, actorRole = null) {
+            const rawTime = Date.now();
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB, ' + new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const currentActor = actorName || loggedUser.name || 'Sistem';
+            const currentRoleTag = actorRole || loggedUser.role.toUpperCase() || 'SYSTEM';
+
+            const logEntry = {
+                id: 'log-' + rawTime + '-' + Math.floor(Math.random()*1000),
+                time: timeStr,
+                timestampRaw: rawTime,
+                actor: currentActor,
+                role: currentRoleTag,
+                action: actionText
+            };
+
+            auditLogs.unshift(logEntry);
+            renderAuditLogs();
+
+            if (db) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(logEntry.id)), logEntry);
+                } catch(e) {}
+            }
         }
 
         function showToast(message, type = 'success') {
@@ -1136,7 +1315,7 @@ function doPost(e) {
             } else if (role === 'kurir') {
                 if(labelName) labelName.innerText = "Email Kurir";
             } else if (role === 'admin') {
-                if(labelName) labelName.innerText = "Email Administrator (Cth: adm@sch.edu)";
+                if(labelName) labelName.innerText = "Email Administrator";
             } else if (role === 'penerima') {
                 if(labelName) labelName.innerText = "Email Penerima";
             }
@@ -1160,7 +1339,6 @@ function doPost(e) {
                 return;
             }
 
-            // Administrator has access to all roles
             const isSuperAdmin = foundUser.email.toLowerCase() === 'adm@sch.edu';
             if (!isSuperAdmin && foundUser.role !== role) {
                 showToast(`Akun ini terdaftar sebagai ${foundUser.role.toUpperCase()}, bukan ${role.toUpperCase()}!`, 'error');
@@ -1181,13 +1359,14 @@ function doPost(e) {
             if(headerBadge) headerBadge.innerText = `Masuk: ${foundUser.name} (${activeLoginRole.toUpperCase()})`;
 
             showToast(`Berhasil login sebagai ${activeLoginRole.toUpperCase()}`);
-            addAuditLog(`Pengguna ${foundUser.name} login sebagai ${activeLoginRole.toUpperCase()}`);
+            addAuditLog(`Pengguna ${foundUser.name} login ke sistem sebagai ${activeLoginRole.toUpperCase()}`, foundUser.name, activeLoginRole.toUpperCase());
             switchRole(activeLoginRole);
             speakText(`Selamat datang kembali ${foundUser.name}`);
         }
         window.handleLogin = handleLogin;
 
         function logoutApp() {
+            addAuditLog(`Pengguna ${loggedUser.name} keluar dari sistem`, loggedUser.name, loggedUser.role.toUpperCase());
             localStorage.removeItem('kurir_bns_logged_user');
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.remove('hidden');
@@ -1195,7 +1374,6 @@ function doPost(e) {
             const passwordInput = document.getElementById('login-password');
             if(usernameInput) usernameInput.value = "";
             if(passwordInput) passwordInput.value = "";
-            addAuditLog(`Pengguna keluar dari sistem`);
             showToast('Anda telah keluar dari sistem', 'info');
         }
         window.logoutApp = logoutApp;
@@ -1207,7 +1385,6 @@ function doPost(e) {
             const mobileNav = document.getElementById('mobile-role-nav');
             
             if (loggedUser.isSuperAdmin) {
-                // Super admin can switch freely between all roles
                 if (desktopNav) {
                     desktopNav.innerHTML = `
                         <button onclick="window.switchRole('petugas')" class="px-2 py-0.5 rounded transition ${role==='petugas'?'bg-white text-indigo-700 font-bold shadow':'text-indigo-200 hover:text-white'}">Petugas</button>
@@ -1330,7 +1507,7 @@ function doPost(e) {
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-truck text-sky-500 mr-0.5"></i> Pengirim (Vendor / Ekspedisi)</label>
                         <select id="input-vendor" onchange="window.saveFormDraft()" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] bg-white">
                             <option value="Shopee Express">Shopee Express</option>
-                            <option value="SPX (Shopee Instant)">SPX (Shopee Instant)</option>
+                            <option value="SPX (Shopee Express)">SPX (Shopee Express)</option>
                             <option value="Tokopedia / AnterAja / GoSend">Tokopedia / AnterAja / GoSend</option>
                             <option value="Lazada Logistics">Lazada Logistics</option>
                             <option value="DHL Express">DHL Express</option>
@@ -1486,6 +1663,7 @@ function doPost(e) {
             saveFormDraft();
             closePhysicalCameraModal();
             showToast('Foto paket fisik berhasil dikompres');
+            addAuditLog(`Petugas (${loggedUser.name}) mengambil foto fisik paket`, loggedUser.name, 'PETUGAS');
         }
         window.capturePhysicalPhoto = capturePhysicalPhoto;
 
@@ -1536,6 +1714,7 @@ function doPost(e) {
 
             closeProofCameraModal();
             showToast('Foto bukti penerimaan berhasil diambil');
+            addAuditLog(`Kurir (${loggedUser.name}) mengambil foto bukti pengiriman`, loggedUser.name, 'KURIR');
         }
         window.captureProofPhoto = captureProofPhoto;
 
@@ -1559,15 +1738,12 @@ function doPost(e) {
                         closeBarcodeModal();
                         showToast('Barcode Sukses Discan: ' + scannedText);
                         speakText('Barcode terbaca');
+                        addAuditLog(`Petugas (${loggedUser.name}) memindai barcode resi: ${scannedText}`, loggedUser.name, 'PETUGAS');
                     }
                 }).then(controls => {
                     codeReaderControls = controls;
-                }).catch(err => {
-                    console.log('Camera decode notice:', err);
-                });
-            } catch(e) {
-                console.log('ZXing scanner notice:', e);
-            }
+                }).catch(err => {});
+            } catch(e) {}
         }
         window.openBarcodeModal = openBarcodeModal;
 
@@ -1602,6 +1778,7 @@ function doPost(e) {
                             saveFormDraft();
                             closeBarcodeModal();
                             showToast('Resi dari gambar terbaca: ' + resiVal);
+                            addAuditLog(`Petugas (${loggedUser.name}) mengunggah gambar resi: ${resiVal}`, loggedUser.name, 'PETUGAS');
                         }
                     }).catch(err => {
                         const simulatedResi = 'RES-' + Math.floor(100000 + Math.random() * 900000);
@@ -1647,7 +1824,8 @@ function doPost(e) {
                 proofPhotoUrl: null,
                 completionOption: null,
                 timestamp: nowFormatted,
-                completedTimestamp: null
+                completedTimestamp: null,
+                timestampRaw: Date.now()
             };
 
             if (sourceType === 'external') {
@@ -1700,7 +1878,7 @@ function doPost(e) {
                 if (!packages.some(p => p.id === pendingPackagePayload.id)) {
                     packages.unshift(pendingPackagePayload);
                 }
-                addAuditLog(`Petugas (${pendingPackagePayload.petugas}) Menerima paket ${sourceType.toUpperCase()} (${pendingPackagePayload.id})`);
+                addAuditLog(`Petugas (${pendingPackagePayload.petugas}) Menerima paket ${sourceType.toUpperCase()} (${pendingPackagePayload.id}) untuk ${pendingPackagePayload.recipient}`, loggedUser.name, 'PETUGAS');
                 
                 closeSummaryModal();
                 const form = document.getElementById('package-form');
@@ -1861,7 +2039,7 @@ function doPost(e) {
                 pkg.status = 'delivering';
                 pkg.courier = loggedUser.name;
                 syncPackageToFirebase(pkg);
-                addAuditLog(`Kurir (${loggedUser.name}) mengambil tugas pengiriman untuk paket ${id}`);
+                addAuditLog(`Kurir (${loggedUser.name}) mengambil tugas pengiriman paket ${id}`, loggedUser.name, 'KURIR');
                 renderCourierView();
                 showToast('Tugas diambil!');
                 speakText('Tugas pengiriman diambil');
@@ -1904,7 +2082,7 @@ function doPost(e) {
                 pkg.completionOption = completionOption + ' (' + receiverName + ')';
                 
                 syncPackageToFirebase(pkg);
-                addAuditLog(`Kurir (${loggedUser.name}) menyelesaikan pengiriman ${pkg.id} (${completionOption})`);
+                addAuditLog(`Kurir (${loggedUser.name}) menyelesaikan pengiriman paket ${pkg.id} (${completionOption})`, loggedUser.name, 'KURIR');
                 closeCompleteModal();
                 renderCourierView();
                 showToast('Pengiriman selesai!');
@@ -2023,7 +2201,7 @@ function doPost(e) {
         window.closeZoomModal = closeZoomModal;
 
         function switchAdminTab(tab) {
-            ['overview', 'packages', 'members', 'audit'].forEach(t => {
+            ['overview', 'packages', 'reports', 'members', 'audit'].forEach(t => {
                 const btn = document.getElementById(`adm-tab-${t}`);
                 const content = document.getElementById(`admin-content-${t}`);
                 if (btn && content) {
@@ -2039,6 +2217,7 @@ function doPost(e) {
 
             if (tab === 'overview') renderAdminOverview();
             if (tab === 'packages') renderAdminPackages();
+            if (tab === 'reports') renderAdminReports();
             if (tab === 'members') renderAdminMembers();
             if (tab === 'audit') renderAuditLogs();
         }
@@ -2057,9 +2236,81 @@ function doPost(e) {
             link.click();
             document.body.removeChild(link);
             showToast('Laporan berhasil diexport ke CSV / Excel');
+            addAuditLog(`Admin (${loggedUser.name}) mengexport laporan CSV`, loggedUser.name, 'ADMIN');
             speakText('Laporan berhasil diexport');
         }
         window.exportAdminReport = exportAdminReport;
+
+        function printAdminReport() {
+            window.print();
+            addAuditLog(`Admin (${loggedUser.name}) mencetak laporan sistem`, loggedUser.name, 'ADMIN');
+        }
+        window.printAdminReport = printAdminReport;
+
+        function resetReportFilter() {
+            const dateFrom = document.getElementById('report-date-from');
+            const dateTo = document.getElementById('report-date-to');
+            if(dateFrom) dateFrom.value = '';
+            if(dateTo) dateTo.value = '';
+            renderAdminReports();
+            showToast('Filter laporan direset');
+        }
+        window.resetReportFilter = resetReportFilter;
+
+        function renderAdminReports() {
+            const dateFrom = document.getElementById('report-date-from')?.value;
+            const dateTo = document.getElementById('report-date-to')?.value;
+
+            let filtered = packages;
+            if (dateFrom && dateTo) {
+                const start = new Date(dateFrom).setHours(0,0,0,0);
+                const end = new Date(dateTo).setHours(23,59,59,999);
+                filtered = packages.filter(p => {
+                    const pTime = p.timestampRaw || new Date().getTime();
+                    return pTime >= start && pTime <= end;
+                });
+            }
+
+            // Officer performance calculation
+            const officerStats = {};
+            filtered.forEach(p => {
+                const officer = p.petugas || 'Tidak Diketahui';
+                if (!officerStats[officer]) officerStats[officer] = { total: 0 };
+                officerStats[officer].total++;
+            });
+
+            // Courier performance calculation
+            const courierStats = {};
+            filtered.forEach(p => {
+                const courier = (p.courier && p.courier !== 'Belum Ditugaskan') ? p.courier : 'Belum Ditugaskan';
+                if (!courierStats[courier]) courierStats[courier] = { total: 0, completed: 0 };
+                courierStats[courier].total++;
+                if (p.status === 'completed') courierStats[courier].completed++;
+            });
+
+            const officerContainer = document.getElementById('report-officer-stats');
+            if (officerContainer) {
+                const keys = Object.keys(officerStats);
+                officerContainer.innerHTML = keys.length === 0 ? '<p class="text-[8.5px] text-slate-400">Tidak ada data</p>' : keys.map(o => `
+                    <div class="flex justify-between items-center bg-white p-1 rounded border border-slate-200 text-[9px]">
+                        <span class="font-semibold text-slate-800"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> ${o}</span>
+                        <span class="font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded">${officerStats[o].total} Paket Diterima</span>
+                    </div>
+                `).join('');
+            }
+
+            const courierContainer = document.getElementById('report-courier-stats');
+            if (courierContainer) {
+                const keys = Object.keys(courierStats);
+                courierContainer.innerHTML = keys.length === 0 ? '<p class="text-[8.5px] text-slate-400">Tidak ada data</p>' : keys.map(c => `
+                    <div class="flex justify-between items-center bg-white p-1 rounded border border-slate-200 text-[9px]">
+                        <span class="font-semibold text-slate-800"><i class="fa-solid fa-motorcycle text-sky-500 mr-1"></i> ${c}</span>
+                        <span class="font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded">${courierStats[c].completed} Selesai / ${courierStats[c].total} Total</span>
+                    </div>
+                `).join('');
+            }
+        }
+        window.renderAdminReports = renderAdminReports;
 
         function renderAdminOverview() {
             const total = packages.length;
@@ -2196,7 +2447,7 @@ function doPost(e) {
             if (confirm('Yakin ingin menghapus data paket ' + id + '?')) {
                 packages = packages.filter(p => p.id !== id);
                 deletePackageFromFirebase(id);
-                addAuditLog(`Admin menghapus data paket ${id}`);
+                addAuditLog(`Admin (${loggedUser.name}) menghapus data paket ${id}`, loggedUser.name, 'ADMIN');
                 renderAdminPackages();
                 showToast('Data paket dihapus');
             }
@@ -2207,7 +2458,6 @@ function doPost(e) {
             const tbody = document.getElementById('admin-members-table-body');
             if (!tbody) return;
 
-            // Filter out superadmin from management view if desired, or keep visible for admin management. Here we show active list excluding or including adm@sch.edu
             const visibleMembers = members.filter(m => m.email.toLowerCase() !== 'adm@sch.edu');
 
             if (visibleMembers.length === 0) {
@@ -2286,7 +2536,7 @@ function doPost(e) {
                     m.password = password;
                     m.role = role;
                     syncMemberToFirebase(m);
-                    addAuditLog(`Admin memperbarui data anggota ${name} (${role.toUpperCase()})`);
+                    addAuditLog(`Admin (${loggedUser.name}) memperbarui data anggota ${name} (${role.toUpperCase()})`, loggedUser.name, 'ADMIN');
                     showToast('Data anggota berhasil diperbarui!');
                 }
             } else {
@@ -2300,7 +2550,7 @@ function doPost(e) {
                 };
                 members.push(newMember);
                 syncMemberToFirebase(newMember);
-                addAuditLog(`Admin menambahkan anggota baru ${name} (${role.toUpperCase()})`);
+                addAuditLog(`Admin (${loggedUser.name}) menambahkan anggota baru ${name} (${role.toUpperCase()})`, loggedUser.name, 'ADMIN');
                 showToast('Anggota baru berhasil ditambahkan ke Cloud!');
             }
 
@@ -2314,7 +2564,7 @@ function doPost(e) {
             if (m) {
                 m.password = '123456';
                 syncMemberToFirebase(m);
-                addAuditLog(`Admin mereset kata sandi anggota ${m.name}`);
+                addAuditLog(`Admin (${loggedUser.name}) mereset kata sandi anggota ${m.name}`, loggedUser.name, 'ADMIN');
                 showToast(`Sandi ${m.name} direset ke: 123456`);
             }
         }
@@ -2325,20 +2575,12 @@ function doPost(e) {
             if (m && confirm(`Yakin ingin menghapus anggota ${m.name}?`)) {
                 members = members.filter(item => item.id !== id);
                 deleteMemberFromFirebase(id);
-                addAuditLog(`Admin menghapus anggota ${m.name}`);
+                addAuditLog(`Admin (${loggedUser.name}) menghapus anggota ${m.name}`, loggedUser.name, 'ADMIN');
                 renderAdminMembers();
                 showToast('Anggota berhasil dihapus');
             }
         }
         window.deleteMember = deleteMember;
-
-        function addAuditLog(actionText) {
-            auditLogs.unshift({
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB, ' + new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
-                actor: loggedUser.name || loggedUser.role.toUpperCase(),
-                action: actionText
-            });
-        }
 
         function renderAuditLogs() {
             const container = document.getElementById('audit-log-container');
@@ -2346,7 +2588,7 @@ function doPost(e) {
             container.innerHTML = auditLogs.map(log => `
                 <div class="p-1 rounded-lg bg-slate-50 border border-slate-100 flex justify-between items-center text-[8.5px]">
                     <div>
-                        <span class="font-bold text-indigo-600 mr-1">[${log.actor}]</span>
+                        <span class="font-bold text-indigo-600 mr-1">[${log.role || 'SYSTEM'}: ${log.actor}]</span>
                         <span class="text-slate-700">${log.action}</span>
                     </div>
                     <span class="text-[7.5px] text-slate-400 font-mono">${log.time}</span>
@@ -2368,6 +2610,7 @@ function doPost(e) {
             if (currentRole === 'penerima') renderReceiverView();
             if (currentRole === 'admin') {
                 renderAdminOverview();
+                renderAdminReports();
                 renderAdminMembers();
             }
         }
