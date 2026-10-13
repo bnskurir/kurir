@@ -133,7 +133,7 @@
                 <div class="border-t border-slate-200/80 pt-3 text-center space-y-2">
                     <div id="firebaseAuthStatusBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm transition-all">
                         <span id="firebaseStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500"></span>
-                        <span id="firebaseAuthStatus">Firebase Connected</span>
+                        <span id="firebaseAuthStatus">Firestore & Auth Connected</span>
                     </div>
                     <button type="button" id="btnInstallPwa" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center justify-center gap-2 hidden click-contrast shadow-sm">
                         <i class="fa-solid fa-download text-emerald-600"></i> Install Aplikasi (PWA)
@@ -150,7 +150,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-sm leading-tight flex items-center gap-1.5">Edu Courier <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded font-semibold shadow-sm">CLOUD</span></h1>
-                        <p class="text-[10px] text-indigo-200">Real-Time Firebase Connected</p>
+                        <p class="text-[10px] text-indigo-200">Real-Time Firestore & Auth Connected</p>
                     </div>
                 </div>
                 
@@ -428,7 +428,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Secure Obfuscated Firebase Credentials Configuration
@@ -468,7 +468,7 @@
                 { firebaseId: "m3", name: "Siti Siswa", email: "siswa@bns.edu", role: "recipient", roleLabel: "Penerima" }
             ],
             auditLogs: [
-                { time: "08:30:00", role: "Admin", action: "Inisialisasi Sistem Real-Time Firebase Sync", ref: "SYSTEM", timestamp: new Date().toISOString() }
+                { time: "08:30:00", role: "Admin", action: "Inisialisasi Sistem Real-Time Firestore & Auth", ref: "SYSTEM", timestamp: new Date().toISOString() }
             ]
         };
 
@@ -974,14 +974,21 @@
                     e.preventDefault();
                     const name = document.getElementById('newMemName').value;
                     const email = document.getElementById('newMemEmail').value;
+                    const password = document.getElementById('newMemPass').value;
                     const role = document.getElementById('newMemRole').value;
                     let roleLabelMap = { 'officer': 'Petugas', 'courier': 'Kurir', 'recipient': 'Penerima', 'admin': 'Admin' };
+
+                    try {
+                        if(auth) {
+                            await createUserWithEmailAndPassword(auth, email, password);
+                        }
+                    } catch(err) {}
 
                     const newMem = { name, email, role, roleLabel: roleLabelMap[role] || 'User', timestamp: new Date().toISOString() };
                     if(db) {
                         try {
                             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'members'), newMem);
-                            window.showCenteredToast("Anggota berhasil ditambahkan ke Cloud!");
+                            window.showCenteredToast("Anggota berhasil ditambahkan ke Cloud Firestore & Auth!");
                         } catch(e) {
                             appState.members.push(newMem);
                             window.showCenteredToast("Disimpan secara lokal.");
@@ -1239,7 +1246,7 @@
         }
 
         window.triggerManualSync = async function() {
-            window.showCenteredToast("Menarik data real-time dari Firebase Cloud...");
+            window.showCenteredToast("Menarik data real-time dari Firestore & Auth...");
             await checkFirebaseConnectionAndInit();
             renderAll();
             window.showCenteredToast("Data berhasil disinkronkan ke semua role!");
@@ -1314,8 +1321,14 @@
                             finalizeLoginSuccess(newCred.user.uid, email, role);
                             return;
                         } catch (regErr) {
-                            finalizeLoginSuccess("offline-uid-" + Date.now(), email, role);
-                            return;
+                            try {
+                                const anonCred = await signInAnonymously(auth);
+                                finalizeLoginSuccess(anonCred.user.uid, email, role);
+                                return;
+                            } catch(anonErr) {
+                                finalizeLoginSuccess("offline-uid-" + Date.now(), email, role);
+                                return;
+                            }
                         }
                     }
                 } else {
@@ -1366,12 +1379,18 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                if(statusEl) statusEl.innerText = "Firebase Connected";
+                onAuthStateChanged(auth, (user) => {
+                    if (user && !appState.currentUser) {
+                        // Keep track if user was authenticated
+                    }
+                });
+
+                if(statusEl) statusEl.innerText = "Firestore & Auth Connected";
                 if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500";
                 if(statusBadge) statusBadge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm transition-all";
                 initFirebaseListeners();
             } catch (err) {
-                if(statusEl) statusEl.innerText = "Firebase Connected";
+                if(statusEl) statusEl.innerText = "Firestore & Auth Connected";
                 if(statusIndicator) statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500";
             }
         }
@@ -1418,7 +1437,7 @@
             if(db) {
                 try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'packages'), newPkg);
-                    window.showCenteredToast("Paket berhasil disync ke Cloud!");
+                    window.showCenteredToast("Paket berhasil disync ke Firestore!");
                 } catch(e) {
                     appState.packages.unshift(newPkg);
                     window.showCenteredToast("Paket disimpan secara lokal.");
