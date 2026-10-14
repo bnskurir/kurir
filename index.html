@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurir Sekolah - Portal Web & Sinkronisasi Realtime</title>
+    <title>Kurir Sekolah - Portal Web Terpadu & Sinkronisasi Cloud</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -14,9 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- HTML5 QR Code Scanner -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <!-- Firebase JS SDK (v9 compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         @media print {
@@ -32,6 +29,7 @@
     <!-- Top Navigation Bar -->
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-50 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+            <!-- App Brand & Title -->
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
                     <i class="fa-solid fa-graduation-cap text-xl text-white"></i>
@@ -45,23 +43,56 @@
                 </div>
             </div>
 
-            <!-- Sync Status & Header Actions -->
+            <!-- Sync Status, Auth & Header Actions -->
             <div class="flex items-center flex-wrap gap-2.5">
+                <!-- Realtime Cloud Status Badge -->
                 <div id="cloudStatusBadge" class="flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold shadow-inner">
                     <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="cloudStatusText">Sinkronisasi Cloud Realtime</span>
+                    <span id="cloudStatusText">Menghubungkan Database...</span>
                 </div>
 
+                <!-- Google Auth & Profile Container -->
+                <div id="authContainer" class="flex items-center">
+                    <!-- Logged Out State -->
+                    <button id="btnLoginMain" onclick="openLoginModal()" class="bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-2 transition shadow-sm">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <span>Login Masuk</span>
+                    </button>
+
+                    <!-- Logged In State (Hidden by default) -->
+                    <div id="userProfile" class="hidden flex items-center space-x-2.5 bg-indigo-900/90 border border-indigo-700/60 pl-2 pr-3 py-1 rounded-xl">
+                        <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=4f46e5&color=fff" alt="Avatar" class="w-7 h-7 rounded-full border border-indigo-400">
+                        <div class="text-left hidden sm:block">
+                            <p id="userName" class="text-xs font-bold leading-tight truncate max-w-[130px]">Pengguna</p>
+                            <p id="userRoleBadge" class="text-[10px] text-indigo-300 font-semibold leading-tight">Petugas</p>
+                        </div>
+                        <button onclick="openLoginModal()" title="Ganti Akun" class="text-indigo-300 hover:text-white ml-1.5 transition text-xs">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                        <button onclick="logoutUser()" title="Keluar" class="text-indigo-300 hover:text-rose-400 ml-1.5 transition text-xs">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Download APK Button -->
+                <a href="/kurir.apk" download="kurir.apk" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
+                    <i class="fa-brands fa-android text-sm"></i>
+                    <span>Unduh APK</span>
+                </a>
+
+                <!-- Voice Announcer Toggle -->
                 <button onclick="toggleVoice()" id="btnVoiceHeader" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-100 border border-indigo-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
                     <i class="fa-solid fa-volume-high text-indigo-300"></i>
-                    <span id="voiceStatusText">Suara TTS Aktif</span>
+                    <span id="voiceStatusText">Suara TTS</span>
                 </button>
 
-                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
-                    <i class="fa-solid fa-print"></i>
-                    <span>Cetak PDF</span>
-                </button>
-
+                <!-- Export CSV -->
                 <button onclick="exportToCsv()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition shadow-sm">
                     <i class="fa-solid fa-file-excel"></i>
                     <span>Unduh CSV</span>
@@ -95,6 +126,23 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 w-full">
 
+        <!-- Top Notification Banner when not logged in -->
+        <div id="loginBanner" class="bg-gradient-to-r from-blue-900 via-indigo-900 to-indigo-950 text-white p-4 rounded-2xl shadow-sm border border-indigo-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-shield-halved text-indigo-300"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold">Sinkronisasi Cloud Real-Time Dua Arah Aktif</h3>
+                    <p class="text-xs text-indigo-200">Data terhubung langsung dengan aplikasi Android Satpam & Kurir. Silakan <b>Login</b> untuk mendaftarkan paket atau mengubah status.</p>
+                </div>
+            </div>
+            <button onclick="openLoginModal()" class="bg-white hover:bg-slate-100 text-indigo-950 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 shrink-0 shadow">
+                <span>Pilih Login / Masuk Sekarang</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+        </div>
+
         <!-- Top KPI Cards -->
         <section class="grid grid-cols-2 md:grid-cols-5 gap-3.5 sm:gap-4 no-print">
             <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
@@ -103,7 +151,7 @@
                     <i class="fa-solid fa-boxes-stacked text-indigo-500"></i>
                 </span>
                 <p id="kpiTotal" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">0</p>
-                <span class="text-[11px] text-slate-400 mt-1">Keseluruhan data</span>
+                <span class="text-[11px] text-slate-400 mt-1">Seluruh kiriman terdata</span>
             </div>
 
             <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-200/80 shadow-sm flex flex-col justify-between">
@@ -112,7 +160,7 @@
                     <i class="fa-solid fa-shield-halved text-amber-600"></i>
                 </span>
                 <p id="kpiReceived" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-2">0</p>
-                <span class="text-[11px] text-amber-700/80 mt-1">Menunggu kurir antar</span>
+                <span class="text-[11px] text-amber-700/80 mt-1">Antrian pengambilan</span>
             </div>
 
             <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-200/80 shadow-sm flex flex-col justify-between">
@@ -121,7 +169,7 @@
                     <i class="fa-solid fa-motorcycle text-sky-600"></i>
                 </span>
                 <p id="kpiInTransit" class="text-2xl sm:text-3xl font-extrabold text-sky-600 mt-2">0</p>
-                <span class="text-[11px] text-sky-700/80 mt-1">Kurir internal jalan</span>
+                <span class="text-[11px] text-sky-700/80 mt-1">Dalam perjalanan kurir</span>
             </div>
 
             <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/80 shadow-sm flex flex-col justify-between">
@@ -139,7 +187,7 @@
                     <i class="fa-solid fa-stopwatch text-indigo-600"></i>
                 </span>
                 <p id="kpiSla" class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mt-2">100%</p>
-                <span class="text-[11px] text-indigo-700/80 mt-1">Standar target sekolah</span>
+                <span class="text-[11px] text-indigo-700/80 mt-1">Target 2 jam sekolah</span>
             </div>
         </section>
 
@@ -148,10 +196,10 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Alur Pengantaran Paket Realtime (Live Kanban)</h2>
-                    <p class="text-xs text-slate-500">Perubahan status di HP Satpam atau Kurir otomatis bergerak di layar ini secara langsung.</p>
+                    <p class="text-xs text-slate-500">Perubahan dari aplikasi Android Satpam & Kurir bergerak otomatis secara langsung di layar ini.</p>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="text-xs font-semibold text-slate-400">Pembaruan terakhir:</span>
+                    <span class="text-xs font-semibold text-slate-400">Sinkron Terakhir:</span>
                     <span id="lastUpdatedTime" class="text-xs font-bold text-slate-700">-</span>
                 </div>
             </div>
@@ -167,7 +215,7 @@
                         <span id="countColReceived" class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </div>
                     <div id="colReceivedCards" class="space-y-3 flex-1 overflow-y-auto">
-                        <!-- Cards -->
+                        <!-- Populated by JS -->
                     </div>
                 </div>
 
@@ -181,7 +229,7 @@
                         <span id="countColInTransit" class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </div>
                     <div id="colInTransitCards" class="space-y-3 flex-1 overflow-y-auto">
-                        <!-- Cards -->
+                        <!-- Populated by JS -->
                     </div>
                 </div>
 
@@ -195,7 +243,7 @@
                         <span id="countColDelivered" class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </div>
                     <div id="colDeliveredCards" class="space-y-3 flex-1 overflow-y-auto">
-                        <!-- Cards -->
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </div>
@@ -206,7 +254,7 @@
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center no-print">
                 <div class="relative w-full md:w-96">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                    <input id="searchInput" oninput="renderTable()" type="text" placeholder="Cari resi, nama penerima, lokasi ruangan..." 
+                    <input id="searchInput" oninput="renderTable()" type="text" placeholder="Cari nomor resi, penerima, ruangan..." 
                            class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
@@ -214,7 +262,7 @@
                         <option value="ALL">Semua Status</option>
                         <option value="RECEIVED">Di Pos Satpam</option>
                         <option value="IN_TRANSIT">Sedang Diantar</option>
-                        <option value="DELIVERED">Selesai</option>
+                        <option value="DELIVERED">Selesai Diserahkan</option>
                     </select>
                     <select id="categoryFilter" onchange="renderTable()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="ALL">Semua Kategori</option>
@@ -257,9 +305,14 @@
         <!-- TAB 3: INPUT PAKET BARU -->
         <section id="content-input" class="tab-content hidden max-w-3xl mx-auto space-y-4">
             <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="border-b border-slate-100 pb-4 mb-5">
-                    <h2 class="text-lg font-bold text-slate-900">Formulir Penerimaan Paket Baru (Pos Satpam)</h2>
-                    <p class="text-xs text-slate-500 mt-1">Data yang disimpan di sini langsung tersinkronisasi ke aplikasi Android Satpam & Kurir dalam hitungan detik.</p>
+                <div class="border-b border-slate-100 pb-4 mb-5 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Formulir Penerimaan Paket Baru (Pos Satpam)</h2>
+                        <p class="text-xs text-slate-500 mt-1">Data yang disimpan langsung masuk ke database cloud dan notifikasi HP Android.</p>
+                    </div>
+                    <span id="authWarningBadge" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-lg font-bold">
+                        <i class="fa-solid fa-check text-[10px] mr-1"></i>Siap Input
+                    </span>
                 </div>
 
                 <form id="parcelForm" onsubmit="submitNewParcel(event)" class="space-y-4">
@@ -360,65 +413,115 @@
 
     </main>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500 no-print">
         <p>© 2026 Kurir Sekolah. Sinkronisasi otomatis terhubung langsung dengan aplikasi Android dan Firebase Firestore.</p>
     </footer>
 
-    <!-- Main JavaScript Logic -->
-    <script>
-        // Sample default fallback data
-        let parcels = [
-            {
-                id: "SCH-1001",
-                trackingNumber: "SPX-ID-882910",
-                senderType: "Eksternal",
-                courierServiceName: "Shopee Xpress",
-                recipientName: "Siti Aminah, M.Pd",
-                recipientLocation: "Ruang Guru Lt.2",
-                recipientPhone: "081277778888",
-                category: "DOKUMEN",
-                status: "RECEIVED",
-                statusLabel: "Di Pos Satpam",
-                storageLocation: "Rak Utama A1",
-                securityStaffName: "Budi Santoso",
-                courierName: "-",
-                receivedAt: Date.now() - 3600000,
-                receivedAtStr: new Date(Date.now() - 3600000).toLocaleString("id-ID"),
-                deliveredAtStr: "-",
-                durationMinutes: 60,
-                slaMinutes: 120,
-                isSlaBreached: false,
-                notes: "Dokumen kurikulum ujian sekolah"
-            },
-            {
-                id: "SCH-1002",
-                trackingNumber: "JNE-REG-991203",
-                senderType: "Eksternal",
-                courierServiceName: "JNE Express",
-                recipientName: "Deni Pratama (Staff TU)",
-                recipientLocation: "Gedung Tata Usaha",
-                recipientPhone: "081299990000",
-                category: "ELEKTRONIK",
-                status: "IN_TRANSIT",
-                statusLabel: "Sedang Diantar",
-                storageLocation: "Rak Utama B2",
-                securityStaffName: "Budi Santoso",
-                courierName: "Joko Prasetyo",
-                receivedAt: Date.now() - 5400000,
-                receivedAtStr: new Date(Date.now() - 5400000).toLocaleString("id-ID"),
-                deliveredAtStr: "-",
-                durationMinutes: 90,
-                slaMinutes: 120,
-                isSlaBreached: false,
-                notes: "Kabel HDMI dan proyektor kelas"
-            }
-        ];
+    <!-- LOGIN & ROLE SELECTOR MODAL -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 relative border border-slate-100">
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
 
-        let voiceEnabled = true;
-        let html5QrCode = null;
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 mx-auto flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-user-shield text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-extrabold text-slate-900">Masuk ke Portal Kurir Sekolah</h3>
+                <p class="text-xs text-slate-500 mt-1">Pilih metode login resmi atau akses peran petugas untuk pengelolaan paket.</p>
+            </div>
 
-        // Firebase Configuration (Direct sync with Android backend)
+            <!-- Option 1: Login Google Resmi -->
+            <div class="mb-5">
+                <button onclick="loginWithGoogle()" class="w-full bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200 font-bold py-3 px-4 rounded-2xl text-sm flex items-center justify-center space-x-3 shadow-sm hover:border-indigo-400 transition">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Login Akun Google (Cloud)</span>
+                </button>
+            </div>
+
+            <div class="relative flex py-2 items-center mb-5">
+                <div class="flex-grow border-t border-slate-200"></div>
+                <span class="flex-shrink mx-4 text-slate-400 text-xs font-semibold uppercase tracking-wider">Atau Pilih Peran Petugas</span>
+                <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <!-- Option 2: Quick Role Login Cards -->
+            <div class="grid grid-cols-2 gap-2.5 mb-5">
+                <button onclick="setDirectRole('satpam')" class="p-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-2xl text-left transition group">
+                    <div class="flex items-center space-x-2 text-amber-700 font-bold text-xs">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Satpam</span>
+                    </div>
+                    <p class="text-[11px] font-semibold text-slate-800 mt-1">Pak Joko (Pos Depan)</p>
+                    <span class="text-[9px] text-amber-800/70">Input & Resi Paket</span>
+                </button>
+
+                <button onclick="setDirectRole('kurir')" class="p-3 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-2xl text-left transition group">
+                    <div class="flex items-center space-x-2 text-sky-700 font-bold text-xs">
+                        <i class="fa-solid fa-motorcycle"></i>
+                        <span>Kurir Sekolah</span>
+                    </div>
+                    <p class="text-[11px] font-semibold text-slate-800 mt-1">Budi Santoso</p>
+                    <span class="text-[9px] text-sky-800/70">Antar & Serah Terima</span>
+                </button>
+
+                <button onclick="setDirectRole('admin')" class="p-3 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-2xl text-left transition group">
+                    <div class="flex items-center space-x-2 text-indigo-700 font-bold text-xs">
+                        <i class="fa-solid fa-crown"></i>
+                        <span>Admin Sarpras</span>
+                    </div>
+                    <p class="text-[11px] font-semibold text-slate-800 mt-1">protecomb@gmail.com</p>
+                    <span class="text-[9px] text-indigo-800/70">Akses Penuh Sistem</span>
+                </button>
+
+                <button onclick="setDirectRole('penerima')" class="p-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-2xl text-left transition group">
+                    <div class="flex items-center space-x-2 text-emerald-700 font-bold text-xs">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Penerima</span>
+                    </div>
+                    <p class="text-[11px] font-semibold text-slate-800 mt-1">Ibu Siti Aminah</p>
+                    <span class="text-[9px] text-emerald-800/70">Pantau Paket Saya</span>
+                </button>
+            </div>
+
+            <!-- Custom Name Option -->
+            <div class="border-t border-slate-100 pt-4">
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Gunakan Nama & Peran Khusus:</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="inpCustomName" placeholder="Nama Anda / Petugas..." class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="setCustomUser()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition">Terapkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Modular SDK & Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            updateDoc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB-Pt5Mq8n8mNA0JFSOT8TgvxEheksAiiU",
             authDomain: "gen-lang-client-0044724585.firebaseapp.com",
@@ -428,108 +531,285 @@
             appId: "1:527925358468:android:54774cf3911d7dd7c3f7d1"
         };
 
-        let db = null;
+        const CUSTOM_DATABASE_ID = "ai-studio-android-kurirsek-ef11a90f-11b7-4eb1-8dd0-0614cd2cbbf4";
+        const FIRESTORE_REST_BASE = "https://firestore.googleapis.com/v1/projects/" + firebaseConfig.projectId + "/databases/" + CUSTOM_DATABASE_ID + "/documents/parcels";
+
+        let app, auth, db;
+        let currentUser = null;
+        let parcels = [];
+        let voiceEnabled = true;
+        let html5QrCode = null;
         let isFirstLoad = true;
+        let syncMode = "REST & SDK";
 
         // Initialize Firebase
         try {
-            if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-                console.log("Firebase terhubung dari halaman web.");
-                initCloudListener();
-            }
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app, CUSTOM_DATABASE_ID);
+            console.log("Firebase initialized successfully.");
+            setupAuthListener();
+            setupFirestoreListener();
         } catch (e) {
-            console.warn("Firebase offline/local fallback:", e);
-            setSyncStatus(false, "Mode Lokal (Offline)");
+            console.warn("Firebase Modular SDK fallback to REST API:", e);
+            startRestSyncPolling();
+        }
+
+        // Restore saved session from LocalStorage if available
+        const savedSession = localStorage.getItem("kurir_user_session");
+        if (savedSession) {
+            try {
+                const u = JSON.parse(savedSession);
+                setUserUI(u);
+            } catch (_) {}
+        } else {
+            // Default active role: Petugas Satpam so portal is ready to use immediately
+            setDirectRole("satpam");
+        }
+
+        // Auth Listener
+        function setupAuthListener() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const uData = {
+                        displayName: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        role: (user.email === "protecomb@gmail.com") ? "Admin Utama (Sarpras)" : "Petugas Terautentikasi",
+                        photoURL: user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(user.displayName || "User") + "&background=4f46e5&color=fff")
+                    };
+                    setUserUI(uData);
+                    localStorage.setItem("kurir_user_session", JSON.stringify(uData));
+                }
+            });
+        }
+
+        function setUserUI(user) {
+            currentUser = user;
+            const btnLogin = document.getElementById('btnLoginMain');
+            const userProfile = document.getElementById('userProfile');
+            const loginBanner = document.getElementById('loginBanner');
+            const authWarningBadge = document.getElementById('authWarningBadge');
+
+            if (btnLogin) btnLogin.classList.add('hidden');
+            if (userProfile) userProfile.classList.remove('hidden');
+            if (loginBanner) loginBanner.classList.add('hidden');
+
+            const userNameEl = document.getElementById('userName');
+            const userAvatarEl = document.getElementById('userAvatar');
+            const userRoleBadgeEl = document.getElementById('userRoleBadge');
+
+            if (userNameEl) userNameEl.innerText = user.displayName;
+            if (userAvatarEl) userAvatarEl.src = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(user.displayName) + "&background=4f46e5&color=fff");
+            if (userRoleBadgeEl) userRoleBadgeEl.innerText = user.role;
+
+            if (authWarningBadge) {
+                authWarningBadge.className = "bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-lg font-bold";
+                authWarningBadge.innerHTML = '<i class="fa-solid fa-check text-[10px] mr-1"></i>Login: ' + user.displayName;
+            }
+        }
+
+        // Google Sign-In
+        window.loginWithGoogle = async function() {
+            try {
+                const provider = new GoogleAuthProvider();
+                const res = await signInWithPopup(auth, provider);
+                speak("Berhasil login dengan akun Google.");
+                window.closeLoginModal();
+            } catch (err) {
+                console.warn("Google popup error or restricted environment:", err);
+                alert("Login Google Popup tidak didukung di lingkungan browser lokal/iframe ini (" + (err.code || err.message) + "). Silakan gunakan tombol Peran Petugas di bawah untuk langsung masuk.");
+            }
+        };
+
+        window.setDirectRole = function(roleType) {
+            let u;
+            if (roleType === 'satpam') {
+                u = { displayName: "Pak Joko (Satpam)", email: "satpam@sekolah.sch.id", role: "Petugas Satpam", photoURL: "https://ui-avatars.com/api/?name=Satpam+Joko&background=d97706&color=fff" };
+            } else if (roleType === 'kurir') {
+                u = { displayName: "Budi Santoso (Kurir)", email: "kurir@sekolah.sch.id", role: "Kurir Internal", photoURL: "https://ui-avatars.com/api/?name=Budi+Kurir&background=0284c7&color=fff" };
+            } else if (roleType === 'admin') {
+                u = { displayName: "Admin Sarpras", email: "protecomb@gmail.com", role: "Admin Utama (Sarpras)", photoURL: "https://ui-avatars.com/api/?name=Admin+Sarpras&background=4f46e5&color=fff" };
+            } else {
+                u = { displayName: "Ibu Siti Aminah", email: "siti@sekolah.sch.id", role: "Penerima Paket (Guru)", photoURL: "https://ui-avatars.com/api/?name=Siti+Guru&background=059669&color=fff" };
+            }
+            setUserUI(u);
+            localStorage.setItem("kurir_user_session", JSON.stringify(u));
+            window.closeLoginModal();
+            speak("Masuk sebagai " + u.displayName);
+        };
+
+        window.setCustomUser = function() {
+            const name = (document.getElementById('inpCustomName')?.value || '').trim();
+            if (!name) return alert("Silakan masukkan nama.");
+            const u = {
+                displayName: name,
+                email: name.toLowerCase().replace(/\s+/g, '') + "@sekolah.sch.id",
+                role: "Petugas Operasional",
+                photoURL: "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=4f46e5&color=fff"
+            };
+            setUserUI(u);
+            localStorage.setItem("kurir_user_session", JSON.stringify(u));
+            window.closeLoginModal();
+            speak("Masuk sebagai " + u.displayName);
+        };
+
+        window.logoutUser = async function() {
+            try {
+                if (auth) await signOut(auth);
+            } catch (_) {}
+            localStorage.removeItem("kurir_user_session");
+            currentUser = null;
+            document.getElementById('btnLoginMain')?.classList.remove('hidden');
+            document.getElementById('userProfile')?.classList.add('hidden');
+            document.getElementById('loginBanner')?.classList.remove('hidden');
+            speak("Anda telah keluar.");
+            openLoginModal();
+        };
+
+        window.openLoginModal = function() {
+            document.getElementById('loginModal')?.classList.remove('hidden');
+        };
+
+        window.closeLoginModal = function() {
+            document.getElementById('loginModal')?.classList.add('hidden');
+        };
+
+        // Realtime Firestore Listener + Resilient REST Fallback
+        function setupFirestoreListener() {
+            setSyncStatus(true, "Menghubungkan Firestore...");
+            try {
+                const parcelsRef = collection(db, "parcels");
+                onSnapshot(parcelsRef, (snapshot) => {
+                    const cloudList = [];
+                    snapshot.forEach(docSnap => {
+                        const d = docSnap.data();
+                        cloudList.push(normalizeParcelData(d, docSnap.id));
+                    });
+                    handleIncomingParcels(cloudList);
+                }, (err) => {
+                    console.warn("Firestore snapshot listener error, using REST polling:", err);
+                    startRestSyncPolling();
+                });
+            } catch (err) {
+                console.warn("Error setting up snapshot listener, switching to REST sync:", err);
+                startRestSyncPolling();
+            }
+        }
+
+        // REST API Polling
+        let restInterval = null;
+        function startRestSyncPolling() {
+            fetchParcelsFromRest();
+            if (!restInterval) {
+                restInterval = setInterval(fetchParcelsFromRest, 6000);
+            }
+        }
+
+        async function fetchParcelsFromRest() {
+            try {
+                const url = FIRESTORE_REST_BASE + "?key=" + firebaseConfig.apiKey;
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error("HTTP " + resp.status);
+                const data = await resp.json();
+                const list = [];
+                if (data.documents && Array.isArray(data.documents)) {
+                    data.documents.forEach(doc => {
+                        const id = doc.name.split('/').pop();
+                        const fields = doc.fields || {};
+                        const parsed = {};
+                        for (const k in fields) {
+                            const valObj = fields[k];
+                            parsed[k] = valObj.stringValue !== undefined ? valObj.stringValue :
+                                        valObj.integerValue !== undefined ? parseInt(valObj.integerValue) :
+                                        valObj.doubleValue !== undefined ? parseFloat(valObj.doubleValue) :
+                                        valObj.booleanValue !== undefined ? valObj.booleanValue : "";
+                        }
+                        list.push(normalizeParcelData(parsed, id));
+                    });
+                }
+                handleIncomingParcels(list);
+            } catch (err) {
+                console.error("Gagal sinkron REST:", err);
+                setSyncStatus(false, "Koneksi Cloud Gagal: " + (err.message || "Offline"));
+            }
+        }
+
+        function normalizeParcelData(d, id) {
+            return {
+                id: d.id || id,
+                trackingNumber: d.trackingNumber || "-",
+                senderType: d.senderType || "Eksternal",
+                courierServiceName: d.courierServiceName || "Kurir",
+                recipientName: d.recipientName || "-",
+                recipientLocation: d.recipientLocation || "-",
+                recipientPhone: d.recipientPhone || "",
+                category: d.category || "BARANG_UMUM",
+                status: d.status || "RECEIVED",
+                statusLabel: d.status === "DELIVERED" ? "Selesai Diserahkan" : (d.status === "IN_TRANSIT" ? "Sedang Diantar" : "Di Pos Satpam"),
+                storageLocation: d.storageLocation || "Rak Utama",
+                securityStaffName: d.securityStaffName || "Satpam",
+                courierName: d.courierName || "-",
+                receivedAt: d.receivedAt || Date.now(),
+                receivedAtStr: new Date(d.receivedAt || Date.now()).toLocaleString("id-ID"),
+                deliveredAtStr: d.deliveredAt ? new Date(d.deliveredAt).toLocaleString("id-ID") : "-",
+                durationMinutes: 0,
+                slaMinutes: d.slaMinutes || 120,
+                isSlaBreached: false,
+                notes: d.notes || ""
+            };
+        }
+
+        function handleIncomingParcels(cloudList) {
+            if (!isFirstLoad && cloudList.length > parcels.length) {
+                const newest = cloudList[cloudList.length - 1];
+                speak("Pemberitahuan: Paket baru dengan nomor resi " + newest.trackingNumber + " untuk " + newest.recipientName + " telah diterima di pos satpam.");
+            }
+            isFirstLoad = false;
+            parcels = cloudList;
+            setSyncStatus(true, "Database Cloud Terhubung (" + cloudList.length + " Paket Realtime)");
+            const lastUpdateEl = document.getElementById('lastUpdatedTime');
+            if (lastUpdateEl) lastUpdateEl.innerText = new Date().toLocaleTimeString('id-ID');
+            updateAllViews();
         }
 
         function setSyncStatus(isOnline, text) {
             const badge = document.getElementById('cloudStatusBadge');
             const dot = document.getElementById('pulseDot');
             const txt = document.getElementById('cloudStatusText');
-            if (isOnline) {
-                badge.className = "flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold shadow-inner";
-                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
-            } else {
-                badge.className = "flex items-center space-x-2 bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-full text-xs font-semibold";
-                dot.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
-            }
-            txt.innerText = text;
-        }
-
-        // Realtime Firestore Listener
-        function initCloudListener() {
-            if (!db) return;
-            setSyncStatus(true, "Menghubungkan ke Cloud...");
-            db.collection("parcels").onSnapshot((snapshot) => {
-                const cloudList = [];
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    cloudList.push({
-                        id: d.id || doc.id,
-                        trackingNumber: d.trackingNumber || "-",
-                        senderType: d.senderType || "Eksternal",
-                        courierServiceName: d.courierServiceName || "Kurir",
-                        recipientName: d.recipientName || "-",
-                        recipientLocation: d.recipientLocation || "-",
-                        recipientPhone: d.recipientPhone || "",
-                        category: d.category || "BARANG_UMUM",
-                        status: d.status || "RECEIVED",
-                        statusLabel: d.status === "DELIVERED" ? "Selesai" : (d.status === "IN_TRANSIT" ? "Sedang Diantar" : "Di Pos Satpam"),
-                        storageLocation: d.storageLocation || "Rak Utama",
-                        securityStaffName: d.securityStaffName || "Satpam",
-                        courierName: d.courierName || "-",
-                        receivedAt: d.receivedAt || Date.now(),
-                        receivedAtStr: new Date(d.receivedAt || Date.now()).toLocaleString("id-ID"),
-                        deliveredAtStr: d.deliveredAt ? new Date(d.deliveredAt).toLocaleString("id-ID") : "-",
-                        durationMinutes: 0,
-                        slaMinutes: d.slaMinutes || 120,
-                        isSlaBreached: false,
-                        notes: d.notes || ""
-                    });
-                });
-
-                if (cloudList.length > 0) {
-                    // Check for newly added parcel to announce with voice
-                    if (!isFirstLoad && cloudList.length > parcels.length) {
-                        const newest = cloudList[cloudList.length - 1];
-                        speak("Pemberitahuan: Paket baru dengan nomor resi " + newest.trackingNumber + " untuk " + newest.recipientName + " telah diterima di pos satpam.");
-                    }
-                    isFirstLoad = false;
-                    parcels = cloudList;
-                    setSyncStatus(true, "Sinkronisasi Cloud Realtime (" + cloudList.length + " Paket)");
+            if (badge && dot && txt) {
+                if (isOnline) {
+                    badge.className = "flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold shadow-inner";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
                 } else {
-                    setSyncStatus(true, "Cloud Terhubung (Database Kosong)");
+                    badge.className = "flex items-center space-x-2 bg-rose-950/80 border border-rose-500/40 text-rose-300 px-3 py-1.5 rounded-full text-xs font-semibold";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
                 }
-
-                document.getElementById('lastUpdatedTime').innerText = new Date().toLocaleTimeString('id-ID');
-                updateAllViews();
-            }, (err) => {
-                console.warn("Firestore snapshot error:", err);
-                setSyncStatus(false, "Sinkronisasi Offline (" + parcels.length + " Data Lokal)");
-            });
+                txt.innerText = text;
+            }
         }
 
         // Tab Switching
-        function switchTab(tabId) {
+        window.switchTab = function(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => {
                 el.classList.remove('border-indigo-400', 'text-white', 'font-bold');
                 el.classList.add('border-transparent', 'text-indigo-200');
             });
 
-            document.getElementById('content-' + tabId).classList.remove('hidden');
+            const targetSection = document.getElementById('content-' + tabId);
             const activeBtn = document.getElementById('tab-' + tabId);
-            activeBtn.classList.remove('border-transparent', 'text-indigo-200');
-            activeBtn.classList.add('border-indigo-400', 'text-white', 'font-bold');
+            if (targetSection) targetSection.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-indigo-200');
+                activeBtn.classList.add('border-indigo-400', 'text-white', 'font-bold');
+            }
 
             if (tabId === 'scanner') {
-                startScanner();
+                window.startScanner();
             } else {
-                stopScanner();
+                window.stopScanner();
             }
-        }
+        };
 
         function updateAllViews() {
             updateKpis();
@@ -560,6 +840,7 @@
             const colReceived = document.getElementById('colReceivedCards');
             const colInTransit = document.getElementById('colInTransitCards');
             const colDelivered = document.getElementById('colDeliveredCards');
+            if (!colReceived || !colInTransit || !colDelivered) return;
 
             const receivedItems = parcels.filter(p => p.status === 'RECEIVED');
             const inTransitItems = parcels.filter(p => p.status === 'IN_TRANSIT');
@@ -599,7 +880,7 @@
             '</div>';
         }
 
-        function renderTable() {
+        window.renderTable = function() {
             const query = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
             const status = document.getElementById('statusFilter')?.value || 'ALL';
             const category = document.getElementById('categoryFilter')?.value || 'ALL';
@@ -647,121 +928,198 @@
                     '</td>' +
                 '</tr>';
             }).join('');
-        }
+        };
 
-        // Add New Parcel with Cloud Sync
-        async function submitNewParcel(event) {
+        // Add New Parcel with Dual Cloud Sync (SDK + REST fallback)
+        window.submitNewParcel = async function(event) {
             event.preventDefault();
+
+            if (!currentUser) {
+                alert("Silakan pilih peran akun atau login sebelum menyimpan paket.");
+                window.openLoginModal();
+                return;
+            }
+
             const btn = document.getElementById('btnSubmitParcel');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan...</span>';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan ke Cloud...</span>';
+
+            const parcelId = "SCH-" + Date.now().toString().slice(-6);
+            const trackingNum = document.getElementById('inpTrackingNumber').value.trim();
+            const courierService = document.getElementById('inpCourierService').value.trim();
+            const recipientName = document.getElementById('inpRecipientName').value.trim();
+            const recipientLocation = document.getElementById('inpRecipientLocation').value.trim();
+            const recipientPhone = document.getElementById('inpRecipientPhone').value.trim();
+            const category = document.getElementById('inpCategory').value;
+            const storageLocation = document.getElementById('inpStorageLocation').value.trim();
+            const notes = document.getElementById('inpNotes').value.trim();
 
             const newParcel = {
-                id: "SCH-" + Date.now().toString().slice(-6),
-                trackingNumber: document.getElementById('inpTrackingNumber').value.trim(),
-                senderType: "Eksternal",
-                courierServiceName: document.getElementById('inpCourierService').value.trim(),
-                recipientName: document.getElementById('inpRecipientName').value.trim(),
-                recipientLocation: document.getElementById('inpRecipientLocation').value.trim(),
-                recipientPhone: document.getElementById('inpRecipientPhone').value.trim(),
-                category: document.getElementById('inpCategory').value,
+                id: parcelId,
+                trackingNumber: trackingNum,
+                senderType: "EXTERNAL",
+                courierServiceName: courierService,
+                recipientName: recipientName,
+                recipientLocation: recipientLocation,
+                recipientPhone: recipientPhone,
+                category: category,
                 status: "RECEIVED",
-                statusLabel: "Di Pos Satpam",
-                storageLocation: document.getElementById('inpStorageLocation').value.trim(),
-                securityStaffName: "Petugas Web Satpam",
+                storageLocation: storageLocation,
+                securityStaffName: currentUser.displayName || "Petugas Web",
                 courierName: "-",
                 receivedAt: Date.now(),
-                receivedAtStr: new Date().toLocaleString("id-ID"),
-                deliveredAtStr: "-",
-                durationMinutes: 0,
                 slaMinutes: 120,
-                isSlaBreached: false,
-                notes: document.getElementById('inpNotes').value.trim()
+                notes: notes
             };
 
-            // Save to Cloud Firestore if connected
+            let saved = false;
+
+            // Attempt 1: Modular SDK
             if (db) {
                 try {
-                    await db.collection("parcels").doc(newParcel.id).set(newParcel);
-                    console.log("Paket berhasil disinkronkan ke Firestore Cloud.");
-                } catch (e) {
-                    console.warn("Gagal simpan ke Firestore, simpan lokal:", e);
+                    const docRef = doc(db, "parcels", newParcel.id);
+                    await setDoc(docRef, newParcel);
+                    saved = true;
+                } catch (sdkErr) {
+                    console.warn("SDK write failed, trying REST fallback:", sdkErr);
                 }
             }
 
-            parcels.push(newParcel);
-            updateAllViews();
-            speak("Paket baru " + newParcel.trackingNumber + " untuk " + newParcel.recipientName + " berhasil didaftarkan.");
-            alert("Paket berhasil disimpan dan disinkronkan ke seluruh sistem!");
+            // Attempt 2: REST fallback
+            if (!saved) {
+                try {
+                    const restUrl = FIRESTORE_REST_BASE + "/" + newParcel.id + "?key=" + firebaseConfig.apiKey;
+                    const restBody = {
+                        fields: {
+                            id: { stringValue: newParcel.id },
+                            trackingNumber: { stringValue: newParcel.trackingNumber },
+                            senderType: { stringValue: newParcel.senderType },
+                            courierServiceName: { stringValue: newParcel.courierServiceName },
+                            recipientName: { stringValue: newParcel.recipientName },
+                            recipientLocation: { stringValue: newParcel.recipientLocation },
+                            recipientPhone: { stringValue: newParcel.recipientPhone },
+                            category: { stringValue: newParcel.category },
+                            status: { stringValue: newParcel.status },
+                            storageLocation: { stringValue: newParcel.storageLocation },
+                            securityStaffName: { stringValue: newParcel.securityStaffName },
+                            courierName: { stringValue: newParcel.courierName },
+                            receivedAt: { integerValue: newParcel.receivedAt.toString() },
+                            slaMinutes: { integerValue: newParcel.slaMinutes.toString() },
+                            notes: { stringValue: newParcel.notes }
+                        }
+                    };
+                    const res = await fetch(restUrl, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(restBody)
+                    });
+                    if (res.ok) saved = true;
+                } catch (restErr) {
+                    console.error("REST write failed:", restErr);
+                }
+            }
 
-            document.getElementById('parcelForm').reset();
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Simpan & Sinkronkan ke Cloud</span>';
-            switchTab('pipeline');
-        }
+
+            if (saved) {
+                speak("Paket baru nomor " + newParcel.trackingNumber + " untuk " + newParcel.recipientName + " berhasil disimpan.");
+                alert("Sukses! Paket " + newParcel.trackingNumber + " berhasil disimpan dan tersinkronkan ke HP Android!");
+                document.getElementById('parcelForm').reset();
+                window.switchTab('pipeline');
+                fetchParcelsFromRest();
+            } else {
+                alert("Gagal menyimpan ke Cloud. Mohon periksa koneksi internet.");
+            }
+        };
 
         // Update Parcel Status
-        async function updateParcelStatus(parcelId, newStatus) {
-            const p = parcels.find(item => item.id === parcelId);
-            if (!p) return;
-
-            p.status = newStatus;
-            p.statusLabel = newStatus === 'DELIVERED' ? 'Selesai' : (newStatus === 'IN_TRANSIT' ? 'Sedang Diantar' : 'Di Pos Satpam');
-            if (newStatus === 'DELIVERED') {
-                p.deliveredAtStr = new Date().toLocaleString("id-ID");
+        window.updateParcelStatus = async function(parcelId, newStatus) {
+            if (!currentUser) {
+                alert("Silakan pilih akun / masuk terlebih dahulu.");
+                window.openLoginModal();
+                return;
             }
 
+            let updated = false;
+
+            // Attempt 1: Modular SDK
             if (db) {
                 try {
-                    await db.collection("parcels").doc(parcelId).update({
+                    const docRef = doc(db, "parcels", parcelId);
+                    const updateData = {
                         status: newStatus,
-                        statusLabel: p.statusLabel,
-                        deliveredAt: newStatus === 'DELIVERED' ? Date.now() : null
-                    });
+                        courierName: currentUser.displayName || "Kurir"
+                    };
+                    if (newStatus === 'DELIVERED') updateData.deliveredAt = Date.now();
+                    else if (newStatus === 'IN_TRANSIT') updateData.dispatchedAt = Date.now();
+                    await updateDoc(docRef, updateData);
+                    updated = true;
                 } catch (e) {
-                    console.warn("Update status ke cloud gagal:", e);
+                    console.warn("Update via SDK failed, trying REST:", e);
                 }
             }
 
-            updateAllViews();
-            speak("Status paket " + p.trackingNumber + " diperbarui menjadi " + p.statusLabel);
-        }
+            // Attempt 2: REST fallback
+            if (!updated) {
+                try {
+                    const restUrl = FIRESTORE_REST_BASE + "/" + parcelId + "?updateMask.fieldPaths=status&updateMask.fieldPaths=courierName&key=" + firebaseConfig.apiKey;
+                    const restBody = {
+                        fields: {
+                            status: { stringValue: newStatus },
+                            courierName: { stringValue: currentUser.displayName || "Kurir" }
+                        }
+                    };
+                    const res = await fetch(restUrl, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(restBody)
+                    });
+                    if (res.ok) updated = true;
+                } catch (e) {
+                    console.error("REST update failed:", e);
+                }
+            }
 
-        function generateAutoResi() {
+            if (updated) {
+                speak("Status paket diperbarui menjadi " + (newStatus === 'DELIVERED' ? 'Selesai' : 'Sedang Diantar'));
+                fetchParcelsFromRest();
+            } else {
+                alert("Gagal memperbarui status ke Cloud.");
+            }
+        };
+
+        window.generateAutoResi = function() {
             document.getElementById('inpTrackingNumber').value = "SCH-" + Math.floor(100000 + Math.random() * 900000);
-        }
+        };
 
         // Barcode Scanner
-        function startScanner() {
+        window.startScanner = function() {
             if (html5QrCode) return;
             const resultBox = document.getElementById('scanResult');
-            resultBox.classList.add('hidden');
+            if (resultBox) resultBox.classList.add('hidden');
 
             html5QrCode = new Html5Qrcode("reader");
             html5QrCode.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
-                    console.log("Barcode berhasil dipindai:", decodedText);
-                    resultBox.innerText = "Barcode Terdeteksi: " + decodedText;
-                    resultBox.classList.remove('hidden');
+                    if (resultBox) {
+                        resultBox.innerText = "Barcode Terdeteksi: " + decodedText;
+                        resultBox.classList.remove('hidden');
+                    }
                     speak("Barcode terdeteksi: " + decodedText);
-
-                    // Auto populate tracking number in input tab
                     document.getElementById('inpTrackingNumber').value = decodedText;
-                    stopScanner();
-                    setTimeout(() => switchTab('input'), 1000);
+                    window.stopScanner();
+                    setTimeout(() => window.switchTab('input'), 1000);
                 },
-                (errorMessage) => {
-                    // scanning loop
-                }
+                () => {}
             ).catch(err => {
-                console.warn("Gagal membuka kamera:", err);
-                alert("Kamera tidak dapat diakses atau izin ditolak.");
+                console.warn("Kamera tidak dapat diakses:", err);
             });
-        }
+        };
 
-        function stopScanner() {
+        window.stopScanner = function() {
             if (html5QrCode) {
                 html5QrCode.stop().then(() => {
                     html5QrCode.clear();
@@ -770,33 +1128,35 @@
                     html5QrCode = null;
                 });
             }
-        }
+        };
 
         // Voice Text-to-Speech
-        function toggleVoice() {
+        window.toggleVoice = function() {
             voiceEnabled = !voiceEnabled;
             const btn = document.getElementById('btnVoiceHeader');
             const txt = document.getElementById('voiceStatusText');
             if (voiceEnabled) {
-                btn.className = "bg-indigo-900/80 hover:bg-indigo-800 text-indigo-100 border border-indigo-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition";
-                txt.innerText = "Suara TTS Aktif";
-                speak("Suara Text to Speech diaktifkan.");
+                if (btn) btn.className = "bg-indigo-900/80 hover:bg-indigo-800 text-indigo-100 border border-indigo-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition";
+                if (txt) txt.innerText = "Suara TTS";
+                speak("Suara Text to Speech aktif.");
             } else {
-                btn.className = "bg-rose-900/80 hover:bg-rose-800 text-rose-200 border border-rose-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition";
-                txt.innerText = "Suara Dinonaktifkan";
+                if (btn) btn.className = "bg-rose-900/80 hover:bg-rose-800 text-rose-200 border border-rose-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition";
+                if (txt) txt.innerText = "Suara Nonaktif";
             }
-        }
+        };
 
         function speak(text) {
             if (!voiceEnabled || !('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            window.speechSynthesis.speak(utterance);
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                window.speechSynthesis.speak(utterance);
+            } catch (_) {}
         }
 
         // CSV Export
-        function exportToCsv() {
+        window.exportToCsv = function() {
             let csv = "LAPORAN TRANSAKSI PAKET SEKOLAH\n";
             csv += "Waktu Ekspor," + new Date().toLocaleString("id-ID") + "\n";
             csv += "No,No Resi,Ekspedisi,Penerima,Lokasi,Kategori,Status,Waktu Diterima\n";
@@ -809,10 +1169,7 @@
             a.href = url;
             a.download = "Laporan_Kurir_Sekolah_" + new Date().toISOString().slice(0, 10) + ".csv";
             a.click();
-        }
-
-        // Initial render on load
-        updateAllViews();
+        };
     </script>
 </body>
 </html>
