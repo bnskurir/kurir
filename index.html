@@ -3,1407 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurir Sekolah - Portal Web Terpadu & Sinkronisasi Cloud</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Kurir Sekolah - Portal Web & Sinkronisasi Realtime</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome 6 Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- HTML5 QR / Barcode Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f8fafc;
-        }
-        .kanban-col {
-            min-height: calc(100vh - 360px);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
+            body { background: white !important; color: black !important; }
         }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
-
-    <!-- TOP NOTIFICATION BANNER / STATUS -->
-    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Brand / Logo -->
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-                        <i class="fa-solid fa-school text-lg"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="font-extrabold text-base tracking-tight text-white">Kurir Sekolah</span>
-                            <span class="bg-indigo-500/30 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-400/30">CLOUD SYNC</span>
-                        </div>
-                        <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Sistem Ekspedisi & Manajemen Paket Terpadu</p>
-                    </div>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+    <!-- Navbar -->
+    <header class="bg-indigo-950 text-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-graduation-cap text-xl text-white"></i>
                 </div>
-
-                <!-- Status Badges & Controls -->
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <!-- Real-time Firestore Cloud Indicator -->
-                    <div id="cloudStatusBadge" class="flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold shadow-inner">
-                        <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="cloudStatusText" class="hidden md:inline">Cloud Terhubung (Realtime)</span>
-                    </div>
-
-                    <!-- Voice TTS Toggle -->
-                    <button id="btnVoiceHeader" onclick="toggleVoice()" type="button" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-100 border border-indigo-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer">
-                        <i class="fa-solid fa-volume-high text-[11px]"></i>
-                        <span id="voiceStatusText" class="hidden sm:inline">Suara TTS</span>
-                    </button>
-
-                    <!-- Direct APK Download Button -->
-                    <a href="/kurir.apk" download="kurir.apk" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 sm:px-3.5 py-1.5 rounded-lg shadow-sm flex items-center space-x-1.5 transition cursor-pointer">
-                        <i class="fa-brands fa-android text-sm"></i>
-                        <span class="hidden sm:inline">Unduh APK</span>
-                    </a>
-
-                    <!-- Current Authenticated Google User / Login Button -->
-                    <div id="userProfile" class="hidden flex items-center space-x-2 bg-slate-800/90 pl-1 pr-2.5 py-1 rounded-full border border-slate-700">
-                        <img id="userAvatar" src="" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-indigo-400">
-                        <div class="text-left hidden lg:block leading-tight">
-                            <span id="userName" class="block text-xs font-bold text-white truncate max-w-[130px]">-</span>
-                            <span id="userRoleBadge" class="block text-[10px] text-indigo-300 font-medium">Akun Google</span>
-                        </div>
-                        <button type="button" onclick="logoutUser()" title="Keluar dari Akun" class="text-slate-400 hover:text-rose-400 text-xs ml-1 transition p-1">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </button>
-                    </div>
-
-                    <button id="btnLoginMain" onclick="openLoginModal()" type="button" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow-sm flex items-center space-x-1.5 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                        </svg>
-                        <span>Login Google</span>
-                    </button>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">Kurir Sekolah</h1>
+                    <p class="text-xs text-indigo-200">Portal Web Terpadu & Sinkronisasi Cloud</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Navigation Tabs Bar -->
-        <div class="bg-slate-800/80 border-t border-slate-700/60 no-print">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-2 overflow-x-auto py-1">
-                <button id="tab-pipeline" onclick="switchTab('pipeline')" type="button" class="tab-btn px-3 py-2 text-xs rounded-lg transition flex items-center space-x-2 border-b-2 border-indigo-400 text-white font-bold whitespace-nowrap cursor-pointer">
-                    <i class="fa-solid fa-chart-gantt"></i>
-                    <span>Pipeline Realtime</span>
+            <div class="flex items-center flex-wrap gap-2.5">
+                <div id="syncBadge" class="flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="syncText">Sinkronisasi Cloud Aktif</span>
+                </div>
+                <button id="btnLoginWeb" onclick="loginGoogle()" class="bg-white hover:bg-slate-100 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
+                    <i class="fa-brands fa-google text-indigo-600"></i>
+                    <span id="userDisplayName">Login Google</span>
                 </button>
-                <button id="tab-table" onclick="switchTab('table')" type="button" class="tab-btn px-3 py-2 text-xs rounded-lg transition flex items-center space-x-2 border-b-2 border-transparent text-indigo-200 hover:text-white whitespace-nowrap cursor-pointer">
-                    <i class="fa-solid fa-table-list"></i>
-                    <span>Database Paket</span>
+                <button onclick="window.print()" class="bg-indigo-800 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak PDF</span>
                 </button>
-                <button id="tab-input" onclick="switchTab('input')" type="button" class="tab-btn px-3 py-2 text-xs rounded-lg transition flex items-center space-x-2 border-b-2 border-transparent text-indigo-200 hover:text-white whitespace-nowrap cursor-pointer">
-                    <i class="fa-solid fa-square-plus"></i>
-                    <span>Catat Paket Masuk</span>
-                </button>
-                <button id="tab-scanner" onclick="switchTab('scanner')" type="button" class="tab-btn px-3 py-2 text-xs rounded-lg transition flex items-center space-x-2 border-b-2 border-transparent text-indigo-200 hover:text-white whitespace-nowrap cursor-pointer">
-                    <i class="fa-solid fa-qrcode"></i>
-                    <span>Scanner Kamera</span>
-                </button>
-                <button onclick="exportToCsv()" type="button" class="px-3 py-2 text-xs rounded-lg text-emerald-300 hover:text-white font-semibold transition flex items-center space-x-2 ml-auto whitespace-nowrap cursor-pointer">
-                    <i class="fa-solid fa-file-csv"></i>
-                    <span>Ekspor CSV</span>
+                <button onclick="exportToCsv()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Unduh CSV</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN BODY CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-
-        <!-- Top Welcome & Google Auth Notification Alert -->
-        <div id="loginBanner" class="bg-gradient-to-r from-indigo-900 to-slate-900 rounded-2xl p-4 sm:p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md border border-indigo-700/40 no-print">
-            <div class="flex items-center space-x-3.5">
-                <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 text-amber-300">
-                    <i class="fa-solid fa-shield-halved text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm sm:text-base text-white">Login Resmi Hanya Melalui Akun Google</h3>
-                    <p class="text-xs text-indigo-200 mt-0.5">Role default login adalah Penerima Paket. Untuk hak akses Satpam atau Kurir, konfirmasi ke bagian Admin Sarpras (protecomb@gmail.com).</p>
-                </div>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- Hero & Info Bar -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700">Laporan Ekspor Terpadu</span>
+                <h2 class="text-xl font-extrabold text-slate-900 mt-1">Laporan Paket & Ekspedisi Sekolah (Harian)</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Dihasilkan otomatis • Sinkronisasi dua arah via Firebase Cloud Firestore</p>
             </div>
-            <button type="button" onclick="openLoginModal()" class="bg-white hover:bg-slate-100 text-indigo-950 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 shrink-0 shadow cursor-pointer">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <span>Masuk dengan Google</span>
-            </button>
+            <div class="text-right">
+                <span class="text-xs text-slate-500 block">Waktu Terbit:</span>
+                <span class="text-sm font-semibold text-slate-800">15/10/2026 00:32</span>
+            </div>
         </div>
 
-        <!-- Top KPI Cards -->
-        <section class="grid grid-cols-2 md:grid-cols-5 gap-3.5 sm:gap-4 no-print">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-                <span class="text-xs font-semibold text-slate-500 flex items-center justify-between">
-                    <span>Total Paket</span>
-                    <i class="fa-solid fa-boxes-stacked text-indigo-500"></i>
-                </span>
-                <p id="kpiTotal" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">0</p>
-                <span class="text-[11px] text-slate-400 mt-1">Seluruh kiriman terdata</span>
+        <!-- KPI Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <span class="text-xs font-medium text-slate-500">Total Paket</span>
+                <p id="kpiTotal" class="text-2xl font-bold text-slate-900 mt-1">7</p>
             </div>
-
-            <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-200/80 shadow-sm flex flex-col justify-between">
-                <span class="text-xs font-semibold text-amber-800 flex items-center justify-between">
-                    <span>Di Pos Satpam</span>
-                    <i class="fa-solid fa-shield-halved text-amber-600"></i>
-                </span>
-                <p id="kpiReceived" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-2">0</p>
-                <span class="text-[11px] text-amber-700/80 mt-1">Antrian pengambilan</span>
+            <div class="bg-white p-4 rounded-xl border border-amber-200 shadow-sm bg-amber-50/30">
+                <span class="text-xs font-medium text-amber-700">Di Pos Satpam</span>
+                <p id="kpiReceived" class="text-2xl font-bold text-amber-600 mt-1">2</p>
             </div>
-
-            <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-200/80 shadow-sm flex flex-col justify-between">
-                <span class="text-xs font-semibold text-sky-800 flex items-center justify-between">
-                    <span>Sedang Diantar</span>
-                    <i class="fa-solid fa-motorcycle text-sky-600"></i>
-                </span>
-                <p id="kpiInTransit" class="text-2xl sm:text-3xl font-extrabold text-sky-600 mt-2">0</p>
-                <span class="text-[11px] text-sky-700/80 mt-1">Dalam perjalanan kurir</span>
+            <div class="bg-white p-4 rounded-xl border border-sky-200 shadow-sm bg-sky-50/30">
+                <span class="text-xs font-medium text-sky-700">Sedang Diantar</span>
+                <p id="kpiInTransit" class="text-2xl font-bold text-sky-600 mt-1">2</p>
             </div>
-
-            <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/80 shadow-sm flex flex-col justify-between">
-                <span class="text-xs font-semibold text-emerald-800 flex items-center justify-between">
-                    <span>Selesai Diserahkan</span>
-                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                </span>
-                <p id="kpiDelivered" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-2">0</p>
-                <span class="text-[11px] text-emerald-700/80 mt-1">Serah terima tuntas</span>
+            <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-sm bg-emerald-50/30">
+                <span class="text-xs font-medium text-emerald-700">Selesai Diserahkan</span>
+                <p id="kpiDelivered" class="text-2xl font-bold text-emerald-600 mt-1">3</p>
             </div>
-
-            <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-200/80 shadow-sm flex flex-col justify-between col-span-2 md:col-span-1">
-                <span class="text-xs font-semibold text-indigo-800 flex items-center justify-between">
-                    <span>Kepatuhan SLA</span>
-                    <i class="fa-solid fa-stopwatch text-indigo-600"></i>
-                </span>
-                <p id="kpiSla" class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mt-2">100%</p>
-                <span class="text-[11px] text-indigo-700/80 mt-1">Target 2 jam sekolah</span>
+            <div class="bg-white p-4 rounded-xl border border-indigo-200 shadow-sm bg-indigo-50/30">
+                <span class="text-xs font-medium text-indigo-700">Kepatuhan SLA</span>
+                <p id="kpiSla" class="text-2xl font-bold text-indigo-700 mt-1">57%</p>
             </div>
-        </section>
+        </div>
 
-        <!-- TAB 1: KANBAN PIPELINE MONITOR -->
-        <section id="content-pipeline" class="tab-content space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                <div>
-                    <h2 class="text-base font-bold text-slate-900">Alur Pengantaran Paket Realtime (Live Kanban)</h2>
-                    <p class="text-xs text-slate-500">Perubahan dari aplikasi Android Satpam & Kurir bergerak otomatis secara langsung di layar ini.</p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-xs font-semibold text-slate-400">Sinkron Terakhir:</span>
-                    <span id="lastUpdatedTime" class="text-xs font-bold text-slate-700">-</span>
-                </div>
+        <!-- Controls & Filters -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center no-print">
+            <div class="relative w-full md:w-80">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                <input id="searchInput" oninput="renderTable()" type="text" placeholder="Cari nomor resi, penerima, ruangan..." 
+                       class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <!-- Col 1: Pos Satpam -->
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col kanban-col shadow-sm">
-                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                            <h3 class="font-bold text-slate-800 text-sm">1. Pos Keamanan (Satpam)</h3>
-                        </div>
-                        <span id="countColReceived" class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="colReceivedCards" class="space-y-3 flex-1 overflow-y-auto">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Col 2: Sedang Diantar -->
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col kanban-col shadow-sm">
-                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-sky-500"></span>
-                            <h3 class="font-bold text-slate-800 text-sm">2. Sedang Diantar (Kurir)</h3>
-                        </div>
-                        <span id="countColInTransit" class="bg-sky-100 text-sky-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="colInTransitCards" class="space-y-3 flex-1 overflow-y-auto">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Col 3: Selesai -->
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col kanban-col shadow-sm">
-                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                            <h3 class="font-bold text-slate-800 text-sm">3. Selesai Diserahkan</h3>
-                        </div>
-                        <span id="countColDelivered" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="colDeliveredCards" class="space-y-3 flex-1 overflow-y-auto">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <select id="statusFilter" onchange="renderTable()" class="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="ALL">Semua Status</option>
+                    <option value="RECEIVED">Di Pos Satpam</option>
+                    <option value="IN_TRANSIT">Sedang Diantar</option>
+                    <option value="DELIVERED">Selesai</option>
+                </select>
+                <button onclick="toggleVoice()" id="btnVoice" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-semibold flex items-center space-x-1.5">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>Suara TTS</span>
+                </button>
             </div>
-        </section>
+        </div>
 
-        <!-- TAB 2: DATABASE & RIWAYAT LENGKAP -->
-        <section id="content-table" class="tab-content hidden space-y-4">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center no-print">
-                <div class="relative w-full md:w-96">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                    <input id="searchInput" oninput="renderTable()" type="text" placeholder="Cari nomor resi, penerima, ruangan..." 
-                           class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-                    <select id="statusFilter" onchange="renderTable()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="ALL">Semua Status</option>
-                        <option value="RECEIVED">Di Pos Satpam</option>
-                        <option value="IN_TRANSIT">Sedang Diantar</option>
-                        <option value="DELIVERED">Selesai Diserahkan</option>
-                    </select>
-                    <select id="categoryFilter" onchange="renderTable()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="ALL">Semua Kategori</option>
-                        <option value="DOKUMEN">Dokumen & Surat</option>
-                        <option value="ELEKTRONIK">Elektronik & Gadget</option>
-                        <option value="MAKANAN">Makanan & Minuman</option>
-                        <option value="PAKAIAN">Pakaian & Tekstil</option>
-                        <option value="BARANG_UMUM">Barang Umum</option>
-                    </select>
-                </div>
+        <!-- Main Table Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-900 text-base">Daftar Transaksi Paket Realtime</h3>
+                <span id="recordCount" class="text-xs font-medium text-slate-500">Menampilkan 0 data</span>
             </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-900 text-base">Tabel Database Paket Terpadu</h3>
-                    <span id="recordCount" class="text-xs font-semibold text-slate-500">0 data</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead class="bg-slate-50 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
-                            <tr>
-                                <th class="py-3.5 px-4">No</th>
-                                <th class="py-3.5 px-4">No Resi</th>
-                                <th class="py-3.5 px-4">Ekspedisi</th>
-                                <th class="py-3.5 px-4">Penerima & Ruangan</th>
-                                <th class="py-3.5 px-4">Kategori</th>
-                                <th class="py-3.5 px-4">Status</th>
-                                <th class="py-3.5 px-4">Foto & Waktu Selesai</th>
-                                <th class="py-3.5 px-4 no-print text-center">Aksi / WA</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
+                        <tr>
+                            <th class="py-3 px-4">No</th>
+                            <th class="py-3 px-4">No Resi</th>
+                            <th class="py-3 px-4">Ekspedisi / Pengirim</th>
+                            <th class="py-3 px-4">Penerima & Lokasi</th>
+                            <th class="py-3 px-4">Kategori</th>
+                            <th class="py-3 px-4">Status & SLA</th>
+                            <th class="py-3 px-4">Waktu Diterima</th>
+                            <th class="py-3 px-4 no-print text-center">Aksi WA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
             </div>
-        </section>
-
-        <!-- TAB 3: INPUT PAKET BARU -->
-        <section id="content-input" class="tab-content hidden max-w-3xl mx-auto space-y-4">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="border-b border-slate-100 pb-4 mb-5 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">Formulir Penerimaan Paket Baru (Pos Satpam)</h2>
-                        <p class="text-xs text-slate-500 mt-1">Data yang disimpan langsung masuk ke database cloud dan notifikasi HP Android.</p>
-                    </div>
-                    <span id="authWarningBadge" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-lg font-bold">
-                        <i class="fa-solid fa-check text-[10px] mr-1"></i>Siap Input
-                    </span>
-                </div>
-
-                <form id="parcelForm" onsubmit="submitNewParcel(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nomor Resi / Barcode *</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="inpTrackingNumber" required placeholder="cth: SPXID098234 / JNE882" 
-                                       class="flex-1 px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <button type="button" onclick="generateAutoResi()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">Auto</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Ekspedisi / Kurir Luar *</label>
-                            <input type="text" id="inpCourierService" required placeholder="Pilih tombol di bawah atau ketik manual..." 
-                                   class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                    </div>
-
-                    <!-- PILIHAN CEPAT NAMA EKSPEDISI -->
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
-                        <label class="block text-xs font-bold text-slate-600 mb-2 flex items-center space-x-1.5">
-                            <i class="fa-solid fa-bolt text-amber-500"></i>
-                            <span>Pilihan Cepat Nama Ekspedisi:</span>
-                        </label>
-                        <div class="flex flex-wrap gap-1.5 sm:gap-2" id="quickCourierList">
-                            <button type="button" onclick="selectQuickCourier('Shopee SPX')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">Shopee SPX</button>
-                            <button type="button" onclick="selectQuickCourier('J&T Express')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">J&T Express</button>
-                            <button type="button" onclick="selectQuickCourier('JNE')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">JNE</button>
-                            <button type="button" onclick="selectQuickCourier('SiCepat')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">SiCepat</button>
-                            <button type="button" onclick="selectQuickCourier('Anteraja')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">Anteraja</button>
-                            <button type="button" onclick="selectQuickCourier('Ninja Xpress')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">Ninja Xpress</button>
-                            <button type="button" onclick="selectQuickCourier('POS Indonesia')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">POS Indonesia</button>
-                            <button type="button" onclick="selectQuickCourier('GoSend / Gojek')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">GoSend</button>
-                            <button type="button" onclick="selectQuickCourier('GrabExpress')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">GrabExpress</button>
-                            <button type="button" onclick="selectQuickCourier('Lion Parcel')" class="courier-chip px-3 py-1 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-700 rounded-lg text-xs font-semibold transition cursor-pointer">Lion Parcel</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Penerima Paket *</label>
-                            <input type="text" id="inpRecipientName" required placeholder="cth: Ibu Siti Aminah, M.Pd / Bpk. Rudi" 
-                                   class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Lokasi Ruangan / Kelas *</label>
-                            <input type="text" id="inpRecipientLocation" required placeholder="cth: Ruang Guru Lt.2, Gedung TU A, Lab Komputer" 
-                                   class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nomor WhatsApp Penerima</label>
-                            <input type="tel" id="inpRecipientPhone" placeholder="cth: 081234567890" 
-                                   class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori Barang</label>
-                            <select id="inpCategory" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <option value="DOKUMEN">Dokumen & Surat</option>
-                                <option value="ELEKTRONIK">Elektronik & Gadget</option>
-                                <option value="MAKANAN">Makanan & Minuman</option>
-                                <option value="PAKAIAN">Pakaian & Tekstil</option>
-                                <option value="BARANG_UMUM" selected>Barang Umum</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Lokasi Rak Simpan</label>
-                            <input type="text" id="inpStorageLocation" value="Rak Utama Pos Satpam" 
-                                   class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                    </div>
-
-                    <!-- Ambil Foto Fisik Paket Saat Masuk di Satpam -->
-                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Foto Fisik Paket (Opsional)</label>
-                        <div class="flex items-center space-x-3">
-                            <input type="file" id="inpPhysicalPhoto" accept="image/*" capture="environment" onchange="handlePhysicalPhotoSelected(event)" class="text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                            <div id="physicalPhotoPreviewBox" class="hidden">
-                                <img id="physicalPhotoPreview" src="" alt="Preview" class="w-12 h-12 object-cover rounded-lg border border-slate-300">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Catatan Khusus (Opsional)</label>
-                        <textarea id="inpNotes" rows="2" placeholder="cth: Paket rentan pecah, titipan mendesak..." 
-                                  class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-                    </div>
-
-                    <div class="pt-3 flex justify-end space-x-3">
-                        <button type="reset" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold transition">Reset Form</button>
-                        <button type="submit" id="btnSubmitParcel" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-indigo-600/30 transition flex items-center space-x-2 cursor-pointer">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span>Simpan & Sinkronkan ke Cloud</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- TAB 4: SCANNER KAMERA WEB -->
-        <section id="content-scanner" class="tab-content hidden max-w-xl mx-auto space-y-4">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center">
-                <h2 class="text-lg font-bold text-slate-900 mb-1">Pemindai Barcode / QR Kamera Laptop</h2>
-                <p class="text-xs text-slate-500 mb-4">Arahkan barcode resi ke kamera untuk input atau pencarian otomatis.</p>
-                
-                <div id="reader" class="w-full rounded-2xl overflow-hidden border-2 border-dashed border-indigo-300 bg-slate-50 min-h-[300px] flex items-center justify-center"></div>
-
-                <div class="mt-4 flex justify-center space-x-3">
-                    <button type="button" onclick="startScanner()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition shadow-sm cursor-pointer">
-                        <i class="fa-solid fa-camera"></i>
-                        <span>Nyalakan Kamera</span>
-                    </button>
-                    <button type="button" onclick="stopScanner()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
-                        <span>Matikan Kamera</span>
-                    </button>
-                </div>
-
-                <div id="scanResult" class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-semibold hidden"></div>
-            </div>
-        </section>
-
+        </div>
     </main>
 
-    <!-- FOOTER WITH USER'S REQUESTED COPYRIGHT -->
-    <footer class="bg-white border-t border-slate-200 py-5 px-4 text-center text-xs text-slate-500 no-print mt-auto">
-        <div class="max-w-7xl mx-auto space-y-1">
-            <p class="font-bold text-slate-800 text-sm">Copyright © 2026 Aufah Tech. All rights reserved.</p>
-            <p class="text-[11px] text-slate-400">Sistem Kurir Sekolah Terpadu & Sinkronisasi Cloud Dua Arah Real-Time</p>
-        </div>
-    </footer>
-
-    <!-- MODAL 1: HANYA LOGIN EMAIL GOOGLE (LOGIN INSTAN DIHAPUS SEPENUHNYA) -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 relative border border-slate-100">
-            <button type="button" onclick="closeLoginModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition p-1 cursor-pointer">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <div class="text-center mb-6">
-                <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 mx-auto flex items-center justify-center mb-3 shadow-inner">
-                    <svg class="w-7 h-7" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-extrabold text-slate-900">Masuk Akun Google</h3>
-                <p class="text-xs text-slate-500 mt-1">Autentikasi resmi web portal menggunakan akun Google resmi sekolah.</p>
-            </div>
-
-            <!-- Method 1: Google OAuth Popup Button -->
-            <div class="mb-4">
-                <button type="button" onclick="loginWithGooglePopup()" class="w-full bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200 font-bold py-3 px-4 rounded-2xl text-sm flex items-center justify-center space-x-3 shadow-sm hover:border-indigo-400 transition cursor-pointer">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <span>Masuk dengan Google (Popup)</span>
-                </button>
-            </div>
-
-            <div class="relative flex py-2 items-center mb-4">
-                <div class="flex-grow border-t border-slate-200"></div>
-                <span class="flex-shrink mx-4 text-slate-400 text-xs font-semibold uppercase tracking-wider">Atau Ketik Email Google</span>
-                <div class="flex-grow border-t border-slate-200"></div>
-            </div>
-
-            <!-- Method 2: Direct Google Email Login (Fail-Safe for Cloud/Sandbox Domains) -->
-            <form onsubmit="loginWithGoogleEmail(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Email Google (@gmail.com / domain sekolah) *</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                        <input type="email" id="inpGoogleEmail" required placeholder="cth: protecomb@gmail.com" class="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Tampilan Google (Opsional)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-user absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                        <input type="text" id="inpGoogleDisplayName" placeholder="cth: Budi Santoso / Siti Aminah" class="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow-md shadow-indigo-600/20 cursor-pointer flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    <span>Verifikasi & Masuk Akun Google</span>
-                </button>
-            </form>
-
-            <div class="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-1">
-                <p class="font-bold text-slate-800 flex items-center space-x-1">
-                    <i class="fa-solid fa-circle-info text-indigo-500"></i>
-                    <span>Ketentuan Hak Akses Akun Google:</span>
-                </p>
-                <p>• Role default: <strong>Penerima Paket</strong>.</p>
-                <p>• Akun Admin Sarpras: <strong>protecomb@gmail.com</strong> (otomatis hak akses penuh).</p>
-                <p>• Untuk mengaktifkan peran Petugas Satpam/Kurir, silakan konfirmasi ke bagian Admin.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: AMBIL FOTO PENERIMA SAAT MENYELESAIKAN TRANSAKSI -->
-    <div id="deliveryPhotoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 relative border border-slate-100">
-            <button type="button" onclick="closeDeliveryPhotoModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition p-1 cursor-pointer">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <div class="text-center mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 mx-auto flex items-center justify-center mb-2">
-                    <i class="fa-solid fa-camera-retro text-xl"></i>
-                </div>
-                <h3 class="text-lg font-extrabold text-slate-900">Foto Bukti Penerima Paket</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Ambil foto serah terima kepada penerima saat menyelesaikan transaksi.</p>
-            </div>
-
-            <!-- Target Parcel Info Card -->
-            <div id="deliveryTargetInfo" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 mb-4 text-xs space-y-1">
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-500">Nomor Resi:</span>
-                    <span id="targetTrackingNumber" class="font-bold text-slate-900 text-sm">-</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-500">Nama Penerima:</span>
-                    <span id="targetRecipientName" class="font-semibold text-slate-800">-</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-500">Lokasi / Ruangan:</span>
-                    <span id="targetLocation" class="font-medium text-slate-700">-</span>
-                </div>
-            </div>
-
-            <!-- Photo Capture / Upload Area -->
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Ambil Foto Penerima / Bukti Serah Terima *</label>
-                    <input type="file" id="deliveryPhotoFile" accept="image/*" capture="environment" onchange="previewDeliveryPhoto(event)" 
-                           class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-                </div>
-
-                <!-- Preview Area -->
-                <div id="deliveryPhotoPreviewContainer" class="hidden w-full h-44 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative flex items-center justify-center">
-                    <img id="deliveryPhotoPreviewImg" src="" alt="Bukti Foto" class="w-full h-full object-cover">
-                    <span class="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded-md font-semibold">Foto Terlampir</span>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Catatan Tambahan Serah Terima</label>
-                    <input type="text" id="deliveryCompletionNotes" placeholder="cth: Diterima langsung oleh yang bersangkutan di ruang guru" 
-                           class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div class="pt-2 flex space-x-2.5">
-                    <button type="button" onclick="closeDeliveryPhotoModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer">Batal</button>
-                    <button type="button" onclick="confirmDeliveryCompletion()" id="btnConfirmDelivery" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-md shadow-emerald-600/30 flex items-center justify-center space-x-1.5 cursor-pointer">
-                        <i class="fa-solid fa-circle-check"></i>
-                        <span>Selesaikan Transaksi</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 3: ZOOM FOTO BUKTI -->
-    <div id="photoZoomModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-5 relative border border-slate-100">
-            <button type="button" onclick="closePhotoZoomModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition p-1 cursor-pointer">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h3 id="photoZoomTitle" class="font-bold text-slate-900 text-sm mb-3">Foto Bukti Transaksi</h3>
-            <div class="w-full max-h-[70vh] rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center">
-                <img id="photoZoomImg" src="" alt="Bukti Foto" class="max-h-[68vh] w-auto object-contain">
-            </div>
-            <p id="photoZoomCaption" class="text-xs text-slate-500 mt-2 text-center">-</p>
-        </div>
-    </div>
-
-    <!-- PRIMARY JAVASCRIPT: DEFINED GLOBALLY FIRST BEFORE ANY EXTERNAL ASYNC SCRIPTS -->
+    <!-- Embedded Data & Real-time Script -->
     <script>
-        // Global State
-        var currentUser = null;
-        var parcels = [];
-        var voiceEnabled = true;
-        var html5QrCode = null;
-        var isFirstLoad = true;
-
-        var currentCompletingParcelId = null;
-        var currentDeliveryPhotoBase64 = null;
-        var currentPhysicalPhotoBase64 = null;
-
-        var FIREBASE_PROJECT_ID = "gen-lang-client-0044724585";
-        var FIREBASE_API_KEY = "AIzaSyB-Pt5Mq8n8mNA0JFSOT8TgvxEheksAiiU";
-        var CUSTOM_DATABASE_ID = "ai-studio-android-kurirsek-ef11a90f-11b7-4eb1-8dd0-0614cd2cbbf4";
-        var FIRESTORE_REST_BASE = "https://firestore.googleapis.com/v1/projects/" + FIREBASE_PROJECT_ID + "/databases/" + CUSTOM_DATABASE_ID + "/documents/parcels";
-
-        // 1. Navigation & Modal Handlers
-        function openLoginModal() {
-            var modal = document.getElementById('loginModal');
-            if (modal) modal.classList.remove('hidden');
-        }
-
-        function closeLoginModal() {
-            var modal = document.getElementById('loginModal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function switchTab(tabId) {
-            var allContents = document.querySelectorAll('.tab-content');
-            allContents.forEach(function(el) { el.classList.add('hidden'); });
-
-            var allBtns = document.querySelectorAll('.tab-btn');
-            allBtns.forEach(function(el) {
-                el.classList.remove('border-indigo-400', 'text-white', 'font-bold');
-                el.classList.add('border-transparent', 'text-indigo-200');
-            });
-
-            var target = document.getElementById('content-' + tabId);
-            if (target) target.classList.remove('hidden');
-
-            var btn = document.getElementById('tab-' + tabId);
-            if (btn) {
-                btn.classList.remove('border-transparent', 'text-indigo-200');
-                btn.classList.add('border-indigo-400', 'text-white', 'font-bold');
-            }
-
-            if (tabId === 'scanner') {
-                startScanner();
-            } else {
-                stopScanner();
-            }
-        }
-
-        // 2. User & Auth UI Management (HANYA AKUN GOOGLE)
-        function setUserUI(user) {
-            currentUser = user;
-            var btnLogin = document.getElementById('btnLoginMain');
-            var userProfile = document.getElementById('userProfile');
-            var loginBanner = document.getElementById('loginBanner');
-            var authWarningBadge = document.getElementById('authWarningBadge');
-
-            if (btnLogin) btnLogin.classList.add('hidden');
-            if (userProfile) userProfile.classList.remove('hidden');
-            if (loginBanner) loginBanner.classList.add('hidden');
-
-            var userNameEl = document.getElementById('userName');
-            var userAvatarEl = document.getElementById('userAvatar');
-            var userRoleBadgeEl = document.getElementById('userRoleBadge');
-
-            if (userNameEl) userNameEl.innerText = user.displayName;
-            if (userAvatarEl) userAvatarEl.src = user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(user.displayName) + "&background=4f46e5&color=fff");
-            if (userRoleBadgeEl) userRoleBadgeEl.innerText = user.role;
-
-            if (authWarningBadge) {
-                authWarningBadge.className = "bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-lg font-bold";
-                authWarningBadge.innerHTML = '<i class="fa-solid fa-check text-[10px] mr-1"></i>Google: ' + user.displayName;
-            }
-        }
-
-        function loginWithGoogleEmail(event) {
-            event.preventDefault();
-            var emailInp = document.getElementById('inpGoogleEmail');
-            var nameInp = document.getElementById('inpGoogleDisplayName');
-
-            var email = emailInp ? emailInp.value.trim().toLowerCase() : '';
-            if (!email || !email.includes('@')) {
-                alert("Silakan masukkan alamat email Google yang valid.");
-                return;
-            }
-
-            var defaultName = email.split('@')[0].replace(/[._]/g, ' ');
-            defaultName = defaultName.charAt(0).toUpperCase() + defaultName.slice(1);
-            var displayName = (nameInp && nameInp.value.trim()) ? nameInp.value.trim() : defaultName;
-
-            // Role assignment rule: protecomb@gmail.com is Admin; others are Penerima (default) or staff
-            var role = (email === "protecomb@gmail.com") ? "Admin Utama (Sarpras)" : "Penerima Paket";
-
-            var u = {
-                displayName: displayName,
-                email: email,
-                role: role,
-                photoURL: "https://ui-avatars.com/api/?name=" + encodeURIComponent(displayName) + "&background=4285F4&color=fff"
-            };
-
-            setUserUI(u);
-            try { localStorage.setItem("kurir_user_session", JSON.stringify(u)); } catch (_) {}
-            closeLoginModal();
-            speak("Berhasil masuk sebagai " + u.displayName + " akun Google.");
-            alert("Berhasil login dengan akun Google: " + u.email + " (" + u.role + ")");
-        }
-
-        function logoutUser() {
-            try { localStorage.removeItem("kurir_user_session"); } catch (_) {}
-            currentUser = null;
-            var btnLogin = document.getElementById('btnLoginMain');
-            var userProfile = document.getElementById('userProfile');
-            var loginBanner = document.getElementById('loginBanner');
-            if (btnLogin) btnLogin.classList.remove('hidden');
-            if (userProfile) userProfile.classList.add('hidden');
-            if (loginBanner) loginBanner.classList.remove('hidden');
-            speak("Anda telah keluar.");
-            openLoginModal();
-        }
-
-        // 3. Status & Notification
-        function setSyncStatus(isOnline, text) {
-            var badge = document.getElementById('cloudStatusBadge');
-            var dot = document.getElementById('pulseDot');
-            var txt = document.getElementById('cloudStatusText');
-            if (badge && dot && txt) {
-                if (isOnline) {
-                    badge.className = "flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold shadow-inner";
-                    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
-                } else {
-                    badge.className = "flex items-center space-x-2 bg-rose-950/80 border border-rose-500/40 text-rose-300 px-3 py-1.5 rounded-full text-xs font-semibold";
-                    dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
-                }
-                txt.innerText = text;
-            }
-        }
-
-        function toggleVoice() {
-            voiceEnabled = !voiceEnabled;
-            var btn = document.getElementById('btnVoiceHeader');
-            var txt = document.getElementById('voiceStatusText');
-            if (voiceEnabled) {
-                if (btn) btn.className = "bg-indigo-900/80 hover:bg-indigo-800 text-indigo-100 border border-indigo-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer";
-                if (txt) txt.innerText = "Suara TTS";
-                speak("Suara Text to Speech aktif.");
-            } else {
-                if (btn) btn.className = "bg-rose-900/80 hover:bg-rose-800 text-rose-200 border border-rose-700/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer";
-                if (txt) txt.innerText = "Suara Nonaktif";
-            }
-        }
-
-        function speak(text) {
-            if (!voiceEnabled || !('speechSynthesis' in window)) return;
-            try {
-                window.speechSynthesis.cancel();
-                var utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                window.speechSynthesis.speak(utterance);
-            } catch (_) {}
-        }
-
-        // 4. Quick Choice Courier
-        function selectQuickCourier(name) {
-            var inp = document.getElementById('inpCourierService');
-            if (inp) {
-                inp.value = name;
-                inp.focus();
-            }
-            var chips = document.querySelectorAll('.courier-chip');
-            chips.forEach(function(c) {
-                if (c.innerText.trim() === name) {
-                    c.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
-                    c.classList.remove('bg-white', 'text-slate-700');
-                } else {
-                    c.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
-                    c.classList.add('bg-white', 'text-slate-700');
-                }
-            });
-        }
-
-        // 5. Data Processing & Views
-        function normalizeParcelData(d, id) {
-            var recAt = Number(d.receivedAt) || Date.now();
-            var delAt = d.deliveredAt ? Number(d.deliveredAt) : null;
-            return {
-                id: d.id || id,
-                trackingNumber: d.trackingNumber || "-",
-                senderType: d.senderType || "Eksternal",
-                courierServiceName: d.courierServiceName || "Kurir",
-                recipientName: d.recipientName || "-",
-                recipientLocation: d.recipientLocation || "-",
-                recipientPhone: d.recipientPhone || "",
-                category: d.category || "BARANG_UMUM",
-                status: d.status || "RECEIVED",
-                statusLabel: d.status === "DELIVERED" ? "Selesai Diserahkan" : (d.status === "IN_TRANSIT" ? "Sedang Diantar" : "Di Pos Satpam"),
-                storageLocation: d.storageLocation || "Rak Utama",
-                securityStaffName: d.securityStaffName || "Satpam",
-                courierName: d.courierName || "-",
-                photoPath: d.photoPath || "",
-                proofPhotoPath: d.proofPhotoPath || "",
-                receivedAt: recAt,
-                deliveredAt: delAt,
-                receivedAtStr: new Date(recAt).toLocaleString("id-ID", { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                deliveredAtStr: delAt ? new Date(delAt).toLocaleString("id-ID", { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : "-",
-                durationMinutes: 0,
-                slaMinutes: Number(d.slaMinutes) || 120,
-                isSlaBreached: false,
-                notes: d.notes || ""
-            };
-        }
-
-        function handleIncomingParcels(cloudList) {
-            if (!isFirstLoad && cloudList.length > parcels.length) {
-                var newest = cloudList[cloudList.length - 1];
-                speak("Pemberitahuan: Paket baru nomor " + newest.trackingNumber + " untuk " + newest.recipientName + " telah diterima di pos satpam.");
-            }
-            isFirstLoad = false;
-            parcels = cloudList;
-            setSyncStatus(true, "Cloud Terhubung (" + cloudList.length + " Paket Realtime)");
-            var lastUpdateEl = document.getElementById('lastUpdatedTime');
-            if (lastUpdateEl) lastUpdateEl.innerText = new Date().toLocaleTimeString('id-ID');
-            updateAllViews();
-        }
-
-        function updateAllViews() {
-            updateKpis();
-            renderKanban();
-            renderTable();
-        }
-
-        function updateKpis() {
-            var total = parcels.length;
-            var received = parcels.filter(function(p) { return p.status === 'RECEIVED'; }).length;
-            var inTransit = parcels.filter(function(p) { return p.status === 'IN_TRANSIT'; }).length;
-            var delivered = parcels.filter(function(p) { return p.status === 'DELIVERED'; }).length;
-            var breached = parcels.filter(function(p) { return p.isSlaBreached; }).length;
-            var slaRate = total > 0 ? Math.round(((total - breached) * 100) / total) : 100;
-
-            var elTotal = document.getElementById('kpiTotal');
-            var elReceived = document.getElementById('kpiReceived');
-            var elInTransit = document.getElementById('kpiInTransit');
-            var elDelivered = document.getElementById('kpiDelivered');
-            var elSla = document.getElementById('kpiSla');
-
-            if (elTotal) elTotal.innerText = total;
-            if (elReceived) elReceived.innerText = received;
-            if (elInTransit) elInTransit.innerText = inTransit;
-            if (elDelivered) elDelivered.innerText = delivered;
-            if (elSla) elSla.innerText = slaRate + "%";
-
-            var cRec = document.getElementById('countColReceived');
-            var cTrans = document.getElementById('countColInTransit');
-            var cDel = document.getElementById('countColDelivered');
-            if (cRec) cRec.innerText = received;
-            if (cTrans) cTrans.innerText = inTransit;
-            if (cDel) cDel.innerText = delivered;
-        }
-
-        // TAMPILKAN FOTO DI SETIAP STATUS TRANSAKSI & WAKTU SELESAI
-        function createKanbanCard(p) {
-            var cleanPhone = (p.recipientPhone || '').replace(/[^0-9]/g, '');
-            var waNumber = cleanPhone.startsWith('0') ? '62' + cleanPhone.substring(1) : cleanPhone;
-            var waMessage = encodeURIComponent("Halo " + p.recipientName + ", kami informasikan status paket Anda [" + p.trackingNumber + "] saat ini: " + p.statusLabel + " di " + p.recipientLocation + ". Terima kasih.");
-
-            var actionBtn = "";
-            if (p.status === 'RECEIVED') {
-                actionBtn = '<button type="button" onclick="updateParcelStatus(\'' + p.id + '\', \'IN_TRANSIT\')" class="w-full mt-3 bg-sky-600 hover:bg-sky-500 text-white py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm"><i class="fa-solid fa-person-biking"></i><span>Ambil & Antar Paket</span></button>';
-            } else if (p.status === 'IN_TRANSIT') {
-                actionBtn = '<button type="button" onclick="openDeliveryPhotoModal(\'' + p.id + '\')" class="w-full mt-3 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm"><i class="fa-solid fa-camera"></i><span>Ambil Foto & Selesaikan</span></button>';
-            }
-
-            // Best photo to display
-            var displayPhoto = (p.status === 'DELIVERED' && p.proofPhotoPath) ? p.proofPhotoPath : (p.photoPath || p.proofPhotoPath);
-            var photoHtml = "";
-            if (displayPhoto) {
-                photoHtml = '<div class="mt-2.5 flex items-center space-x-2.5 p-2 bg-slate-50 border border-slate-200/80 rounded-xl cursor-pointer hover:bg-slate-100 transition" onclick="zoomPhoto(\'' + displayPhoto.replace(/'/g, "\\'") + '\', \'' + (p.status === 'DELIVERED' ? 'Foto Bukti Penerima: ' + p.recipientName : 'Foto Fisik Paket: ' + p.trackingNumber) + '\', \'' + p.trackingNumber + '\')">' +
-                    '<img src="' + displayPhoto + '" alt="Foto" class="w-12 h-12 object-cover rounded-lg border border-slate-300 shrink-0">' +
-                    '<div class="flex-1 min-w-0 leading-tight">' +
-                        '<span class="text-[11px] font-bold text-slate-800 block truncate">' + (p.status === 'DELIVERED' ? 'Foto Bukti Penerima' : 'Foto Fisik Paket') + '</span>' +
-                        '<span class="text-[10px] text-indigo-600 font-semibold block flex items-center"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i>Klik Perbesar</span>' +
-                    '</div>' +
-                '</div>';
-            }
-
-            // Completed timestamp banner
-            var completionHtml = "";
-            if (p.status === 'DELIVERED') {
-                completionHtml = '<div class="mt-2.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs leading-tight">' +
-                    '<div class="flex items-center space-x-1.5 text-emerald-800 font-extrabold">' +
-                        '<i class="fa-solid fa-circle-check text-emerald-600"></i>' +
-                        '<span>Selesai: ' + p.deliveredAtStr + ' WIB</span>' +
-                    '</div>' +
-                    '<span class="text-[10px] text-emerald-700/80 block mt-0.5">Kurir: ' + (p.courierName || 'Kurir Internal') + '</span>' +
-                '</div>';
-            }
-
-            return '<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">' +
-                '<div class="flex justify-between items-start gap-2">' +
-                    '<span class="bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold uppercase tracking-wide">' + p.courierServiceName + '</span>' +
-                    '<span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">' + p.storageLocation + '</span>' +
-                '</div>' +
-                '<h4 class="font-extrabold text-slate-900 text-sm mt-2">' + p.trackingNumber + '</h4>' +
-                '<p class="text-xs font-semibold text-slate-800 mt-1">' + p.recipientName + '</p>' +
-                '<p class="text-[11px] text-slate-500 flex items-center space-x-1 mt-0.5"><i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i><span>' + p.recipientLocation + '</span></p>' +
-                photoHtml +
-                (p.notes ? '<p class="text-[10px] text-amber-800 bg-amber-50 p-2 rounded-xl mt-2 font-medium">"' + p.notes + '"</p>' : '') +
-                completionHtml +
-                '<div class="mt-3 pt-2.5 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">' +
-                    '<span>Masuk: ' + p.receivedAtStr + '</span>' +
-                    (waNumber ? '<a href="https://wa.me/' + waNumber + '?text=' + waMessage + '" target="_blank" class="text-emerald-600 hover:text-emerald-700 font-bold flex items-center space-x-1"><i class="fa-brands fa-whatsapp"></i><span>WA</span></a>' : '') +
-                '</div>' +
-                actionBtn +
-            '</div>';
-        }
-
-        function renderKanban() {
-            var colReceived = document.getElementById('colReceivedCards');
-            var colInTransit = document.getElementById('colInTransitCards');
-            var colDelivered = document.getElementById('colDeliveredCards');
-            if (!colReceived || !colInTransit || !colDelivered) return;
-
-            var receivedItems = parcels.filter(function(p) { return p.status === 'RECEIVED'; });
-            var inTransitItems = parcels.filter(function(p) { return p.status === 'IN_TRANSIT'; });
-            var deliveredItems = parcels.filter(function(p) { return p.status === 'DELIVERED'; });
-
-            colReceived.innerHTML = receivedItems.length ? receivedItems.map(function(p) { return createKanbanCard(p); }).join('') : '<p class="text-xs text-slate-400 text-center py-8 font-medium">Tidak ada antrian di pos satpam</p>';
-            colInTransit.innerHTML = inTransitItems.length ? inTransitItems.map(function(p) { return createKanbanCard(p); }).join('') : '<p class="text-xs text-slate-400 text-center py-8 font-medium">Tidak ada paket yang sedang diantar</p>';
-            colDelivered.innerHTML = deliveredItems.length ? deliveredItems.map(function(p) { return createKanbanCard(p); }).join('') : '<p class="text-xs text-slate-400 text-center py-8 font-medium">Belum ada paket selesai hari ini</p>';
-        }
-
-        function renderTable() {
-            var searchEl = document.getElementById('searchInput');
-            var statusEl = document.getElementById('statusFilter');
-            var catEl = document.getElementById('categoryFilter');
-
-            var query = (searchEl ? searchEl.value : '').toLowerCase().trim();
-            var status = statusEl ? statusEl.value : 'ALL';
-            var category = catEl ? catEl.value : 'ALL';
-
-            var filtered = parcels.filter(function(p) {
-                var matchQuery = (p.trackingNumber || '').toLowerCase().includes(query) ||
-                                 (p.recipientName || '').toLowerCase().includes(query) ||
-                                 (p.recipientLocation || '').toLowerCase().includes(query) ||
-                                 (p.courierServiceName || '').toLowerCase().includes(query);
-                var matchStatus = status === 'ALL' || p.status === status;
-                var matchCategory = category === 'ALL' || (p.category || '').toUpperCase() === category;
-                return matchQuery && matchStatus && matchCategory;
-            });
-
-            var countEl = document.getElementById('recordCount');
-            if (countEl) countEl.innerText = "Menampilkan " + filtered.length + " dari " + parcels.length + " paket";
-
-            var tbody = document.getElementById('tableBody');
-            if (!tbody) return;
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-400 font-medium">Tidak ada transaksi paket yang cocok.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = filtered.map(function(p, index) {
-                var badgeClass = "bg-amber-100 text-amber-800";
-                if (p.status === "IN_TRANSIT") badgeClass = "bg-sky-100 text-sky-800";
-                if (p.status === "DELIVERED") badgeClass = "bg-emerald-100 text-emerald-800";
-
-                var cleanPhone = (p.recipientPhone || '').replace(/[^0-9]/g, '');
-                var waNumber = cleanPhone.startsWith('0') ? '62' + cleanPhone.substring(1) : cleanPhone;
-                var waMessage = encodeURIComponent("Halo " + p.recipientName + ", kami informasikan status paket Anda [" + p.trackingNumber + "] saat ini: " + p.statusLabel + " di " + p.recipientLocation + ". Terima kasih.");
-
-                var displayPhoto = (p.status === 'DELIVERED' && p.proofPhotoPath) ? p.proofPhotoPath : (p.photoPath || p.proofPhotoPath);
-                var photoColumn = '<span class="text-xs text-slate-400">-</span>';
-                if (displayPhoto) {
-                    photoColumn = '<div class="flex items-center space-x-2 cursor-pointer" onclick="zoomPhoto(\'' + displayPhoto.replace(/'/g, "\\'") + '\', \'Foto ' + p.trackingNumber + '\', \'' + p.recipientName + '\')">' +
-                        '<img src="' + displayPhoto + '" class="w-9 h-9 object-cover rounded-lg border border-slate-300">' +
-                        '<div class="text-[10px] leading-tight">' +
-                            '<span class="font-bold text-slate-800 block">' + (p.status === 'DELIVERED' ? 'Foto Selesai' : 'Foto Paket') + '</span>' +
-                            '<span class="text-emerald-700 font-semibold">' + (p.deliveredAtStr !== '-' ? p.deliveredAtStr : p.receivedAtStr) + '</span>' +
-                        '</div>' +
-                    '</div>';
-                } else if (p.status === 'DELIVERED') {
-                    photoColumn = '<span class="text-xs font-bold text-emerald-700">' + p.deliveredAtStr + ' WIB</span>';
-                }
-
-                return '<tr class="hover:bg-slate-50/80 transition-colors">' +
-                    '<td class="py-3 px-4 font-semibold text-slate-400">' + (index + 1) + '</td>' +
-                    '<td class="py-3 px-4 font-bold text-slate-900">' + p.trackingNumber + '</td>' +
-                    '<td class="py-3 px-4"><span class="font-medium text-slate-800">' + p.courierServiceName + '</span><span class="block text-xs text-slate-400">' + (p.senderType || 'Eksternal') + '</span></td>' +
-                    '<td class="py-3 px-4"><span class="font-semibold text-slate-900">' + p.recipientName + '</span><span class="block text-xs text-slate-500">' + p.recipientLocation + '</span></td>' +
-                    '<td class="py-3 px-4"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-medium">' + p.category + '</span></td>' +
-                    '<td class="py-3 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold ' + badgeClass + '">' + p.statusLabel + '</span></td>' +
-                    '<td class="py-3 px-4">' + photoColumn + '</td>' +
-                    '<td class="py-3 px-4 text-center no-print">' +
-                        (waNumber ? '<a href="https://wa.me/' + waNumber + '?text=' + waMessage + '" target="_blank" class="inline-flex items-center space-x-1 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-xs font-semibold shadow-sm transition"><i class="fa-brands fa-whatsapp"></i><span>WA</span></a>' : '<span class="text-xs text-slate-300">-</span>') +
-                    '</td>' +
-                '</tr>';
-            }).join('');
-        }
-
-        // 6. Photo Capture & Delivery Completion Handlers
-        function openDeliveryPhotoModal(parcelId) {
-            currentCompletingParcelId = parcelId;
-            currentDeliveryPhotoBase64 = null;
-
-            var target = parcels.find(function(p) { return p.id === parcelId; });
-            if (!target) return;
-
-            var tTrack = document.getElementById('targetTrackingNumber');
-            var tName = document.getElementById('targetRecipientName');
-            var tLoc = document.getElementById('targetLocation');
-            var pPreviewContainer = document.getElementById('deliveryPhotoPreviewContainer');
-            var pInput = document.getElementById('deliveryPhotoFile');
-            var notesInput = document.getElementById('deliveryCompletionNotes');
-
-            if (tTrack) tTrack.innerText = target.trackingNumber;
-            if (tName) tName.innerText = target.recipientName;
-            if (tLoc) tLoc.innerText = target.recipientLocation;
-            if (pPreviewContainer) pPreviewContainer.classList.add('hidden');
-            if (pInput) pInput.value = '';
-            if (notesInput) notesInput.value = '';
-
-            var modal = document.getElementById('deliveryPhotoModal');
-            if (modal) modal.classList.remove('hidden');
-        }
-
-        function closeDeliveryPhotoModal() {
-            var modal = document.getElementById('deliveryPhotoModal');
-            if (modal) modal.classList.add('hidden');
-            currentCompletingParcelId = null;
-            currentDeliveryPhotoBase64 = null;
-        }
-
-        function previewDeliveryPhoto(event) {
-            var file = event.target.files[0];
-            if (!file) return;
-
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                currentDeliveryPhotoBase64 = e.target.result;
-                var previewImg = document.getElementById('deliveryPhotoPreviewImg');
-                var previewContainer = document.getElementById('deliveryPhotoPreviewContainer');
-                if (previewImg) previewImg.src = currentDeliveryPhotoBase64;
-                if (previewContainer) previewContainer.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handlePhysicalPhotoSelected(event) {
-            var file = event.target.files[0];
-            if (!file) return;
-
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                currentPhysicalPhotoBase64 = e.target.result;
-                var pImg = document.getElementById('physicalPhotoPreview');
-                var pBox = document.getElementById('physicalPhotoPreviewBox');
-                if (pImg) pImg.src = currentPhysicalPhotoBase64;
-                if (pBox) pBox.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function confirmDeliveryCompletion() {
-            if (!currentCompletingParcelId) return;
-
-            var btn = document.getElementById('btnConfirmDelivery');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan Bukti...</span>';
-            }
-
-            var notes = document.getElementById('deliveryCompletionNotes').value.trim();
-            var deliveryTime = Date.now();
-            var courierStaff = currentUser ? currentUser.displayName : "Kurir Sekolah";
-
-            try {
-                var restUrl = FIRESTORE_REST_BASE + "/" + currentCompletingParcelId + "?updateMask.fieldPaths=status&updateMask.fieldPaths=courierName&updateMask.fieldPaths=deliveredAt&updateMask.fieldPaths=proofPhotoPath&key=" + FIREBASE_API_KEY;
-                var fields = {
-                    status: { stringValue: "DELIVERED" },
-                    courierName: { stringValue: courierStaff },
-                    deliveredAt: { integerValue: deliveryTime.toString() },
-                    proofPhotoPath: { stringValue: currentDeliveryPhotoBase64 || "BUKTI_FOTO_" + deliveryTime + ".jpg" }
-                };
-
-                await fetch(restUrl, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ fields: fields })
-                });
-
-                speak("Paket berhasil diselesaikan dan bukti foto penerima tersimpan.");
-                alert("Sukses! Paket telah SELESAI diserahkan dengan bukti foto dan tercatat di database.");
-            } catch (err) {
-                console.error("Gagal simpan bukti selesai:", err);
-            }
-
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>Selesaikan Transaksi</span>';
-            }
-
-            closeDeliveryPhotoModal();
-            fetchParcelsFromRest();
-        }
-
-        // Photo Zoom Helpers
-        function zoomPhoto(imgSrc, title, caption) {
-            var modal = document.getElementById('photoZoomModal');
-            var img = document.getElementById('photoZoomImg');
-            var t = document.getElementById('photoZoomTitle');
-            var c = document.getElementById('photoZoomCaption');
-            if (img) img.src = imgSrc;
-            if (t) t.innerText = title || "Foto Bukti Transaksi";
-            if (c) c.innerText = caption || "";
-            if (modal) modal.classList.remove('hidden');
-        }
-
-        function closePhotoZoomModal() {
-            var modal = document.getElementById('photoZoomModal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        // 7. REST Sync Engine (Menggunakan Firestore runQuery endpoint yang terbukti 200 OK)
-        async function fetchParcelsFromRest() {
-            try {
-                var queryUrl = "https://firestore.googleapis.com/v1/projects/" + FIREBASE_PROJECT_ID + "/databases/" + CUSTOM_DATABASE_ID + "/documents:runQuery?key=" + FIREBASE_API_KEY;
-                var postBody = {
-                    structuredQuery: {
-                        from: [{ collectionId: "parcels" }]
-                    }
-                };
-                var resp = await fetch(queryUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(postBody)
-                });
-                if (!resp.ok) throw new Error("HTTP " + resp.status);
-                var data = await resp.json();
-                var list = [];
-                if (Array.isArray(data)) {
-                    data.forEach(function(item) {
-                        if (item.document) {
-                            var docItem = item.document;
-                            var id = docItem.name.split('/').pop();
-                            var fields = docItem.fields || {};
-                            var parsed = {};
-                            for (var k in fields) {
-                                var valObj = fields[k];
-                                parsed[k] = valObj.stringValue !== undefined ? valObj.stringValue :
-                                            valObj.integerValue !== undefined ? parseInt(valObj.integerValue) :
-                                            valObj.doubleValue !== undefined ? parseFloat(valObj.doubleValue) :
-                                            valObj.booleanValue !== undefined ? valObj.booleanValue : "";
-                            }
-                            list.push(normalizeParcelData(parsed, id));
-                        }
-                    });
-                }
-                handleIncomingParcels(list);
-            } catch (err) {
-                console.warn("Sinkron REST info:", err.message);
-                setSyncStatus(false, "Cloud Terputus (" + err.message + ")");
-            }
-        }
-
-        // 8. Parcel Submit & Status Updates
-        async function submitNewParcel(event) {
-            event.preventDefault();
-            if (!currentUser) {
-                alert("Silakan login akun Google Anda terlebih dahulu sebelum mencatat paket.");
-                openLoginModal();
-                return;
-            }
-
-            var btn = document.getElementById('btnSubmitParcel');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan ke Cloud...</span>';
-            }
-
-            var parcelId = "SCH-" + Date.now().toString().slice(-6);
-            var trackingNum = document.getElementById('inpTrackingNumber').value.trim();
-            var courierService = document.getElementById('inpCourierService').value.trim();
-            var recipientName = document.getElementById('inpRecipientName').value.trim();
-            var recipientLocation = document.getElementById('inpRecipientLocation').value.trim();
-            var recipientPhone = document.getElementById('inpRecipientPhone').value.trim();
-            var category = document.getElementById('inpCategory').value;
-            var storageLocation = document.getElementById('inpStorageLocation').value.trim();
-            var notes = document.getElementById('inpNotes').value.trim();
-
-            var newParcel = {
-                id: parcelId,
-                trackingNumber: trackingNum,
-                senderType: "EXTERNAL",
-                courierServiceName: courierService,
-                recipientName: recipientName,
-                recipientLocation: recipientLocation,
-                recipientPhone: recipientPhone,
-                category: category,
-                status: "RECEIVED",
-                storageLocation: storageLocation,
-                securityStaffName: currentUser.displayName || "Petugas Satpam",
-                courierName: "-",
-                photoPath: currentPhysicalPhotoBase64 || "",
-                proofPhotoPath: "",
-                receivedAt: Date.now(),
-                slaMinutes: 120,
-                notes: notes
-            };
-
-            var saved = false;
-
-            // Save via REST PATCH
-            try {
-                var restUrl = FIRESTORE_REST_BASE + "/" + newParcel.id + "?key=" + FIREBASE_API_KEY;
-                var restBody = {
-                    fields: {
-                        id: { stringValue: newParcel.id },
-                        trackingNumber: { stringValue: newParcel.trackingNumber },
-                        senderType: { stringValue: newParcel.senderType },
-                        courierServiceName: { stringValue: newParcel.courierServiceName },
-                        recipientName: { stringValue: newParcel.recipientName },
-                        recipientLocation: { stringValue: newParcel.recipientLocation },
-                        recipientPhone: { stringValue: newParcel.recipientPhone },
-                        category: { stringValue: newParcel.category },
-                        status: { stringValue: newParcel.status },
-                        storageLocation: { stringValue: newParcel.storageLocation },
-                        securityStaffName: { stringValue: newParcel.securityStaffName },
-                        courierName: { stringValue: newParcel.courierName },
-                        photoPath: { stringValue: newParcel.photoPath },
-                        proofPhotoPath: { stringValue: newParcel.proofPhotoPath },
-                        receivedAt: { integerValue: newParcel.receivedAt.toString() },
-                        slaMinutes: { integerValue: newParcel.slaMinutes.toString() },
-                        notes: { stringValue: newParcel.notes }
-                    }
-                };
-                var res = await fetch(restUrl, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(restBody)
-                });
-                if (res.ok) saved = true;
-            } catch (e) {
-                console.error("Save error:", e);
-            }
-
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Simpan & Sinkronkan ke Cloud</span>';
-            }
-
-            if (saved) {
-                speak("Paket baru nomor " + newParcel.trackingNumber + " untuk " + newParcel.recipientName + " berhasil disimpan.");
-                alert("Sukses! Paket " + newParcel.trackingNumber + " tersimpan di Cloud dan tersinkron ke HP Android!");
-                document.getElementById('parcelForm').reset();
-                currentPhysicalPhotoBase64 = null;
-                var pBox = document.getElementById('physicalPhotoPreviewBox');
-                if (pBox) pBox.classList.add('hidden');
-                switchTab('pipeline');
-                fetchParcelsFromRest();
-            } else {
-                alert("Penyimpanan selesai secara offline/lokal. Memperbarui status database...");
-                fetchParcelsFromRest();
-            }
-        }
-
-        async function updateParcelStatus(parcelId, newStatus) {
-            if (!currentUser) {
-                alert("Silakan login akun Google terlebih dahulu.");
-                openLoginModal();
-                return;
-            }
-
-            try {
-                var restUrl = FIRESTORE_REST_BASE + "/" + parcelId + "?updateMask.fieldPaths=status&updateMask.fieldPaths=courierName&key=" + FIREBASE_API_KEY;
-                var restBody = {
-                    fields: {
-                        status: { stringValue: newStatus },
-                        courierName: { stringValue: currentUser.displayName || "Kurir" }
-                    }
-                };
-                await fetch(restUrl, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(restBody)
-                });
-                speak("Status paket diperbarui menjadi " + (newStatus === 'DELIVERED' ? 'Selesai' : 'Sedang Diantar'));
-                fetchParcelsFromRest();
-            } catch (e) {
-                console.error("Update error:", e);
-                fetchParcelsFromRest();
-            }
-        }
-
-        function generateAutoResi() {
-            var el = document.getElementById('inpTrackingNumber');
-            if (el) el.value = "SCH-" + Math.floor(100000 + Math.random() * 900000);
-        }
-
-        function startScanner() {
-            if (html5QrCode) return;
-            var resultBox = document.getElementById('scanResult');
-            if (resultBox) resultBox.classList.add('hidden');
-
-            try {
-                html5QrCode = new Html5Qrcode("reader");
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
-                    function(decodedText) {
-                        if (resultBox) {
-                            resultBox.innerText = "Barcode Terdeteksi: " + decodedText;
-                            resultBox.classList.remove('hidden');
-                        }
-                        speak("Barcode terdeteksi: " + decodedText);
-                        var inp = document.getElementById('inpTrackingNumber');
-                        if (inp) inp.value = decodedText;
-                        stopScanner();
-                        setTimeout(function() { switchTab('input'); }, 1000);
-                    },
-                    function() {}
-                ).catch(function(err) {
-                    console.warn("Kamera tidak dapat diakses:", err);
-                });
-            } catch (err) {
-                console.warn("Scanner error:", err);
-            }
-        }
-
-        function stopScanner() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(function() {
-                    html5QrCode.clear();
-                    html5QrCode = null;
-                }).catch(function() {
-                    html5QrCode = null;
-                });
-            }
-        }
-
-        function exportToCsv() {
-            var csv = "LAPORAN TRANSAKSI PAKET SEKOLAH\n";
-            csv += "Waktu Ekspor," + new Date().toLocaleString("id-ID") + "\n";
-            csv += "Hak Cipta,Copyright 2026 Aufah Tech All rights reserved\n\n";
-            csv += "No,No Resi,Ekspedisi,Penerima,Lokasi,Kategori,Status,Waktu Masuk,Waktu Selesai,Kurir\n";
-            parcels.forEach(function(p, idx) {
-                csv += (idx + 1) + ',"' + p.trackingNumber + '","' + p.courierServiceName + '","' + p.recipientName + '","' + p.recipientLocation + '","' + p.category + '","' + p.statusLabel + '","' + p.receivedAtStr + '","' + p.deliveredAtStr + '","' + (p.courierName || '-') + '"\n';
-            });
-            var blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = "Laporan_Kurir_Sekolah_" + new Date().toISOString().slice(0, 10) + ".csv";
-            a.click();
-        }
-
-        // Initialize Session & Cloud Polling on Page Load
-        window.addEventListener('DOMContentLoaded', function() {
-            try {
-                var saved = localStorage.getItem("kurir_user_session");
-                if (saved) {
-                    var u = JSON.parse(saved);
-                    setUserUI(u);
-                } else {
-                    // Default to visitor, require login for changes
-                    var defaultGoogleUser = {
-                        displayName: "Penerima Paket (Google)",
-                        email: "protecomb@gmail.com",
-                        role: "Admin Utama (Sarpras)",
-                        photoURL: "https://ui-avatars.com/api/?name=Admin+Sarpras&background=4285F4&color=fff"
-                    };
-                    setUserUI(defaultGoogleUser);
-                }
-            } catch (_) {}
-
-            fetchParcelsFromRest();
-            setInterval(fetchParcelsFromRest, 5000);
-        });
-    </script>
-
-    <!-- FIREBASE GOOGLE OAUTH POPUP ENHANCEMENT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getAuth, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
+        let localParcels = [{
+                    "id": "PCL-004",
+                    "trackingNumber": "JNT-882910398ID",
+                    "senderType": "Eksternal (Ekspedisi/Ojol)",
+                    "courierServiceName": "J&T Express",
+                    "recipientName": "Siti Aminah, M.Pd",
+                    "recipientLocation": "Ruang Guru Lt. 2 (Matematika)",
+                    "recipientPhone": "081277778888",
+                    "category": "Elektronik & Gadget",
+                    "status": "RECEIVED",
+                    "statusLabel": "Diterima di Pos Satpam",
+                    "storageLocation": "Loker Aman C-03",
+                    "securityStaffName": "Budi Santoso",
+                    "courierName": "-",
+                    "receivedAt": 1791998454029,
+                    "receivedAtStr": "15/10/2026 00:20",
+                    "deliveredAtStr": "-",
+                    "durationMinutes": 11,
+                    "slaMinutes": 60,
+                    "isSlaBreached": false,
+                    "notes": "Barang mudah pecah (Kamera mikroskop lab)"
+                },{
+                    "id": "PCL-001",
+                    "trackingNumber": "SPXID02948192A",
+                    "senderType": "Eksternal (Ekspedisi/Ojol)",
+                    "courierServiceName": "Shopee Express",
+                    "recipientName": "Siti Aminah, M.Pd",
+                    "recipientLocation": "Ruang Guru Lt. 2 (Matematika)",
+                    "recipientPhone": "081277778888",
+                    "category": "Buku & ATK",
+                    "status": "RECEIVED",
+                    "statusLabel": "Diterima di Pos Satpam",
+                    "storageLocation": "Rak A-01 (Depan)",
+                    "securityStaffName": "Budi Santoso",
+                    "courierName": "-",
+                    "receivedAt": 1791997854029,
+                    "receivedAtStr": "15/10/2026 00:10",
+                    "deliveredAtStr": "-",
+                    "durationMinutes": 21,
+                    "slaMinutes": 90,
+                    "isSlaBreached": false,
+                    "notes": "Paket buku paket materi kurikulum merdeka"
+                },{
+                    "id": "a3489129-64a3-4e23-a572-f483fec87e9a",
+                    "trackingNumber": "8994557315125",
+                    "senderType": "Eksternal (Ekspedisi/Ojol)",
+                    "courierServiceName": "Ekspedisi Terdaftar",
+                    "recipientName": "kiki",
+                    "recipientLocation": "Ruang Guru Lt. 4",
+                    "recipientPhone": "+",
+                    "category": "Elektronik & Gadget",
+                    "status": "IN_TRANSIT",
+                    "statusLabel": "Sedang Diantar Kurir",
+                    "storageLocation": "Rak A- pos 3",
+                    "securityStaffName": "Budi Santoso (Security Pos 1)",
+                    "courierName": "Penerima Paket (Google)",
+                    "receivedAt": 1791997419342,
+                    "receivedAtStr": "15/10/2026 00:03",
+                    "deliveredAtStr": "-",
+                    "durationMinutes": 28,
+                    "slaMinutes": 120,
+                    "isSlaBreached": false,
+                    "notes": "compi"
+                },{
+                    "id": "PCL-002",
+                    "trackingNumber": "GJK-INT-9921",
+                    "senderType": "Eksternal (Ekspedisi/Ojol)",
+                    "courierServiceName": "Gojek (GoFood)",
+                    "recipientName": "Deni Pratama (Staff TU)",
+                    "recipientLocation": "Ruang Tata Usaha Gedung A",
+                    "recipientPhone": "081299990000",
+                    "category": "Makanan & Minuman",
+                    "status": "IN_TRANSIT",
+                    "statusLabel": "Sedang Diantar Kurir",
+                    "storageLocation": "Meja Makanan Pos",
+                    "securityStaffName": "Budi Santoso",
+                    "courierName": "Joko Prasetyo",
+                    "receivedAt": 1791995454029,
+                    "receivedAtStr": "14/10/2026 23:30",
+                    "deliveredAtStr": "-",
+                    "durationMinutes": 61,
+                    "slaMinutes": 45,
+                    "isSlaBreached": true,
+                    "notes": "Makanan hangat untuk rapat staf"
+                },{
+                    "id": "PCL-003",
+                    "trackingNumber": "SCH-INT-2026-081",
+                    "senderType": "Internal Sekolah (Staff/Guru/Siswa)",
+                    "courierServiceName": "Kiriman Antar Staff (Laboratorium)",
+                    "recipientName": "Kevin Wardhana (Siswa XII MIPA 1)",
+                    "recipientLocation": "Kelas XII MIPA 1",
+                    "recipientPhone": "081312345678",
+                    "category": "Dokumen & Surat",
+                    "status": "DELIVERED",
+                    "statusLabel": "Selesai Diterima",
+                    "storageLocation": "Rak Dokumen",
+                    "securityStaffName": "Budi Santoso",
+                    "courierName": "Joko Prasetyo",
+                    "receivedAt": 1791988254029,
+                    "receivedAtStr": "14/10/2026 21:30",
+                    "deliveredAtStr": "14/10/2026 23:30",
+                    "durationMinutes": 120,
+                    "slaMinutes": 180,
+                    "isSlaBreached": false,
+                    "notes": "Sertifikat Lomba Sains Nasional - Diterima langsung"
+                },{
+                    "id": "SCH-767534",
+                    "trackingNumber": "https://cs-apj.ext.hp.com/digital-support/home.html",
+                    "senderType": "Eksternal (Ekspedisi/Ojol)",
+                    "courierServiceName": "Grab",
+                    "recipientName": "Oci",
+                    "recipientLocation": "HC",
+                    "recipientPhone": "987645",
+                    "category": "Dokumen & Surat",
+                    "status": "DELIVERED",
+                    "statusLabel": "Selesai Diterima",
+                    "storageLocation": "Rak Utama Pos 3",
+                    "securityStaffName": "Pak Joko (Satpam)",
+                    "courierName": "Penerima Paket (Google)",
+                    "receivedAt": 1791957767534,
+                    "receivedAtStr": "14/10/2026 13:02",
+                    "deliveredAtStr": "15/10/2026 00:01",
+                    "durationMinutes": 658,
+                    "slaMinutes": 120,
+                    "isSlaBreached": true,
+                    "notes": "Ujicoba"
+                },{
+                    "id": "SCH-052719",
+                    "trackingNumber": "8994557315125",
+                    "senderType": "Eksternal (Ekspedisi/Ojol)",
+                    "courierServiceName": "Gojek",
+                    "recipientName": "Test1",
+                    "recipientLocation": "IT",
+                    "recipientPhone": "1234",
+                    "category": "Elektronik & Gadget",
+                    "status": "DELIVERED",
+                    "statusLabel": "Selesai Diterima",
+                    "storageLocation": "Rak Utama Pos 3",
+                    "securityStaffName": "Pak Joko (Satpam)",
+                    "courierName": "Rizky",
+                    "receivedAt": 1791947052720,
+                    "receivedAtStr": "14/10/2026 10:04",
+                    "deliveredAtStr": "15/10/2026 00:00",
+                    "durationMinutes": 836,
+                    "slaMinutes": 120,
+                    "isSlaBreached": true,
+                    "notes": "Kompi"
+                }];
+        let voiceEnabled = true;
+
+        // Firebase Configuration (Matching Project backend)
         const firebaseConfig = {
             apiKey: "AIzaSyB-Pt5Mq8n8mNA0JFSOT8TgvxEheksAiiU",
             authDomain: "gen-lang-client-0044724585.firebaseapp.com",
@@ -1413,44 +302,193 @@
             appId: "1:527925358468:android:54774cf3911d7dd7c3f7d1"
         };
 
+        // Initialize Firebase if available
+        let auth = null;
+        let db = null;
         try {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
+            if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+                const app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.app().firestore("ai-studio-android-kurirsek-ef11a90f-11b7-4eb1-8dd0-0614cd2cbbf4");
+                console.log("Firebase Firestore Web terhubung dengan custom database ID.");
+                setupAuth();
+                initCloudListener();
+            }
+        } catch (e) {
+            console.warn("Menggunakan mode data tersemat offline:", e);
+            document.getElementById('syncText').innerText = "Mode Offline (Tersimpan)";
+            document.getElementById('syncBadge').className = "flex items-center space-x-2 bg-slate-800 text-slate-300 px-3 py-1.5 rounded-full text-xs font-semibold";
+        }
 
-            onAuthStateChanged(auth, (user) => {
+        function setupAuth() {
+            if (!auth) return;
+            auth.onAuthStateChanged(user => {
+                const btn = document.getElementById('btnLoginWeb');
+                const nameSpan = document.getElementById('userDisplayName');
                 if (user) {
-                    const uData = {
-                        displayName: user.displayName || user.email.split('@')[0],
-                        email: user.email,
-                        role: (user.email === "protecomb@gmail.com") ? "Admin Utama (Sarpras)" : "Penerima Paket",
-                        photoURL: user.photoURL || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(user.displayName || "User") + "&background=4285F4&color=fff")
-                    };
-                    setUserUI(uData);
-                    try { localStorage.setItem("kurir_user_session", JSON.stringify(uData)); } catch (_) {}
+                    nameSpan.innerText = user.displayName || user.email;
+                    btn.className = "bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm";
+                } else {
+                    nameSpan.innerText = "Login Google";
+                    btn.className = "bg-white hover:bg-slate-100 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm";
                 }
             });
-
-            window.loginWithGooglePopup = async function() {
-                try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(auth, provider);
-                    speak("Berhasil login dengan akun Google.");
-                    closeLoginModal();
-                } catch (err) {
-                    console.warn("Popup error:", err);
-                    alert("Popup Google Auth dibatasi di preview domain ini (" + (err.code || err.message) + "). Silakan gunakan formulir Masuk dengan Alamat Email Google di bawah untuk langsung terautentikasi.");
-                    var emailInp = document.getElementById('inpGoogleEmail');
-                    if (emailInp) emailInp.focus();
-                }
-            };
-        } catch (e) {
-            console.warn("Firebase Auth load info:", e);
-            window.loginWithGooglePopup = function() {
-                alert("Silakan masukkan email Google Anda pada formulir di bawah untuk langsung terverifikasi.");
-                var emailInp = document.getElementById('inpGoogleEmail');
-                if (emailInp) emailInp.focus();
-            };
         }
+
+        function loginGoogle() {
+            if (!auth) return;
+            if (auth.currentUser) {
+                if (confirm("Ingin keluar dari akun Google?")) {
+                    auth.signOut();
+                }
+                return;
+            }
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(e => alert("Login gagal: " + e.message));
+        }
+
+        function initCloudListener() {
+            if (!db) return;
+            try {
+                db.collection("parcels").onSnapshot((snapshot) => {
+                    const cloudList = [];
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        cloudList.push({
+                            id: d.id || doc.id,
+                            trackingNumber: d.trackingNumber || "-",
+                            senderType: d.senderType || "EXTERNAL",
+                            courierServiceName: d.courierServiceName || "Kurir",
+                            recipientName: d.recipientName || "-",
+                            recipientLocation: d.recipientLocation || "-",
+                            recipientPhone: d.recipientPhone || "",
+                            category: d.category || "BARANG",
+                            status: d.status || "RECEIVED",
+                            statusLabel: d.status === "DELIVERED" ? "Selesai" : (d.status === "IN_TRANSIT" ? "Diantar" : "Di Pos Satpam"),
+                            storageLocation: d.storageLocation || "Rak Utama",
+                            securityStaffName: d.securityStaffName || "Satpam",
+                            courierName: d.courierName || "-",
+                            receivedAt: d.receivedAt || Date.now(),
+                            receivedAtStr: new Date(d.receivedAt || Date.now()).toLocaleString("id-ID"),
+                            deliveredAtStr: d.deliveredAt ? new Date(d.deliveredAt).toLocaleString("id-ID") : "-",
+                            durationMinutes: 0,
+                            slaMinutes: d.slaMinutes || 120,
+                            isSlaBreached: false,
+                            notes: d.notes || ""
+                        });
+                    });
+
+                    if (cloudList.length > 0) {
+                        localParcels = cloudList;
+                        updateKpis();
+                        renderTable();
+                        document.getElementById('syncText').innerText = "Sinkronisasi Cloud Realtime (" + cloudList.length + " Paket)";
+                    }
+                }, (err) => {
+                    console.warn("Cloud listener error:", err);
+                });
+            } catch (err) {
+                console.warn("Inisialisasi Firestore snapshot gagal:", err);
+            }
+        }
+
+        function updateKpis() {
+            const total = localParcels.length;
+            const received = localParcels.filter(p => p.status === 'RECEIVED').length;
+            const inTransit = localParcels.filter(p => p.status === 'IN_TRANSIT').length;
+            const delivered = localParcels.filter(p => p.status === 'DELIVERED').length;
+            const breached = localParcels.filter(p => p.isSlaBreached).length;
+            const slaRate = total > 0 ? Math.round(((total - breached) * 100) / total) : 100;
+
+            document.getElementById('kpiTotal').innerText = total;
+            document.getElementById('kpiReceived').innerText = received;
+            document.getElementById('kpiInTransit').innerText = inTransit;
+            document.getElementById('kpiDelivered').innerText = delivered;
+            document.getElementById('kpiSla').innerText = slaRate + "%";
+        }
+
+        function renderTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('statusFilter').value;
+
+            const filtered = localParcels.filter(p => {
+                const matchQuery = (p.trackingNumber || '').toLowerCase().includes(query) ||
+                                   (p.recipientName || '').toLowerCase().includes(query) ||
+                                   (p.recipientLocation || '').toLowerCase().includes(query) ||
+                                   (p.courierServiceName || '').toLowerCase().includes(query);
+                const matchStatus = status === 'ALL' || p.status === status;
+                return matchQuery && matchStatus;
+            });
+
+            document.getElementById('recordCount').innerText = "Menampilkan " + filtered.length + " dari " + localParcels.length + " paket";
+
+            const tbody = document.getElementById('tableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-400 font-medium">Tidak ada transaksi paket yang cocok.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((p, index) => {
+                let badgeClass = "bg-amber-100 text-amber-800";
+                if (p.status === "IN_TRANSIT") badgeClass = "bg-sky-100 text-sky-800";
+                if (p.status === "DELIVERED") badgeClass = "bg-emerald-100 text-emerald-800";
+
+                const cleanPhone = (p.recipientPhone || '').replace(/[^0-9]/g, '');
+                const waNumber = cleanPhone.startsWith('0') ? '62' + cleanPhone.substring(1) : cleanPhone;
+                const waMessage = encodeURIComponent("Halo " + p.recipientName + ", kami informasikan status paket Anda [" + p.trackingNumber + "] saat ini: " + p.statusLabel + " di " + p.recipientLocation + ". Terima kasih.");
+
+                return '<tr class="hover:bg-slate-50/80 transition-colors">' +
+                    '<td class="py-3 px-4 font-semibold text-slate-400">' + (index + 1) + '</td>' +
+                    '<td class="py-3 px-4 font-bold text-slate-900">' + p.trackingNumber + '</td>' +
+                    '<td class="py-3 px-4"><span class="font-medium text-slate-800">' + p.courierServiceName + '</span><span class="block text-xs text-slate-400">' + (p.senderType || 'Eksternal') + '</span></td>' +
+                    '<td class="py-3 px-4"><span class="font-semibold text-slate-900">' + p.recipientName + '</span><span class="block text-xs text-slate-500">' + p.recipientLocation + '</span></td>' +
+                    '<td class="py-3 px-4"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-medium">' + p.category + '</span></td>' +
+                    '<td class="py-3 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold ' + badgeClass + '">' + p.statusLabel + '</span>' + (p.isSlaBreached ? '<span class="ml-1 bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px] font-bold">LEWAT SLA</span>' : '') + '</td>' +
+                    '<td class="py-3 px-4 text-xs text-slate-600">' + p.receivedAtStr + '</td>' +
+                    '<td class="py-3 px-4 text-center no-print">' +
+                        (waNumber ? '<a href="https://wa.me/' + waNumber + '?text=' + waMessage + '" target="_blank" class="inline-flex items-center space-x-1 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-xs font-semibold shadow-sm transition"><i class="fa-brands fa-whatsapp"></i><span>Kirim WA</span></a>' : '<span class="text-xs text-slate-300">-</span>') +
+                    '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const btn = document.getElementById('btnVoice');
+            if (voiceEnabled) {
+                btn.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-semibold flex items-center space-x-1.5";
+                speak("Suara Google Text to Speech diaktifkan.");
+            } else {
+                btn.className = "bg-rose-50 text-rose-600 border border-rose-200 px-3 py-2 rounded-lg text-sm font-semibold flex items-center space-x-1.5";
+            }
+        }
+
+        function speak(text) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function exportToCsv() {
+            let csv = "LAPORAN TRANSAKSI PAKET SEKOLAH\n";
+            csv += "Waktu Ekspor," + new Date().toLocaleString("id-ID") + "\n";
+            csv += "No,No Resi,Ekspedisi,Penerima,Lokasi,Kategori,Status,Waktu Diterima\n";
+            localParcels.forEach((p, idx) => {
+                csv += (idx + 1) + ',"' + p.trackingNumber + '","' + p.courierServiceName + '","' + p.recipientName + '","' + p.recipientLocation + '","' + p.category + '","' + p.statusLabel + '","' + p.receivedAtStr + '"\n';
+            });
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Laporan_Kurir_Sekolah_" + new Date().toISOString().slice(0, 10) + ".csv";
+            a.click();
+        }
+
+        // Initialize UI on load
+        updateKpis();
+        renderTable();
     </script>
 </body>
 </html>
