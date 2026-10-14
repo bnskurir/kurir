@@ -1137,32 +1137,45 @@
             if (modal) modal.classList.add('hidden');
         }
 
-        // 7. REST Sync Engine
+        // 7. REST Sync Engine (Menggunakan Firestore runQuery endpoint yang terbukti 200 OK)
         async function fetchParcelsFromRest() {
             try {
-                var url = FIRESTORE_REST_BASE + "?key=" + FIREBASE_API_KEY;
-                var resp = await fetch(url);
+                var queryUrl = "https://firestore.googleapis.com/v1/projects/" + FIREBASE_PROJECT_ID + "/databases/" + CUSTOM_DATABASE_ID + "/documents:runQuery?key=" + FIREBASE_API_KEY;
+                var postBody = {
+                    structuredQuery: {
+                        from: [{ collectionId: "parcels" }]
+                    }
+                };
+                var resp = await fetch(queryUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(postBody)
+                });
                 if (!resp.ok) throw new Error("HTTP " + resp.status);
                 var data = await resp.json();
                 var list = [];
-                if (data.documents && Array.isArray(data.documents)) {
-                    data.documents.forEach(function(docItem) {
-                        var id = docItem.name.split('/').pop();
-                        var fields = docItem.fields || {};
-                        var parsed = {};
-                        for (var k in fields) {
-                            var valObj = fields[k];
-                            parsed[k] = valObj.stringValue !== undefined ? valObj.stringValue :
-                                        valObj.integerValue !== undefined ? parseInt(valObj.integerValue) :
-                                        valObj.doubleValue !== undefined ? parseFloat(valObj.doubleValue) :
-                                        valObj.booleanValue !== undefined ? valObj.booleanValue : "";
+                if (Array.isArray(data)) {
+                    data.forEach(function(item) {
+                        if (item.document) {
+                            var docItem = item.document;
+                            var id = docItem.name.split('/').pop();
+                            var fields = docItem.fields || {};
+                            var parsed = {};
+                            for (var k in fields) {
+                                var valObj = fields[k];
+                                parsed[k] = valObj.stringValue !== undefined ? valObj.stringValue :
+                                            valObj.integerValue !== undefined ? parseInt(valObj.integerValue) :
+                                            valObj.doubleValue !== undefined ? parseFloat(valObj.doubleValue) :
+                                            valObj.booleanValue !== undefined ? valObj.booleanValue : "";
+                            }
+                            list.push(normalizeParcelData(parsed, id));
                         }
-                        list.push(normalizeParcelData(parsed, id));
                     });
                 }
                 handleIncomingParcels(list);
             } catch (err) {
                 console.warn("Sinkron REST info:", err.message);
+                setSyncStatus(false, "Cloud Terputus (" + err.message + ")");
             }
         }
 
