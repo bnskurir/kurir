@@ -37,7 +37,6 @@
             color: #0f172a;
         }
 
-        /* LUXURY GLASSMORPHISM CONTAINERS & AUTOMATIC UPGRADE FOR EXISTING CARDS */
         .bg-white {
             background: var(--glass-bg) !important;
             backdrop-filter: blur(18px) saturate(180%) !important;
@@ -61,7 +60,6 @@
             box-shadow: 0 10px 30px -10px rgba(49, 46, 129, 0.35) !important;
         }
 
-        /* MODERN INPUTS & SELECTS */
         input[type="text"], input[type="password"], input[type="email"], input[type="tel"], input[type="date"], select {
             background: rgba(255, 255, 255, 0.85) !important;
             border: 1px solid rgba(203, 213, 225, 0.85) !important;
@@ -78,22 +76,10 @@
             transform: translateY(-0.5px);
         }
 
-        /* CUSTOM SMOOTH SCROLLBAR */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(241, 245, 249, 0.4);
-            border-radius: 999px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.5);
-            border-radius: 999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(99, 102, 241, 0.6);
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(241, 245, 249, 0.4); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.5); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.6); }
 
         .tab-view { display: none; animation: fadeInFrame 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
         .tab-view.active { display: block; }
@@ -127,32 +113,13 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(1.15); }
         }
-        .connection-indicator {
-            animation: pulse-slow 2s infinite ease-in-out;
-        }
-        .modal-transition {
-            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes slide-in {
-            from { transform: translateY(-10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .toast-anim {
-            animation: slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            backdrop-filter: blur(16px);
-        }
-        .zoomable-img {
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: zoom-in;
-            border-radius: 0.5rem !important;
-        }
-        .zoomable-img:hover {
-            filter: brightness(1.06);
-            transform: scale(1.08);
-            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
-        }
+        .connection-indicator { animation: pulse-slow 2s infinite ease-in-out; }
+        .modal-transition { transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slide-in { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .toast-anim { animation: slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; backdrop-filter: blur(16px); }
+        .zoomable-img { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); cursor: zoom-in; border-radius: 0.5rem !important; }
+        .zoomable-img:hover { filter: brightness(1.06); transform: scale(1.08); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15); }
 
-        /* LOCKED NON-OVERLAPPING 3-COLUMN GLASS GRID FOR PETUGAS STATUS */
         .petugas-status-grid-wrap {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -162,31 +129,16 @@
             min-height: 480px;
         }
         @media (max-width: 768px) {
-            .petugas-status-grid-wrap {
-                grid-template-columns: 1fr;
-                height: auto;
-                gap: 0.75rem;
-            }
+            .petugas-status-grid-wrap { grid-template-columns: 1fr; height: auto; gap: 0.75rem; }
         }
 
-        /* COMMAND CENTER FULLSCREEN MODE */
         #petugas-content-status.fullscreen-mode {
-            position: fixed !important;
-            inset: 0 !important;
-            z-index: 99999 !important;
+            position: fixed !important; inset: 0 !important; z-index: 99999 !important;
             background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #f0fdfa 100%) !important;
-            padding: 1rem !important;
-            overflow-y: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
+            padding: 1rem !important; overflow-y: auto !important; display: flex !important; flex-direction: column !important;
         }
-        #petugas-content-status.fullscreen-mode .hide-in-fullscreen {
-            display: none !important;
-        }
-        #petugas-content-status.fullscreen-mode .petugas-status-grid-wrap {
-            flex: 1 !important;
-            height: calc(100vh - 4.5rem) !important;
-        }
+        #petugas-content-status.fullscreen-mode .hide-in-fullscreen { display: none !important; }
+        #petugas-content-status.fullscreen-mode .petugas-status-grid-wrap { flex: 1 !important; height: calc(100vh - 4.5rem) !important; }
 
         @media print {
             body * { visibility: hidden; }
@@ -194,68 +146,23 @@
             #print-report-area { position: absolute; left: 0; top: 0; width: 100%; }
             #print-audit-area, #print-audit-area * { visibility: visible; }
             #print-audit-area { position: absolute; left: 0; top: 0; width: 100%; }
-            #qr-label-print-card, #qr-label-print-card * { visibility: visible; }
-            #qr-label-print-card { position: fixed; left: 10%; top: 10%; width: 80%; border: 2px solid #000; padding: 16px; }
         }
-        @keyframes pulse-urgent {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.65; }
-        }
-        .sla-overdue-badge {
-            animation: pulse-urgent 1.2s infinite ease-in-out;
-        }
+        @keyframes pulse-urgent { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
+        .sla-overdue-badge { animation: pulse-urgent 1.2s infinite ease-in-out; }
 
-        /* =========================================================
-           DESKTOP & MOBILE BALANCED PROPORTIONAL TYPOGRAPHY
-           Menaikkan keterbacaan agar elegan di Desktop & nyaman di HP
-           ========================================================= */
         @media (min-width: 769px) {
-            .text-\[7px\], .text-\[7\.5px\], .text-\[8px\] {
-                font-size: 10.5px !important;
-                line-height: 1.4 !important;
-            }
-            .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\] {
-                font-size: 11.5px !important;
-                line-height: 1.45 !important;
-            }
-            .text-\[10px\], .text-\[11px\] {
-                font-size: 13px !important;
-                line-height: 1.5 !important;
-            }
+            .text-\[7px\], .text-\[7\.5px\], .text-\[8px\] { font-size: 10.5px !important; line-height: 1.4 !important; }
+            .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\] { font-size: 11.5px !important; line-height: 1.45 !important; }
+            .text-\[10px\], .text-\[11px\] { font-size: 13px !important; line-height: 1.5 !important; }
         }
 
         @media (max-width: 768px) {
-            body {
-                font-size: 14px !important;
-            }
-            .text-\[7px\], .text-\[7\.5px\], .text-\[8px\], .text-\[8\.5px\] {
-                font-size: 11.5px !important;
-                line-height: 1.4 !important;
-            }
-            .text-\[9px\], .text-\[9\.5px\], .text-\[10px\], .text-\[11px\] {
-                font-size: 13.5px !important;
-                line-height: 1.45 !important;
-            }
+            body { font-size: 14px !important; }
             input[type="text"], input[type="password"], input[type="email"], input[type="tel"], input[type="date"], select {
-                min-height: 42px !important;
-                padding: 0.55rem 0.85rem !important;
-                font-size: 14px !important;
-                border-radius: 0.75rem !important;
+                min-height: 42px !important; padding: 0.55rem 0.85rem !important; font-size: 14px !important; border-radius: 0.75rem !important;
             }
-            button {
-                min-height: 38px !important;
-                padding-top: 0.45rem !important;
-                padding-bottom: 0.45rem !important;
-                border-radius: 0.65rem !important;
-            }
-            .zoomable-img {
-                width: 46px !important;
-                height: 46px !important;
-            }
-            main {
-                padding: 0.75rem !important;
-                padding-bottom: 5rem !important;
-            }
+            button { min-height: 38px !important; padding-top: 0.45rem !important; padding-bottom: 0.45rem !important; border-radius: 0.65rem !important; }
+            main { padding: 0.75rem !important; padding-bottom: 5rem !important; }
         }
     </style>
 </head>
@@ -300,8 +207,8 @@
 
             <form onsubmit="window.handleLogin(event)" class="space-y-3">
                 <div>
-                    <label class="block text-[9.5px] font-bold text-slate-700 mb-1" id="login-label-name">Email / Username</label>
-                    <input type="text" id="login-username" oninput="window.handleLoginEmailInput(this.value)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 bg-white/90" placeholder="Ketik email terdaftar...">
+                    <label class="block text-[9.5px] font-bold text-slate-700 mb-1" id="login-label-name">Username</label>
+                    <input type="text" id="login-username" oninput="window.handleLoginEmailInput(this.value)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 bg-white/90" placeholder="Ketik username (cth: admin / gari)...">
                 </div>
                 <div id="password-field-group">
                     <div class="flex justify-between items-center mb-1">
@@ -318,7 +225,7 @@
 
                 <div id="login-error-alert" class="hidden p-2 rounded-xl bg-rose-50/90 border border-rose-200 text-rose-700 text-[9px] font-semibold flex items-center space-x-1.5">
                     <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
-                    <span id="login-error-text">Email atau kata sandi yang Anda masukkan salah.</span>
+                    <span id="login-error-text">Username atau kata sandi yang Anda masukkan salah.</span>
                 </div>
 
                 <button type="submit" id="login-submit-btn" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition flex items-center justify-center space-x-1.5 btn-glow">
@@ -442,6 +349,8 @@
                             <option value="Laboratorium Sains"></option>
                             <option value="Perpustakaan"></option>
                             <option value="UKS / Klinik"></option>
+                        </datalist>
+
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-2.5">
                             <div>
                                 <label class="block text-[9px] font-bold text-slate-700 mb-1"><i class="fa-solid fa-user text-indigo-500 mr-1"></i> Nama Penerima (Auto-Complete)</label>
@@ -904,7 +813,7 @@
                         <table class="w-full text-left text-[9px]">
                             <thead class="bg-slate-100 text-slate-700 uppercase font-semibold text-[8px]">
                                 <tr>
-                                    <th class="p-1.5">Nama & Email Resmi</th>
+                                    <th class="p-1.5">Nama Lengkap & Username</th>
                                     <th class="p-1.5">Peran (Role)</th>
                                     <th class="p-1.5">Status</th>
                                     <th class="p-1.5 text-right">Aksi</th>
@@ -1007,7 +916,7 @@
                     <input type="text" id="profile-display-name" readonly class="w-full px-2 py-0.5 rounded border border-slate-200 bg-slate-100 font-semibold text-indigo-700">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-0.5">Email Resmi</label>
+                    <label class="block font-semibold text-slate-600 mb-0.5">Username Login</label>
                     <input type="text" id="profile-display-email" readonly class="w-full px-2 py-0.5 rounded border border-slate-200 bg-slate-100 font-mono text-slate-600">
                 </div>
                 <div>
@@ -1026,11 +935,11 @@
                 <h3 class="font-bold text-slate-800 text-[10px] flex items-center"><i class="fa-solid fa-key text-amber-500 mr-1"></i> Ajukan Reset Kata Sandi</h3>
                 <button onclick="window.closeForgotPasswordModal()" class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-[9px]"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[8.5px] text-slate-500">Masukkan email terdaftar Anda. Permintaan akan dikirim ke panel Admin untuk direset ke sandi standar.</p>
+            <p class="text-[8.5px] text-slate-500">Masukkan username terdaftar Anda. Permintaan akan dikirim ke panel Admin untuk direset ke sandi standar.</p>
             <form onsubmit="window.handleSubmitForgotPassword(event)" class="space-y-1.5 text-[9px]">
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-0.5">Email Resmi Terdaftar</label>
-                    <input type="email" id="forgot-email-input" required placeholder="Cth: gari@sch.edu" class="w-full px-2 py-1 rounded border border-slate-200">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Username Terdaftar</label>
+                    <input type="text" id="forgot-email-input" required placeholder="Cth: gari / kurir1" class="w-full px-2 py-1 rounded border border-slate-200">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-600 mb-0.5">Keterangan / Alasan</label>
@@ -1285,8 +1194,8 @@
                     <input type="text" id="member-name" required placeholder="Cth: Budi Santoso" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-0.5">Email Resmi</label>
-                    <input type="email" id="member-email" required placeholder="Cth: budi@sch.edu" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
+                    <label class="block font-semibold text-slate-600 mb-0.5">Username Login</label>
+                    <input type="text" id="member-email" required placeholder="Cth: budi / petugas1" class="w-full px-2 py-0.5 rounded border border-slate-200 text-[9px]">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-600 mb-0.5">Kata Sandi</label>
@@ -1385,9 +1294,6 @@
         let lastPackageCount = 0;
         let charts = {};
 
-        /* ==============================================================
-           ENGINE PARSER WAKTU TRANSAKSI & SINKRONISASI PERIODE CERDAS
-           ============================================================== */
         const indoMonthMap = {
             'jan': 0, 'januari': 0,
             'feb': 1, 'februari': 1,
@@ -1411,7 +1317,6 @@
 
         function parsePackageTimeMs(pkg) {
             if (!pkg) return Date.now();
-            // 1. Prioritaskan pembacaan tanggal dari kode TRX-DDMMYY jika ada, untuk mencegah bug timestampRaw yang ter-overwrite Date.now()
             let idDateMs = null;
             if (pkg.id && typeof pkg.id === 'string') {
                 const idMatch = pkg.id.match(/TRX-(\d{2})(\d{2})(\d{2})-/);
@@ -1423,7 +1328,6 @@
                 }
             }
 
-            // 2. Parsing dari string timestamp ("10:30 WIB, 14 Okt 2026" atau "10.30 WIB, 14 Okt 2026")
             if (pkg.timestamp && typeof pkg.timestamp === 'string') {
                 const m = pkg.timestamp.match(/(\d{1,2})[:.](\d{2}).*?(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
                 if (m) {
@@ -1438,7 +1342,6 @@
                 }
             }
 
-            // 3. Gunakan timestampRaw jika valid
             if (typeof pkg.timestampRaw === 'number' && !isNaN(pkg.timestampRaw) && pkg.timestampRaw > 1000000000000) {
                 return pkg.timestampRaw;
             }
@@ -1446,9 +1349,7 @@
                 return Number(pkg.timestampRaw);
             }
 
-            // 4. Fallback ke tanggal dari ID Transaksi (TRX-DDMMYY) agar data tanggal sebelumnya tidak pernah dianggap hari ini
             if (idDateMs) return idDateMs;
-
             return Date.now();
         }
 
@@ -1488,7 +1389,6 @@
                 escapeCsv(p.completedTimestamp || '-')
             ].join(','));
 
-            // Tambahkan BOM (\uFEFF) agar Microsoft Excel langsung mengenali karakter UTF-8 dan memisahkan kolom dengan rapi
             const csvString = "\uFEFF" + headers.map(escapeCsv).join(',') + "\r\n" + rows.join("\r\n");
             const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -1604,9 +1504,7 @@
         }
 
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                stopAllActiveMediaStreams();
-            }
+            if (document.hidden) stopAllActiveMediaStreams();
         });
         window.addEventListener('pagehide', stopAllActiveMediaStreams);
         window.addEventListener('beforeunload', stopAllActiveMediaStreams);
@@ -1626,17 +1524,29 @@
             return canvas.toDataURL('image/jpeg', quality);
         }
 
-        /* ==============================================================
-           DATA PRODUKSI REAL (TANPA DATA DUMMY)
-           Akun master awal hanya SuperAdmin untuk mendaftarkan anggota real
-           di tab Admin -> Anggota (otomatis tersinkronisasi dengan Firestore)
-           ============================================================== */
         let members = [
-            { id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
+            { id: 'usr-superadm', name: 'Administrator', username: 'admin', email: 'admin', password: '123456', role: 'admin', status: 'Aktif' }
         ];
         let packages = [];
         let auditLogs = [];
         let resetRequests = [];
+
+        function getMemberUsername(m) {
+            if (!m) return '';
+            if (m.username) return String(m.username).trim().toLowerCase();
+            if (m.email) return String(m.email).split('@')[0].trim().toLowerCase();
+            if (m.name) return String(m.name).trim().toLowerCase();
+            return '';
+        }
+
+        function matchesMemberLogin(m, inputVal) {
+            if (!m || !inputVal) return false;
+            const cleanInput = String(inputVal).trim().toLowerCase();
+            const uname = getMemberUsername(m);
+            const rawEmail = (m.email || '').trim().toLowerCase();
+            const rawName = (m.name || '').trim().toLowerCase();
+            return cleanInput === uname || cleanInput === rawEmail || cleanInput === rawName || (cleanInput === 'admin' && rawEmail === 'adm@sch.edu') || (cleanInput === 'adm' && uname === 'admin');
+        }
 
         function updateCourierAndRecipientDropdowns() {
             const courierSelect = document.getElementById('input-assign-courier');
@@ -1693,7 +1603,7 @@
 
         function openProfileModal() {
             document.getElementById('profile-display-name').value = loggedUser.name || '';
-            document.getElementById('profile-display-email').value = loggedUser.email || '';
+            document.getElementById('profile-display-email').value = loggedUser.username || (loggedUser.email ? loggedUser.email.split('@')[0] : '');
             document.getElementById('profile-new-password').value = '';
             document.getElementById('profile-modal-avatar').src = loggedUser.avatar || 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
             document.getElementById('profile-modal').classList.remove('hidden');
@@ -1713,7 +1623,7 @@
                 loggedUser.avatar = evt.target.result;
                 document.getElementById('profile-modal-avatar').src = loggedUser.avatar;
                 document.getElementById('header-avatar-img').src = loggedUser.avatar;
-                const m = members.find(item => item.email.toLowerCase() === (loggedUser.email || '').toLowerCase());
+                const m = members.find(item => matchesMemberLogin(item, loggedUser.username || loggedUser.email));
                 if (m) {
                     m.avatar = loggedUser.avatar;
                     syncMemberToFirebase(m);
@@ -1728,7 +1638,7 @@
             e.preventDefault();
             const newPwd = document.getElementById('profile-new-password').value;
             if (!newPwd) return;
-            const m = members.find(item => item.email.toLowerCase() === (loggedUser.email || '').toLowerCase());
+            const m = members.find(item => matchesMemberLogin(item, loggedUser.username || loggedUser.email));
             if (m) {
                 m.password = newPwd;
                 syncMemberToFirebase(m);
@@ -1753,20 +1663,20 @@
 
         function handleSubmitForgotPassword(e) {
             e.preventDefault();
-            const email = document.getElementById('forgot-email-input').value.trim();
+            const usernameInput = document.getElementById('forgot-email-input').value.trim();
             const reason = document.getElementById('forgot-reason-input').value.trim() || 'Lupa kata sandi';
-            const found = members.find(m => m.email.toLowerCase() === email.toLowerCase());
+            const found = members.find(m => matchesMemberLogin(m, usernameInput));
             const reqObj = {
                 id: 'rst-' + Date.now(),
                 name: found ? found.name : 'Pengguna',
-                email: email,
+                email: found ? getMemberUsername(found) : usernameInput,
                 reason: reason,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' WIB',
                 status: 'Pending'
             };
             resetRequests.unshift(reqObj);
             updateResetRequestsBadge();
-            addAuditLog(`Pengajuan reset kata sandi untuk ${email}`, reqObj.name, 'SYSTEM');
+            addAuditLog(`Pengajuan reset kata sandi untuk username: ${usernameInput}`, reqObj.name, 'SYSTEM');
             closeForgotPasswordModal();
             showToast('Permintaan reset sandi terkirim ke Admin!');
         }
@@ -1774,10 +1684,7 @@
 
         function handleRecipientAutoComplete(val) {
             const trimmed = (val || '').trim().toLowerCase();
-            if (!trimmed) {
-                saveFormDraft();
-                return;
-            }
+            if (!trimmed) return;
             const pastPkg = packages.find(p => p.recipient && p.recipient.toLowerCase() === trimmed);
             if (pastPkg) {
                 const roleEl = document.getElementById('input-recipient-role');
@@ -1787,7 +1694,6 @@
                 if (destEl && pastPkg.destination && !destEl.value) destEl.value = pastPkg.destination;
                 if (phoneEl && pastPkg.phone && !phoneEl.value) phoneEl.value = pastPkg.phone;
             }
-            saveFormDraft();
         }
         window.handleRecipientAutoComplete = handleRecipientAutoComplete;
 
@@ -1945,7 +1851,7 @@
             const req = resetRequests.find(r => r.id === reqId);
             if (!req) return;
             req.status = 'Selesai';
-            const m = members.find(item => item.email.toLowerCase() === req.email.toLowerCase());
+            const m = members.find(item => matchesMemberLogin(item, req.email));
             if (m) {
                 m.password = '123456';
                 syncMemberToFirebase(m);
@@ -1964,14 +1870,14 @@
             const avatarEl = document.getElementById('login-detected-avatar');
             const nameEl = document.getElementById('login-detected-name');
 
-            const found = members.find(m => m.email.toLowerCase() === trimmed || m.name.toLowerCase() === trimmed);
+            const found = members.find(m => matchesMemberLogin(m, trimmed));
             if (found) {
                 const initials = found.name.slice(0, 2).toUpperCase();
                 if (avatarEl) avatarEl.src = found.avatar || `https://placehold.co/100x100/10b981/ffffff?text=${encodeURIComponent(initials)}`;
-                if (nameEl) nameEl.innerText = `Terdeteksi: ${found.name} (${found.role.toUpperCase()})`;
+                if (nameEl) nameEl.innerText = `Terdeteksi: ${found.name} (@${getMemberUsername(found)} • ${found.role.toUpperCase()})`;
             } else {
                 if (avatarEl) avatarEl.src = `https://placehold.co/100x100/4338ca/ffffff?text=BNS`;
-                if (nameEl) nameEl.innerText = `Sistem Logistik Sekolah Ceria & Andal`;
+                if (nameEl) nameEl.innerText = `Sistem Logistik Sekolah Modern & Realtime`;
             }
         }
         window.handleLoginEmailInput = handleLoginEmailInput;
@@ -2067,12 +1973,7 @@
 
                     updateCourierAndRecipientDropdowns();
                     refreshActiveView();
-                }, (err) => {
-                    const statusDot = document.getElementById('connection-dot');
-                    const statusText = document.getElementById('connection-text');
-                    if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block";
-                    if(statusText) statusText.innerText = "Cek Rules Firestore";
-                });
+                }, (err) => {});
 
                 const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
                 onSnapshot(refUsr, (snapshot) => {
@@ -2082,12 +1983,12 @@
                     });
                     if (cloudMembers.length > 0) {
                         members = cloudMembers;
-                        if (!members.some(m => m.email.toLowerCase() === 'adm@sch.edu')) {
-                            members.unshift({ id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' });
+                        if (!members.some(m => matchesMemberLogin(m, 'admin'))) {
+                            members.unshift({ id: 'usr-superadm', name: 'Administrator', username: 'admin', email: 'admin', password: '123456', role: 'admin', status: 'Aktif' });
                         }
                     } else {
                         members = [
-                            { id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
+                            { id: 'usr-superadm', name: 'Administrator', username: 'admin', email: 'admin', password: '123456', role: 'admin', status: 'Aktif' }
                         ];
                     }
                     updateCourierAndRecipientDropdowns();
@@ -2330,9 +2231,9 @@
                 const btn = document.getElementById(`login-btn-${r}`);
                 if (btn) {
                     if (r === role) {
-                        btn.className = "p-1 rounded-lg border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 shadow-sm";
+                        btn.className = "p-1.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-1 shadow-sm btn-glow";
                     } else {
-                        btn.className = "p-1 rounded-lg border-2 border-slate-200 text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-0.5 hover:border-indigo-300";
+                        btn.className = "p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1 hover:bg-white/60";
                     }
                 }
             });
@@ -2346,19 +2247,23 @@
             if(passwordInput) passwordInput.value = "";
 
             if (role === 'petugas') {
-                if(labelName) labelName.innerText = "Email Petugas";
+                if(labelName) labelName.innerText = "Username Petugas";
+                if(usernameInput) usernameInput.placeholder = "Ketik username petugas...";
                 if(passwordGroup) passwordGroup.classList.remove('hidden');
                 passwordInput.required = true;
             } else if (role === 'kurir') {
-                if(labelName) labelName.innerText = "Email Kurir";
+                if(labelName) labelName.innerText = "Username Kurir";
+                if(usernameInput) usernameInput.placeholder = "Ketik username kurir...";
                 if(passwordGroup) passwordGroup.classList.remove('hidden');
                 passwordInput.required = true;
             } else if (role === 'admin') {
-                if(labelName) labelName.innerText = "Email Administrator";
+                if(labelName) labelName.innerText = "Username Administrator";
+                if(usernameInput) usernameInput.placeholder = "Ketik username admin (cth: admin)...";
                 if(passwordGroup) passwordGroup.classList.remove('hidden');
                 passwordInput.required = true;
             } else if (role === 'penerima') {
                 if(labelName) labelName.innerText = "Nama Penerima / Ruangan";
+                if(usernameInput) usernameInput.placeholder = "Ketik nama Anda atau ruangan...";
                 if(passwordGroup) passwordGroup.classList.add('hidden');
                 passwordInput.required = false;
             }
@@ -2376,8 +2281,10 @@
                     showToast('Masukkan nama penerima atau ruangan!', 'error');
                     return;
                 }
+                const cleanUname = username.toLowerCase().replace(/\s+/g, '');
                 loggedUser.name = username;
-                loggedUser.email = username.toLowerCase().replace(/\s+/g, '') + '@receiver.sch.edu';
+                loggedUser.username = cleanUname;
+                loggedUser.email = cleanUname;
                 loggedUser.isSuperAdmin = false;
                 loggedUser.avatar = `https://placehold.co/100x100/059669/ffffff?text=${encodeURIComponent(username.slice(0,2).toUpperCase())}`;
 
@@ -2403,13 +2310,13 @@
             }
 
             const password = document.getElementById('login-password').value;
-            const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase());
+            const foundUser = members.find(m => matchesMemberLogin(m, username));
             if (!foundUser) {
                 const errBox = document.getElementById('login-error-alert');
                 const errTxt = document.getElementById('login-error-text');
-                if (errTxt) errTxt.innerText = 'Email atau username tidak terdaftar di sistem!';
+                if (errTxt) errTxt.innerText = 'Username tidak terdaftar di sistem!';
                 if (errBox) errBox.classList.remove('hidden');
-                showToast('Email atau username tidak terdaftar!', 'error');
+                showToast('Username tidak terdaftar!', 'error');
                 return;
             }
             if (foundUser.password !== password) {
@@ -2421,7 +2328,8 @@
                 return;
             }
 
-            const isSuperAdmin = foundUser.email.toLowerCase() === 'adm@sch.edu' || foundUser.role === 'admin';
+            const resolvedUname = getMemberUsername(foundUser);
+            const isSuperAdmin = resolvedUname === 'admin' || resolvedUname === 'adm' || foundUser.role === 'admin';
             if (!isSuperAdmin && foundUser.role !== role) {
                 showToast(`Akun ini terdaftar sebagai ${foundUser.role.toUpperCase()}, bukan ${role.toUpperCase()}!`, 'error');
                 return;
@@ -2430,7 +2338,8 @@
             const activeLoginRole = isSuperAdmin ? role : foundUser.role;
             loggedUser = {
                 name: foundUser.name,
-                email: foundUser.email,
+                username: resolvedUname,
+                email: resolvedUname,
                 role: activeLoginRole,
                 isSuperAdmin: isSuperAdmin,
                 avatar: foundUser.avatar || `https://placehold.co/100x100/4338ca/ffffff?text=${encodeURIComponent(foundUser.name.slice(0,2).toUpperCase())}`
@@ -2443,10 +2352,10 @@
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.add('hidden');
             const headerBadge = document.getElementById('header-user-badge');
-            if(headerBadge) headerBadge.innerText = `Masuk: ${foundUser.name} (${activeLoginRole.toUpperCase()})`;
+            if(headerBadge) headerBadge.innerText = `Masuk: ${foundUser.name} (@${resolvedUname} • ${activeLoginRole.toUpperCase()})`;
 
             showToast(`Berhasil login sebagai ${activeLoginRole.toUpperCase()}`);
-            addAuditLog(`Pengguna ${foundUser.name} login ke sistem sebagai ${activeLoginRole.toUpperCase()}`, foundUser.name, activeLoginRole.toUpperCase());
+            addAuditLog(`Pengguna ${foundUser.name} (@${resolvedUname}) login ke sistem sebagai ${activeLoginRole.toUpperCase()}`, foundUser.name, activeLoginRole.toUpperCase());
             switchRole(activeLoginRole);
             speakText(`Selamat datang kembali ${foundUser.name}`);
         }
@@ -2582,12 +2491,6 @@
         }
         window.switchSourceType = switchSourceType;
 
-        /* ==============================================================
-           GENERATOR ID TRANSAKSI ANTI-BENTROK & ANTI-RESET
-           Menggabungkan Tanggal + High-Water Mark Sequence + Kode Unik Waktu
-           sehingga walaupun ada data dihapus atau 2 petugas input bersamaan,
-           ID Transaksi tidak akan pernah kembar atau menimpa data lama.
-           ============================================================== */
         function generateUniqueTrxId() {
             const now = new Date();
             const dateCode = String(now.getDate()).padStart(2, '0') +
@@ -2646,9 +2549,6 @@
         function renderPetugasForm() {
             const container = document.getElementById('source-fields-container');
             if(!container) return;
-            const now = new Date();
-            const dateCode = String(now.getDate()).padStart(2, '0') + String(now.getMonth() + 1).padStart(2, '0') + String(now.getFullYear()).slice(-2);
-            
             const generatedTrxId = generateUniqueTrxId();
 
             if (sourceType === 'external') {
@@ -2733,7 +2633,7 @@
                 })
                 .catch(() => {
                     closePhysicalCameraModal();
-                    showToast('Kamera tidak dapat diakses, silakan pilih dari tombol Galeri atau Contoh.', 'info');
+                    showToast('Kamera tidak dapat diakses, silakan pilih dari tombol Galeri.', 'info');
                 });
         }
         window.openPhysicalCameraModal = openPhysicalCameraModal;
@@ -2910,7 +2810,6 @@
                 inputResi.classList.add('ring-2', 'ring-emerald-500');
                 setTimeout(() => inputResi.classList.remove('ring-2', 'ring-emerald-500'), 1500);
             }
-            saveFormDraft();
             showToast('Barcode Sukses Discan: ' + cleanText);
             speakText('Barcode terbaca');
             addAuditLog(`Petugas (${loggedUser.name}) memindai barcode resi: ${cleanText}`, loggedUser.name, 'PETUGAS');
@@ -3827,10 +3726,10 @@
             const tbody = document.getElementById('admin-members-table-body');
             if (!tbody) return;
 
-            const visibleMembers = members.filter(m => m.email.toLowerCase() !== 'adm@sch.edu');
+            const visibleMembers = members.filter(m => !['admin', 'adm'].includes(getMemberUsername(m)));
 
             if (visibleMembers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-2 text-slate-400">Tidak ada data anggota.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-2 text-slate-400">Belum ada anggota terdaftar. Klik "Tambah Anggota" di kanan atas.</td></tr>`;
                 return;
             }
 
@@ -3838,7 +3737,7 @@
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-1.5">
                         <span class="font-bold text-slate-800 block">${m.name}</span>
-                        <span class="text-[7.5px] text-slate-500 font-mono">${m.email}</span>
+                        <span class="text-[8px] text-indigo-600 font-mono font-semibold">@${getMemberUsername(m)}</span>
                     </td>
                     <td class="p-1.5 uppercase font-semibold text-indigo-600">${m.role}</td>
                     <td class="p-1.5"><span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[7px] font-semibold">${m.status || 'Aktif'}</span></td>
@@ -3868,7 +3767,7 @@
                     if(title) title.innerHTML = '<i class="fa-solid fa-user-pen text-indigo-600 mr-1"></i> Edit Anggota';
                     if(editId) editId.value = m.id;
                     if(nameInput) nameInput.value = m.name;
-                    if(emailInput) emailInput.value = m.email;
+                    if(emailInput) emailInput.value = getMemberUsername(m);
                     if(pwdInput) pwdInput.value = m.password || '123456';
                     if(roleSelect) roleSelect.value = m.role;
                 }
@@ -3893,7 +3792,8 @@
             e.preventDefault();
             const editId = document.getElementById('member-edit-id').value;
             const name = document.getElementById('member-name').value.trim();
-            const email = document.getElementById('member-email').value.trim();
+            const rawUsername = document.getElementById('member-email').value.trim().toLowerCase().replace(/\s+/g, '');
+            const username = rawUsername.includes('@') ? rawUsername.split('@')[0] : rawUsername;
             const password = document.getElementById('member-password').value;
             const role = document.getElementById('member-role').value;
 
@@ -3901,28 +3801,35 @@
                 const m = members.find(item => item.id === editId);
                 if (m) {
                     m.name = name;
-                    m.email = email;
+                    m.username = username;
+                    m.email = username;
                     m.password = password;
                     m.role = role;
                     syncMemberToFirebase(m);
-                    addAuditLog(`Admin (${loggedUser.name}) memperbarui data anggota ${name} (${role.toUpperCase()})`, loggedUser.name, 'ADMIN');
+                    addAuditLog(`Admin (${loggedUser.name}) memperbarui data anggota ${name} (@${username} - ${role.toUpperCase()})`, loggedUser.name, 'ADMIN');
                     showToast('Data anggota berhasil diperbarui!');
                 }
             } else {
+                if (members.some(item => getMemberUsername(item) === username)) {
+                    showToast(`Username "${username}" sudah dipakai, gunakan username lain!`, 'error');
+                    return;
+                }
                 const newMember = {
                     id: 'usr-' + Date.now(),
                     name,
-                    email,
+                    username,
+                    email: username,
                     password,
                     role,
                     status: 'Aktif'
                 };
                 members.push(newMember);
                 syncMemberToFirebase(newMember);
-                addAuditLog(`Admin (${loggedUser.name}) menambahkan anggota baru ${name} (${role.toUpperCase()})`, loggedUser.name, 'ADMIN');
+                addAuditLog(`Admin (${loggedUser.name}) menambahkan anggota baru ${name} (@${username} - ${role.toUpperCase()})`, loggedUser.name, 'ADMIN');
                 showToast('Anggota baru berhasil ditambahkan ke Cloud!');
             }
 
+            updateCourierAndRecipientDropdowns();
             closeMemberModal();
             renderAdminMembers();
         }
@@ -3941,14 +3848,16 @@
 
         function deleteMember(id) {
             const m = members.find(item => item.id === id);
-            if (!m) return;
-            openCustomConfirm('Hapus Anggota', `Yakin ingin menghapus anggota ${m.name}?`, () => {
-                members = members.filter(item => item.id !== id);
-                deleteMemberFromFirebase(id);
-                addAuditLog(`Admin (${loggedUser.name}) menghapus anggota ${m.name}`, loggedUser.name, 'ADMIN');
-                renderAdminMembers();
-                showToast('Anggota berhasil dihapus');
-            });
+            if (m) {
+                openCustomConfirm('Hapus Anggota', `Yakin ingin menghapus anggota ${m.name}?`, () => {
+                    members = members.filter(item => item.id !== id);
+                    deleteMemberFromFirebase(id);
+                    addAuditLog(`Admin (${loggedUser.name}) menghapus anggota ${m.name}`, loggedUser.name, 'ADMIN');
+                    updateCourierAndRecipientDropdowns();
+                    renderAdminMembers();
+                    showToast('Anggota berhasil dihapus');
+                });
+            }
         }
         window.deleteMember = deleteMember;
 
@@ -3960,10 +3869,9 @@
             const searchVal = document.getElementById('audit-filter-search')?.value.toLowerCase() || '';
             const dateFrom = document.getElementById('audit-date-from')?.value;
 
-            let filtered = auditLogs.filter(log => {
+            const filtered = auditLogs.filter(log => {
                 const matchRole = roleFilter === 'all' || (log.role && log.role.toUpperCase() === roleFilter);
                 const matchSearch = searchVal === '' || (log.action && log.action.toLowerCase().includes(searchVal)) || (log.actor && log.actor.toLowerCase().includes(searchVal));
-                
                 let matchDate = true;
                 if (dateFrom) {
                     const start = new Date(dateFrom + 'T00:00:00').getTime();
@@ -3978,12 +3886,12 @@
             }
 
             container.innerHTML = filtered.map(log => `
-                <div class="p-1 rounded-lg bg-slate-50 border border-slate-100 flex justify-between items-center text-[8.5px]">
+                <div class="p-1.5 rounded-xl bg-slate-50 border border-slate-100 flex justify-between items-center text-[8.5px] gap-2">
                     <div>
-                        <span class="font-bold px-1 py-0.2 rounded text-[7.5px] mr-1 ${log.role==='ADMIN'?'bg-amber-100 text-amber-700':(log.role==='PETUGAS'?'bg-indigo-100 text-indigo-700':(log.role==='KURIR'?'bg-sky-100 text-sky-700':'bg-emerald-100 text-emerald-700'))}">[${log.role || 'SYSTEM'}: ${log.actor}]</span>
+                        <span class="font-bold px-1.5 py-0.5 rounded text-[7.5px] mr-1 ${log.role==='ADMIN'?'bg-amber-100 text-amber-700':(log.role==='PETUGAS'?'bg-indigo-100 text-indigo-700':(log.role==='KURIR'?'bg-sky-100 text-sky-700':'bg-emerald-100 text-emerald-700'))}">[${log.role || 'SYSTEM'}: ${log.actor}]</span>
                         <span class="text-slate-700">${log.action}</span>
                     </div>
-                    <span class="text-[7.5px] text-slate-400 font-mono">${log.time}</span>
+                    <span class="text-[7.5px] text-slate-400 font-mono shrink-0">${log.time}</span>
                 </div>
             `).join('');
         }
@@ -4008,13 +3916,23 @@
         window.printAuditReport = printAuditReport;
 
         function exportAuditCsv() {
-            let csvContent = "data:text/csv;charset=utf-8,Waktu,Peran,Aktor,Aktivitas\n";
-            auditLogs.forEach(l => {
-                csvContent += `"${l.time}","${l.role || ''}","${l.actor || ''}","${(l.action || '').replace(/"/g, '""')}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
+            if (!auditLogs || auditLogs.length === 0) {
+                showToast('Belum ada catatan audit log untuk diexport!', 'error');
+                return;
+            }
+            const escapeCsv = (val) => `"${String(val || '').replace(/"/g, '""')}"`;
+            const headers = ["Waktu", "Peran", "Aktor", "Aktivitas"];
+            const rows = auditLogs.map(l => [
+                escapeCsv(l.time),
+                escapeCsv(l.role || ''),
+                escapeCsv(l.actor || ''),
+                escapeCsv(l.action || '')
+            ].join(','));
+            const csvString = "\uFEFF" + headers.map(escapeCsv).join(',') + "\r\n" + rows.join("\r\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", "audit_log_kurir_bns_" + new Date().toISOString().slice(0,10) + ".csv");
             document.body.appendChild(link);
             link.click();
@@ -4025,19 +3943,18 @@
         window.exportAuditCsv = exportAuditCsv;
 
         function clearAuditLogs() {
-            openCustomConfirm('Bersihkan Audit Log', 'Yakin ingin membersihkan seluruh catatan audit log?', () => {
+            openCustomConfirm('Bersihkan Audit Log', 'Yakin ingin membersihkan tampilan catatan audit log?', () => {
                 auditLogs = [];
                 renderAuditLogs();
                 showToast('Audit log dibersihkan');
-                addAuditLog(`Admin (${loggedUser.name}) membersihkan seluruh audit log`, loggedUser.name, 'ADMIN');
             });
         }
         window.clearAuditLogs = clearAuditLogs;
 
         function refreshActiveView() {
-            renderPetugasStatusView();
-            renderCourierView();
-            renderReceiverView();
+            if (currentRole === 'petugas') renderPetugasStatusView();
+            if (currentRole === 'kurir') renderCourierView();
+            if (currentRole === 'penerima') renderReceiverView();
             if (currentRole === 'admin') {
                 renderAdminOverview();
                 renderAdminPackages();
@@ -4047,43 +3964,39 @@
                 renderAuditLogs();
             }
         }
-        window.refreshActiveView = refreshActiveView;
 
         window.onload = function() {
-            initSignaturePad();
             initFirebase();
+            initSignaturePad();
+            updateCourierAndRecipientDropdowns();
+
+            setInterval(() => {
+                if (currentRole === 'petugas') renderPetugasStatusView();
+                if (currentRole === 'kurir') renderCourierView();
+            }, 30000);
 
             try {
                 const savedSession = localStorage.getItem('kurir_bns_logged_user');
                 if (savedSession) {
                     const sessionObj = JSON.parse(savedSession);
-                    if (sessionObj && sessionObj.name && sessionObj.role) {
-                        loggedUser = sessionObj;
-                        document.getElementById('header-avatar-img').src = loggedUser.avatar || 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
-                        const authScreen = document.getElementById('auth-screen');
-                        if(authScreen) authScreen.classList.add('hidden');
-                        const headerBadge = document.getElementById('header-user-badge');
-                        if(headerBadge) headerBadge.innerText = `Masuk: ${sessionObj.name} (${sessionObj.role.toUpperCase()})`;
-                        switchRole(sessionObj.role);
-                    } else {
-                        selectLoginRole('petugas');
-                        document.getElementById('auth-screen')?.classList.remove('hidden');
-                    }
+                    loggedUser = sessionObj;
+                    const authScreen = document.getElementById('auth-screen');
+                    if(authScreen) authScreen.classList.add('hidden');
+                    const headerBadge = document.getElementById('header-user-badge');
+                    if(headerBadge) headerBadge.innerText = `Masuk: ${sessionObj.name} (${sessionObj.role.toUpperCase()})`;
+                    const avatarImg = document.getElementById('header-avatar-img');
+                    if(avatarImg && sessionObj.avatar) avatarImg.src = sessionObj.avatar;
+                    switchRole(sessionObj.role);
                 } else {
                     selectLoginRole('petugas');
-                    document.getElementById('auth-screen')?.classList.remove('hidden');
+                    const authScreen = document.getElementById('auth-screen');
+                    if(authScreen) authScreen.classList.remove('hidden');
                 }
             } catch(e) {
                 selectLoginRole('petugas');
-                document.getElementById('auth-screen')?.classList.remove('hidden');
+                const authScreen = document.getElementById('auth-screen');
+                if(authScreen) authScreen.classList.remove('hidden');
             }
-
-            setInterval(() => {
-                if (currentRole === 'petugas' || currentRole === 'kurir') {
-                    renderPetugasStatusView();
-                    renderCourierView();
-                }
-            }, 30000);
         };
     </script>
 </body>
