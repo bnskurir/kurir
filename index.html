@@ -215,19 +215,6 @@
                     </div>
                 </div>
 
-                <!-- Demo Quick Credentials Helper -->
-                <div class="bg-indigo-50/70 p-1.5 rounded-lg border border-indigo-100 text-[8px] text-slate-600 space-y-0.5">
-                    <div class="font-bold text-indigo-700 flex items-center justify-between">
-                        <span><i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> Klik Akun Demo (Sandi: 123456):</span>
-                    </div>
-                    <div class="flex flex-wrap gap-1 pt-0.5">
-                        <button type="button" onclick="window.fillDemoAccount('petugas','gari@sch.edu')" class="bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded font-medium transition">Petugas (Gari)</button>
-                        <button type="button" onclick="window.fillDemoAccount('kurir','rizky@sch.edu')" class="bg-white hover:bg-sky-100 text-sky-700 border border-sky-200 px-1.5 py-0.5 rounded font-medium transition">Kurir (Rizky)</button>
-                        <button type="button" onclick="window.fillDemoAccount('penerima','Siti Rahma')" class="bg-white hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-medium transition">Penerima (Siti)</button>
-                        <button type="button" onclick="window.fillDemoAccount('admin','adm@sch.edu')" class="bg-white hover:bg-amber-100 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-medium transition">SuperAdmin</button>
-                    </div>
-                </div>
-
                 <div id="login-error-alert" class="hidden p-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-[8.5px] font-medium flex items-center space-x-1">
                     <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
                     <span id="login-error-text">Email atau kata sandi yang Anda masukkan salah.</span>
@@ -239,8 +226,8 @@
                 </button>
             </form>
             <div class="bg-slate-50 p-1 rounded-lg border border-slate-100 text-[8.5px] text-slate-500 text-center flex justify-between items-center px-2">
-                <span>Sinkronisasi Cloud Aktif.</span>
-                <span class="font-mono text-[7.5px] text-indigo-500">v2.7 TimeSync</span>
+                <span>Sinkronisasi Cloud Firebase Aktif.</span>
+                <span class="font-mono text-[7.5px] text-indigo-500">Production Mode</span>
             </div>
         </div>
     </div>
@@ -333,13 +320,29 @@
                                     <span>Galeri</span>
                                     <input type="file" accept="image/*" capture="environment" onchange="window.handlePhysicalFileUpload(event)" class="hidden">
                                 </label>
-                                <button type="button" onclick="window.useSimulatedPhysicalPhoto()" class="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 font-semibold py-0.5 px-1.5 rounded text-[8px] shadow-sm transition" title="Gunakan Foto Simulasi Cepat">
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Contoh
-                                </button>
                                 <button type="button" onclick="window.openPhysicalCameraModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-0.5 px-1.5 rounded text-[8.5px] shadow transition flex items-center space-x-0.5 btn-glow">
                                     <i class="fa-solid fa-camera text-[8px]"></i>
                                     <span>Kamera</span>
                                 </button>
+                            </div>
+                        </div>
+
+                        <datalist id="school-recipient-directory"></datalist>
+                        <datalist id="school-room-directory">
+                            <option value="Ruang Guru"></option>
+                            <option value="Ruang TU"></option>
+                            <option value="Ruang Kepala Sekolah"></option>
+                            <option value="Lab Komputer"></option>
+                            <option value="Laboratorium Sains"></option>
+                            <option value="Perpustakaan"></option>
+                            <option value="UKS / Klinik"></option>
+                            <option value="Pos Satpam"></option>
+                        </datalist>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-1">
+                            <div>
+                                <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-user text-indigo-500 mr-0.5"></i> Nama Penerima</label>
+                                <input type="text" id="input-recipient" list="school-recipient-directory" oninput="window.handleRecipientAutoComplete(this.value)" required placeholder="Ketik nama penerima..." class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 text-slate-800 placeholder:text-slate-400">
                             </div>
                         </div>
 
@@ -406,7 +409,6 @@
                                 <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-motorcycle text-sky-500 mr-0.5"></i> Tugaskan Kurir (Opsional)</label>
                                 <select id="input-assign-courier" onchange="window.saveFormDraft()" class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] focus:outline-none focus:border-indigo-500 bg-white">
                                     <option value="Belum Ditugaskan">-- Antrian Terbuka --</option>
-                                    <option value="Rizky">Rizky (Kurir Utama)</option>
                                 </select>
                             </div>
                             <div>
@@ -436,10 +438,6 @@
                             <p class="text-[7.5px] text-slate-500 hide-in-fullscreen">Menampilkan transaksi terurut secara kronologis sesuai tanggal/periode yang dipilih</p>
                         </div>
                         <div class="flex items-center space-x-1 flex-wrap gap-y-1">
-                            <button onclick="window.seedMultiPeriodSampleData()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded text-[8px] font-bold transition flex items-center space-x-1" title="Muat Contoh Paket Hari Ini, Kemarin, Besok, Minggu Ini & Bulan Ini">
-                                <i class="fa-solid fa-calendar-check"></i>
-                                <span>Tes Data Lintas Waktu</span>
-                            </button>
                             <button onclick="window.exportPetugasReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[8.5px] font-bold shadow transition flex items-center space-x-1 btn-glow" title="Export Laporan Sesuai Filter Waktu">
                                 <i class="fa-solid fa-file-excel"></i>
                                 <span>Export CSV</span>
@@ -1231,7 +1229,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let deferredPrompt = null;
@@ -1279,8 +1277,9 @@
 
         let appId = typeof __app_id !== 'undefined' ? __app_id : 'bns-kurir-realtime';
         let db, auth;
+        const SECRET_API_KEY = "AIzaSyDCRDC1ykV6UTeBYFAoNEBtlIKeyDphstU";
 
-        let loggedUser = { role: 'petugas', name: 'Gari', email: 'gari@sch.edu', isSuperAdmin: true, avatar: 'https://placehold.co/100x100/4338ca/ffffff?text=GA' };
+        let loggedUser = { role: 'petugas', name: '', email: '', isSuperAdmin: false, avatar: 'https://placehold.co/100x100/4338ca/ffffff?text=BNS' };
         let currentRole = 'petugas';
         let sourceType = 'external';
         let physicalPhotoDataUrl = null;
@@ -1301,8 +1300,6 @@
 
         /* ==============================================================
            ENGINE PARSER WAKTU TRANSAKSI & SINKRONISASI PERIODE CERDAS
-           Memastikan paket lama/baru dari Cloud selalu punya timestampRaw
-           yang akurat (dari timestampRaw, teks tanggal ID, atau kode TRX)
            ============================================================== */
         const indoMonthMap = {
             'jan': 0, 'januari': 0,
@@ -1323,14 +1320,6 @@
             const d = new Date(ms);
             return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB, ' +
                    d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-        }
-
-        function formatTrxIdFromMs(ms, seq = 1001) {
-            const d = new Date(ms);
-            const dateCode = String(d.getDate()).padStart(2, '0') +
-                             String(d.getMonth() + 1).padStart(2, '0') +
-                             String(d.getFullYear()).slice(-2);
-            return `TRX-${dateCode}-${seq}`;
         }
 
         function parsePackageTimeMs(pkg) {
@@ -1490,222 +1479,51 @@
             return canvas.toDataURL('image/jpeg', quality);
         }
 
+        /* ==============================================================
+           DATA PRODUKSI REAL (TANPA DATA DUMMY)
+           Akun master awal hanya SuperAdmin untuk mendaftarkan anggota real
+           di tab Admin -> Anggota (otomatis tersinkronisasi dengan Firestore)
+           ============================================================== */
         let members = [
-            { id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' },
-            { id: 'usr-1', name: 'Gari', email: 'gari@sch.edu', password: '123456', role: 'petugas', status: 'Aktif' },
-            { id: 'usr-2', name: 'Rizky', email: 'rizky@sch.edu', password: '123456', role: 'kurir', status: 'Aktif' },
-            { id: 'usr-3', name: 'Siti Rahma', email: 'siti@sch.edu', password: '123456', role: 'penerima', status: 'Aktif' },
-            { id: 'usr-4', name: 'Aufah', email: 'aufah@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
+            { id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
         ];
+        let packages = [];
         let auditLogs = [];
         let resetRequests = [];
 
-        function buildDefaultSamplePackages() {
-            const nowMs = Date.now();
-            const yesterdayMs = nowMs - 86400000;
-            const tomorrowMs = nowMs + 86400000;
-            const fourDaysAgoMs = nowMs - (4 * 86400000);
-            const fifteenDaysAgoMs = nowMs - (15 * 86400000);
-
-            return [
-                {
-                    id: formatTrxIdFromMs(nowMs, 1001),
-                    resi: 'SPX-88291022',
-                    source: 'external',
-                    vendor: 'SPX (Shopee Express)',
-                    originLocation: 'POS 3',
-                    petugas: 'Gari',
-                    courier: 'Belum Ditugaskan',
-                    recipient: 'Siti Rahma',
-                    role: 'Teacher',
-                    destination: 'Ruang Guru Lt. 2',
-                    phone: '081234567801',
-                    category: 'dokumen',
-                    sla: '30 menit (cepat)',
-                    notes: 'Dokumen Kurikulum Penting (Hari Ini)',
-                    status: 'pending',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/4338ca/ffffff?text=Paket+Hari+Ini',
-                    proofPhotoUrl: null,
-                    signatureDataUrl: null,
-                    completionOption: null,
-                    timestamp: formatTimestampIndo(nowMs - 900000),
-                    completedTimestamp: null,
-                    timestampRaw: nowMs - 900000
-                },
-                {
-                    id: formatTrxIdFromMs(nowMs, 1002),
-                    resi: 'JNE-99104411',
-                    source: 'external',
-                    vendor: 'JNE Express',
-                    originLocation: 'POS 1',
-                    petugas: 'Gari',
-                    courier: 'Rizky',
-                    recipient: 'Budi Santoso',
-                    role: 'Student',
-                    destination: 'Lab Komputer 1',
-                    phone: '081234567802',
-                    category: 'barang',
-                    sla: '24 jam (besok)',
-                    notes: 'Komponen Robotik (SLA Besok 24 Jam)',
-                    status: 'delivering',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/0284c7/ffffff?text=SLA+Besok',
-                    proofPhotoUrl: null,
-                    signatureDataUrl: null,
-                    completionOption: null,
-                    timestamp: formatTimestampIndo(nowMs - 1800000),
-                    completedTimestamp: null,
-                    timestampRaw: nowMs - 1800000
-                },
-                {
-                    id: formatTrxIdFromMs(nowMs, 1003),
-                    resi: 'INT-440219',
-                    source: 'internal',
-                    senderInternal: 'TU Pusat',
-                    roomSender: 'Gedung A',
-                    petugas: 'Gari',
-                    courier: 'Rizky',
-                    recipient: 'Siti Rahma',
-                    role: 'Teacher',
-                    destination: 'Ruang Guru Lt. 2',
-                    phone: '081234567801',
-                    category: 'makanan',
-                    sla: '30 menit (cepat)',
-                    notes: 'Konsumsi Rapat Komite (Hari Ini)',
-                    status: 'completed',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/10b981/ffffff?text=Konsumsi+Rapat',
-                    proofPhotoUrl: 'https://placehold.co/300x200/059669/ffffff?text=Bukti+Diterima',
-                    signatureDataUrl: null,
-                    completionOption: 'Diterima langsung oleh yang bersangkutan (Siti Rahma)',
-                    timestamp: formatTimestampIndo(nowMs - 3200000),
-                    completedTimestamp: formatTimestampIndo(nowMs - 1500000),
-                    timestampRaw: nowMs - 3200000
-                },
-                {
-                    id: formatTrxIdFromMs(tomorrowMs, 1001),
-                    resi: 'SCH-BSK-7712',
-                    source: 'internal',
-                    senderInternal: 'Kurikulum Pusat',
-                    roomSender: 'Ruang Wakasek',
-                    petugas: 'Gari',
-                    courier: 'Belum Ditugaskan',
-                    recipient: 'Ahmad Fauzi, M.Pd',
-                    role: 'Teacher',
-                    destination: 'Ruang Kepsek Lt. 1',
-                    phone: '081234567803',
-                    category: 'dokumen',
-                    sla: '24 jam (besok)',
-                    notes: 'Jadwal Pengiriman Besok Pagi',
-                    status: 'pending',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/7c3aed/ffffff?text=Jadwal+Besok',
-                    proofPhotoUrl: null,
-                    signatureDataUrl: null,
-                    completionOption: null,
-                    timestamp: formatTimestampIndo(tomorrowMs),
-                    completedTimestamp: null,
-                    timestampRaw: tomorrowMs
-                },
-                {
-                    id: formatTrxIdFromMs(yesterdayMs, 1001),
-                    resi: 'JNT-KMRN-5519',
-                    source: 'external',
-                    vendor: 'J&T Express',
-                    originLocation: 'POS 3',
-                    petugas: 'Gari',
-                    courier: 'Rizky',
-                    recipient: 'Rina Kartika',
-                    role: 'Staff',
-                    destination: 'Ruang TU Pusat',
-                    phone: '081234567804',
-                    category: 'dokumen',
-                    sla: '2 jam (reguler)',
-                    notes: 'Arsip Surat Dinas (Kemarin)',
-                    status: 'completed',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/f59e0b/ffffff?text=Paket+Kemarin',
-                    proofPhotoUrl: 'https://placehold.co/300x200/059669/ffffff?text=Bukti+Kemarin',
-                    signatureDataUrl: null,
-                    completionOption: 'Diterima langsung oleh yang bersangkutan (Rina Kartika)',
-                    timestamp: formatTimestampIndo(yesterdayMs),
-                    completedTimestamp: formatTimestampIndo(yesterdayMs + 2400000),
-                    timestampRaw: yesterdayMs
-                },
-                {
-                    id: formatTrxIdFromMs(fourDaysAgoMs, 1001),
-                    resi: 'SICEPAT-MGG-3310',
-                    source: 'external',
-                    vendor: 'SiCepat',
-                    originLocation: 'POS 1',
-                    petugas: 'Gari',
-                    courier: 'Rizky',
-                    recipient: 'Hendra Wijaya',
-                    role: 'Staff',
-                    destination: 'Laboratorium Sains',
-                    phone: '081234567806',
-                    category: 'barang',
-                    sla: '2 jam (reguler)',
-                    notes: 'Alat Praktikum Kimia (Minggu Ini - 4 Hari Lalu)',
-                    status: 'completed',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/0ea5e9/ffffff?text=Minggu+Ini',
-                    proofPhotoUrl: 'https://placehold.co/300x200/059669/ffffff?text=Bukti+Lab',
-                    signatureDataUrl: null,
-                    completionOption: 'Diterima langsung oleh yang bersangkutan (Hendra)',
-                    timestamp: formatTimestampIndo(fourDaysAgoMs),
-                    completedTimestamp: formatTimestampIndo(fourDaysAgoMs + 3600000),
-                    timestampRaw: fourDaysAgoMs
-                },
-                {
-                    id: formatTrxIdFromMs(fifteenDaysAgoMs, 1001),
-                    resi: 'POS-BLN-1190',
-                    source: 'external',
-                    vendor: 'DHL',
-                    originLocation: 'POS Utama',
-                    petugas: 'Gari',
-                    courier: 'Rizky',
-                    recipient: 'Dewi Lestari',
-                    role: 'Teacher',
-                    destination: 'Ruang Konseling',
-                    phone: '081234567805',
-                    category: 'dokumen',
-                    sla: '2 jam (reguler)',
-                    notes: 'Modul Psikologi Pendidikan (Bulan Ini - 15 Hari Lalu)',
-                    status: 'completed',
-                    physicalPhotoUrl: 'https://placehold.co/300x200/ec4899/ffffff?text=Bulan+Ini',
-                    proofPhotoUrl: 'https://placehold.co/300x200/059669/ffffff?text=Bukti+BK',
-                    signatureDataUrl: null,
-                    completionOption: 'Diterima langsung oleh yang bersangkutan (Dewi Lestari)',
-                    timestamp: formatTimestampIndo(fifteenDaysAgoMs),
-                    completedTimestamp: formatTimestampIndo(fifteenDaysAgoMs + 1800000),
-                    timestampRaw: fifteenDaysAgoMs
+        function updateCourierAndRecipientDropdowns() {
+            const courierSelect = document.getElementById('input-assign-courier');
+            if (courierSelect) {
+                const currentVal = courierSelect.value;
+                const couriers = members.filter(m => m.role === 'kurir');
+                courierSelect.innerHTML = `<option value="Belum Ditugaskan">-- Antrian Terbuka --</option>` +
+                    couriers.map(c => `<option value="${c.name}">${c.name} (Kurir)</option>`).join('');
+                if ([...courierSelect.options].some(o => o.value === currentVal)) {
+                    courierSelect.value = currentVal;
                 }
-            ];
-        }
-
-        let packages = buildDefaultSamplePackages();
-
-        async function seedMultiPeriodSampleData() {
-            const sampleList = buildDefaultSamplePackages();
-            for (const item of sampleList) {
-                const idx = packages.findIndex(p => p.id === item.id);
-                if (idx >= 0) {
-                    packages[idx] = item;
-                } else {
-                    packages.push(item);
-                }
-                await syncPackageToFirebase(item);
             }
-            packages.sort((a, b) => parsePackageTimeMs(b) - parsePackageTimeMs(a));
-            refreshActiveView();
-            showToast('Data contoh lintas waktu (Hari Ini, Besok, Kemarin, 1 Minggu, 1 Bulan) berhasil disinkronkan!');
-        }
-        window.seedMultiPeriodSampleData = seedMultiPeriodSampleData;
 
-        const schoolDirectory = [
-            { name: 'Siti Rahma', role: 'Teacher', room: 'Ruang Guru Lt. 2', phone: '081234567801' },
-            { name: 'Budi Santoso', role: 'Student', room: 'Lab Komputer 1', phone: '081234567802' },
-            { name: 'Ahmad Fauzi, M.Pd', role: 'Teacher', room: 'Ruang Kepsek Lt. 1', phone: '081234567803' },
-            { name: 'Rina Kartika', role: 'Staff', room: 'Ruang TU Pusat', phone: '081234567804' },
-            { name: 'Dewi Lestari', role: 'Teacher', room: 'Ruang Konseling', phone: '081234567805' },
-            { name: 'Hendra Wijaya', role: 'Staff', room: 'Laboratorium Sains', phone: '081234567806' }
-        ];
+            const recipientDatalist = document.getElementById('school-recipient-directory');
+            if (recipientDatalist) {
+                const uniqueRecipients = new Map();
+                members.filter(m => m.role === 'penerima').forEach(m => {
+                    uniqueRecipients.set(m.name.toLowerCase(), { name: m.name, role: 'Teacher', room: '', phone: '' });
+                });
+                packages.forEach(p => {
+                    if (p.recipient) {
+                        uniqueRecipients.set(p.recipient.toLowerCase(), {
+                            name: p.recipient,
+                            role: p.role || 'Teacher',
+                            room: p.destination || '',
+                            phone: p.phone || ''
+                        });
+                    }
+                });
+                recipientDatalist.innerHTML = Array.from(uniqueRecipients.values())
+                    .map(r => `<option value="${r.name}">${r.role}${r.room ? ' - ' + r.room : ''}</option>`)
+                    .join('');
+            }
+        }
 
         function openCustomConfirm(title, message, onConfirm) {
             document.getElementById('custom-confirm-title').innerText = title;
@@ -1808,15 +1626,19 @@
         window.handleSubmitForgotPassword = handleSubmitForgotPassword;
 
         function handleRecipientAutoComplete(val) {
-            const found = schoolDirectory.find(d => d.name.toLowerCase() === (val || '').trim().toLowerCase());
-            if (found) {
+            const trimmed = (val || '').trim().toLowerCase();
+            if (!trimmed) {
+                saveFormDraft();
+                return;
+            }
+            const pastPkg = packages.find(p => p.recipient && p.recipient.toLowerCase() === trimmed);
+            if (pastPkg) {
                 const roleEl = document.getElementById('input-recipient-role');
                 const destEl = document.getElementById('input-destination');
                 const phoneEl = document.getElementById('input-phone');
-                if (roleEl) roleEl.value = found.role;
-                if (destEl) destEl.value = found.room;
-                if (phoneEl) phoneEl.value = found.phone;
-                showToast(`Auto-Fill Direktori: ${found.name} (${found.room})`, 'info');
+                if (roleEl && pastPkg.role) roleEl.value = pastPkg.role;
+                if (destEl && pastPkg.destination && !destEl.value) destEl.value = pastPkg.destination;
+                if (phoneEl && pastPkg.phone && !phoneEl.value) phoneEl.value = pastPkg.phone;
             }
             saveFormDraft();
         }
@@ -2007,20 +1829,6 @@
         }
         window.handleLoginEmailInput = handleLoginEmailInput;
 
-        function fillDemoAccount(role, usernameVal) {
-            selectLoginRole(role);
-            const uInput = document.getElementById('login-username');
-            const pInput = document.getElementById('login-password');
-            if (uInput) {
-                uInput.value = usernameVal;
-                handleLoginEmailInput(usernameVal);
-            }
-            if (pInput && role !== 'penerima') {
-                pInput.value = '123456';
-            }
-        }
-        window.fillDemoAccount = fillDemoAccount;
-
         function speakAppWelcome() {
             if (!('speechSynthesis' in window)) {
                 showToast('Fitur suara tidak didukung browser ini.', 'error');
@@ -2045,39 +1853,45 @@
         }
         window.speakText = speakText;
 
-        async function initFirebase() {
-            try {
-                let firebaseConfig = null;
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    firebaseConfig = JSON.parse(__firebase_config);
-                }
-                if (!firebaseConfig) return;
+        function initFirebase() {
+            const firebaseConfig = {
+                apiKey: SECRET_API_KEY,
+                authDomain: "kurirapps-d651e.firebaseapp.com",
+                projectId: "kurirapps-d651e",
+                storageBucket: "kurirapps-d651e.firebasestorage.app",
+                messagingSenderId: "315550512942",
+                appId: "1:315550512942:web:6c7248e546439e571facbf",
+                measurementId: "G-B4RRT8JMCC"
+            };
 
+            try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
                 setupRealtimeSync();
-                const statusDot = document.getElementById('connection-dot');
-                const statusText = document.getElementById('connection-text');
-                if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block";
-                if(statusText) statusText.innerText = "Cloud Sync (Aktif)";
+
+                signInAnonymously(auth).then(() => {
+                    const statusDot = document.getElementById('connection-dot');
+                    const statusText = document.getElementById('connection-text');
+                    if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block";
+                    if(statusText) statusText.innerText = `Cloud Sync (${packages.length} Paket)`;
+                }).catch(() => {
+                    const statusDot = document.getElementById('connection-dot');
+                    const statusText = document.getElementById('connection-text');
+                    if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block";
+                    if(statusText) statusText.innerText = `Cloud Sync (${packages.length} Paket)`;
+                });
             } catch (e) {
                 const statusDot = document.getElementById('connection-dot');
                 const statusText = document.getElementById('connection-text');
-                if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block";
-                if(statusText) statusText.innerText = "Mode Sesi Lokal";
+                if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-rose-400 connection-indicator inline-block";
+                if(statusText) statusText.innerText = "Gagal Terhubung Cloud";
             }
         }
 
         function setupRealtimeSync() {
-            if (!db || !auth || !auth.currentUser) return;
+            if (!db) return;
             try {
                 const refPkg = collection(db, 'artifacts', appId, 'public', 'data', 'packages_col');
                 onSnapshot(refPkg, (snapshot) => {
@@ -2087,17 +1901,26 @@
                         rawData.timestampRaw = parsePackageTimeMs(rawData);
                         cloudPkgs.push(rawData);
                     });
-                    if(cloudPkgs.length > 0) {
-                        const newTotal = cloudPkgs.length;
-                        if (lastPackageCount > 0 && newTotal > lastPackageCount) {
-                            showToast('📢 Paket baru masuk ke sistem!', 'success');
-                            speakText('Perhatian, ada paket baru masuk ke sistem');
-                        }
-                        lastPackageCount = newTotal;
-                        packages = cloudPkgs.sort((a,b) => parsePackageTimeMs(b) - parsePackageTimeMs(a));
-                        refreshActiveView();
+
+                    const newTotal = cloudPkgs.length;
+                    if (lastPackageCount > 0 && newTotal > lastPackageCount) {
+                        showToast('📢 Paket baru masuk ke sistem!', 'success');
+                        speakText('Perhatian, ada paket baru masuk ke sistem');
                     }
-                }, (err) => {});
+                    lastPackageCount = newTotal;
+                    packages = cloudPkgs.sort((a,b) => parsePackageTimeMs(b) - parsePackageTimeMs(a));
+
+                    const statusText = document.getElementById('connection-text');
+                    if (statusText) statusText.innerText = `Cloud Sync (${packages.length} Paket)`;
+
+                    updateCourierAndRecipientDropdowns();
+                    refreshActiveView();
+                }, (err) => {
+                    const statusDot = document.getElementById('connection-dot');
+                    const statusText = document.getElementById('connection-text');
+                    if(statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block";
+                    if(statusText) statusText.innerText = "Cek Rules Firestore";
+                });
 
                 const refUsr = collection(db, 'artifacts', appId, 'public', 'data', 'members_col');
                 onSnapshot(refUsr, (snapshot) => {
@@ -2107,11 +1930,16 @@
                     });
                     if (cloudMembers.length > 0) {
                         members = cloudMembers;
-                        if (!members.some(m => m.email === 'adm@sch.edu')) {
+                        if (!members.some(m => m.email.toLowerCase() === 'adm@sch.edu')) {
                             members.unshift({ id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' });
                         }
-                        if (currentRole === 'admin') renderAdminMembers();
+                    } else {
+                        members = [
+                            { id: 'usr-superadm', name: 'Administrator', email: 'adm@sch.edu', password: '123456', role: 'admin', status: 'Aktif' }
+                        ];
                     }
+                    updateCourierAndRecipientDropdowns();
+                    if (currentRole === 'admin') renderAdminMembers();
                 }, (err) => {});
 
                 const refAudit = collection(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col');
@@ -2120,22 +1948,21 @@
                     snapshot.forEach(docSnap => {
                         cloudLogs.push(docSnap.data());
                     });
-                    if (cloudLogs.length > 0) {
-                        auditLogs = cloudLogs.sort((a,b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
-                        renderAuditLogs();
-                    }
+                    auditLogs = cloudLogs.sort((a,b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
+                    renderAuditLogs();
                 }, (err) => {});
             } catch (syncErr) {}
         }
 
         async function syncPackageToFirebase(pkgObj) {
-            if (!db || !auth || !auth.currentUser) return true;
+            if (!db) return false;
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id));
                 await setDoc(docRef, pkgObj, { merge: true });
                 return true;
             } catch (e) {
-                return true;
+                showToast('Gagal menyimpan ke Cloud Firestore: Periksa koneksi / Rules Firebase.', 'error');
+                return false;
             }
         }
 
@@ -2212,7 +2039,7 @@
                         auditLogs = parsed.auditLogs;
                     }
 
-                    if (db && auth && auth.currentUser) {
+                    if (db) {
                         for(const p of packages) {
                             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(p.id)), p, { merge: true });
                         }
@@ -2233,21 +2060,21 @@
         };
 
         async function deletePackageFromFirebase(id) {
-            if (!db || !auth || !auth.currentUser) return;
+            if (!db) return;
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(id)));
             } catch (e) {}
         }
 
         async function syncMemberToFirebase(memberObj) {
-            if (!db || !auth || !auth.currentUser) return;
+            if (!db) return;
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true });
             } catch (e) {}
         }
 
         async function deleteMemberFromFirebase(id) {
-            if (!db || !auth || !auth.currentUser) return;
+            if (!db) return;
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id)));
             } catch (e) {}
@@ -2271,7 +2098,7 @@
             auditLogs.unshift(logEntry);
             renderAuditLogs();
 
-            if (db && auth && auth.currentUser) {
+            if (db) {
                 try {
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(logEntry.id)), logEntry);
                 } catch(e) {}
@@ -2402,6 +2229,8 @@
                 loggedUser.isSuperAdmin = false;
                 loggedUser.avatar = `https://placehold.co/100x100/059669/ffffff?text=${encodeURIComponent(username.slice(0,2).toUpperCase())}`;
 
+                localStorage.setItem('kurir_bns_logged_user', JSON.stringify(loggedUser));
+
                 document.getElementById('header-avatar-img').src = loggedUser.avatar;
                 const authScreen = document.getElementById('auth-screen');
                 if(authScreen) authScreen.classList.add('hidden');
@@ -2424,27 +2253,40 @@
             const password = document.getElementById('login-password').value;
             const foundUser = members.find(m => m.email.toLowerCase() === username.toLowerCase());
             if (!foundUser) {
+                const errBox = document.getElementById('login-error-alert');
+                const errTxt = document.getElementById('login-error-text');
+                if (errTxt) errTxt.innerText = 'Email atau username tidak terdaftar di sistem!';
+                if (errBox) errBox.classList.remove('hidden');
                 showToast('Email atau username tidak terdaftar!', 'error');
                 return;
             }
             if (foundUser.password !== password) {
+                const errBox = document.getElementById('login-error-alert');
+                const errTxt = document.getElementById('login-error-text');
+                if (errTxt) errTxt.innerText = 'Kata sandi yang Anda masukkan salah!';
+                if (errBox) errBox.classList.remove('hidden');
                 showToast('Kata sandi salah!', 'error');
                 return;
             }
 
-            const isSuperAdmin = foundUser.email.toLowerCase() === 'adm@sch.edu';
+            const isSuperAdmin = foundUser.email.toLowerCase() === 'adm@sch.edu' || foundUser.role === 'admin';
             if (!isSuperAdmin && foundUser.role !== role) {
                 showToast(`Akun ini terdaftar sebagai ${foundUser.role.toUpperCase()}, bukan ${role.toUpperCase()}!`, 'error');
                 return;
             }
 
-            loggedUser.name = foundUser.name;
-            loggedUser.email = foundUser.email;
-            loggedUser.isSuperAdmin = isSuperAdmin;
-            loggedUser.avatar = foundUser.avatar || `https://placehold.co/100x100/4338ca/ffffff?text=${encodeURIComponent(foundUser.name.slice(0,2).toUpperCase())}`;
+            const activeLoginRole = isSuperAdmin ? role : foundUser.role;
+            loggedUser = {
+                name: foundUser.name,
+                email: foundUser.email,
+                role: activeLoginRole,
+                isSuperAdmin: isSuperAdmin,
+                avatar: foundUser.avatar || `https://placehold.co/100x100/4338ca/ffffff?text=${encodeURIComponent(foundUser.name.slice(0,2).toUpperCase())}`
+            };
+
+            localStorage.setItem('kurir_bns_logged_user', JSON.stringify(loggedUser));
             
             document.getElementById('header-avatar-img').src = loggedUser.avatar;
-            const activeLoginRole = isSuperAdmin ? role : foundUser.role;
 
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.add('hidden');
@@ -2459,7 +2301,10 @@
         window.handleLogin = handleLogin;
 
         function logoutApp() {
-            addAuditLog(`Pengguna ${loggedUser.name} keluar dari sistem`, loggedUser.name, loggedUser.role.toUpperCase());
+            if (loggedUser && loggedUser.name) {
+                addAuditLog(`Pengguna ${loggedUser.name} keluar dari sistem`, loggedUser.name, (loggedUser.role || 'SYSTEM').toUpperCase());
+            }
+            localStorage.removeItem('kurir_bns_logged_user');
             const authScreen = document.getElementById('auth-screen');
             if(authScreen) authScreen.classList.remove('hidden');
             const usernameInput = document.getElementById('login-username');
@@ -2476,15 +2321,27 @@
             const desktopNav = document.getElementById('desktop-role-nav');
             const mobileNav = document.getElementById('mobile-role-nav');
             
-            const navButtonsHtml = (isMobile) => `
-                <button onclick="window.switchRole('petugas')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='petugas'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-box-open mr-1"></i>Petugas</button>
-                <button onclick="window.switchRole('kurir')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='kurir'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-paper-plane mr-1"></i>Kurir</button>
-                <button onclick="window.switchRole('penerima')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='penerima'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-gift mr-1"></i>Penerima</button>
-                <button onclick="window.switchRole('admin')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='admin'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-chart-pie mr-1"></i>Admin</button>
-            `;
-
-            if (desktopNav) desktopNav.innerHTML = navButtonsHtml(false);
-            if (mobileNav) mobileNav.innerHTML = navButtonsHtml(true);
+            if (loggedUser.isSuperAdmin) {
+                const navButtonsHtml = (isMobile) => `
+                    <button onclick="window.switchRole('petugas')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='petugas'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-box-open mr-1"></i>Petugas</button>
+                    <button onclick="window.switchRole('kurir')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='kurir'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-paper-plane mr-1"></i>Kurir</button>
+                    <button onclick="window.switchRole('penerima')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='penerima'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-gift mr-1"></i>Penerima</button>
+                    <button onclick="window.switchRole('admin')" class="${isMobile ? 'py-1 px-1.5 rounded-lg text-center transition' : 'px-2 py-0.5 rounded transition'} ${role==='admin'?(isMobile?'bg-white font-bold text-indigo-800 shadow':'bg-white text-indigo-700 font-bold shadow'):'text-indigo-100 hover:text-white'}"><i class="fa-solid fa-chart-pie mr-1"></i>Admin</button>
+                `;
+                if (desktopNav) desktopNav.innerHTML = navButtonsHtml(false);
+                if (mobileNav) {
+                    mobileNav.className = "md:hidden grid grid-cols-4 gap-1 bg-indigo-800/95 px-2 py-1.5 border-t border-indigo-600 text-xs";
+                    mobileNav.innerHTML = navButtonsHtml(true);
+                }
+            } else {
+                if (desktopNav) {
+                    desktopNav.innerHTML = `<span class="px-2 py-0.5 rounded bg-white text-indigo-700 font-bold shadow">${role.toUpperCase()}</span>`;
+                }
+                if (mobileNav) {
+                    mobileNav.className = "md:hidden flex justify-center bg-indigo-800/95 py-1 border-t border-indigo-600 text-xs";
+                    mobileNav.innerHTML = `<span class="text-white font-bold px-3 py-0.5 rounded bg-indigo-900/70">${role.toUpperCase()}</span>`;
+                }
+            }
 
             ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
                 const view = document.getElementById(`view-${r}`);
@@ -2592,7 +2449,7 @@
                     <div>
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-barcode text-sky-500 mr-0.5"></i> No Resi</label>
                         <div class="flex space-x-1">
-                            <input type="text" id="input-resi" value="${randomResi}" oninput="window.saveFormDraft()" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] font-mono font-bold bg-white">
+                            <input type="text" id="input-resi" placeholder="Scan atau ketik nomor resi..." oninput="window.saveFormDraft()" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] font-mono font-bold bg-white">
                             <button type="button" onclick="window.openBarcodeModal()" class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-[8.5px] font-semibold hover:bg-indigo-200 transition whitespace-nowrap"><i class="fa-solid fa-barcode mr-0.5"></i> Scan</button>
                         </div>
                     </div>
@@ -2627,7 +2484,7 @@
                     <div>
                         <label class="block text-[8.5px] font-semibold text-slate-600 mb-0.1"><i class="fa-solid fa-barcode text-sky-500 mr-0.5"></i> No Referensi</label>
                         <div class="flex space-x-1">
-                            <input type="text" id="input-resi" value="INT-${Math.floor(100000 + Math.random() * 900000)}" oninput="window.saveFormDraft()" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] font-mono font-bold bg-white placeholder:text-slate-400">
+                            <input type="text" id="input-resi" value="INT-${dateCode}-${todayCount}" oninput="window.saveFormDraft()" required class="w-full px-1.5 py-0.5 rounded border border-slate-200 text-[9.5px] font-mono font-bold bg-white placeholder:text-slate-400">
                             <button type="button" onclick="window.openBarcodeModal()" class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-[8.5px] font-semibold hover:bg-indigo-200 transition whitespace-nowrap"><i class="fa-solid fa-barcode mr-0.5"></i> Scan</button>
                         </div>
                     </div>
@@ -2646,21 +2503,6 @@
 
         function saveFormDraft() {}
         window.saveFormDraft = saveFormDraft;
-
-        function useSimulatedPhysicalPhoto() {
-            physicalPhotoDataUrl = 'https://placehold.co/300x200/4f46e5/ffffff?text=Foto+Paket+Fisik';
-            const thumb = document.getElementById('physical-photo-thumb');
-            if(thumb) thumb.src = physicalPhotoDataUrl;
-            const wrap = document.getElementById('physical-photo-preview-wrap');
-            if(wrap) wrap.classList.remove('hidden');
-            const badge = document.getElementById('photo-status-badge');
-            if(badge) {
-                badge.className = "text-[7.5px] bg-emerald-100 text-emerald-700 px-1 py-0.1 rounded-full font-medium inline-block";
-                badge.innerText = "Foto Siap";
-            }
-            showToast('Contoh foto paket fisik diterapkan!');
-        }
-        window.useSimulatedPhysicalPhoto = useSimulatedPhysicalPhoto;
 
         function openPhysicalCameraModal() {
             stopAllActiveMediaStreams();
@@ -2979,9 +2821,7 @@
                             finalizeBarcodeScanResult(result.getText());
                         }
                     }).catch(() => {
-                        const simulatedResi = 'RES-' + Math.floor(100000 + Math.random() * 900000);
-                        isBarcodeScanning = true;
-                        finalizeBarcodeScanResult(simulatedResi);
+                        showToast('Barcode tidak terbaca dari gambar ini, silakan ketik manual atau foto ulang.', 'error');
                     });
                 };
                 img.src = event.target.result;
@@ -2993,7 +2833,8 @@
         function handlePreparePackageSummary(e) {
             e.preventDefault();
             if (!physicalPhotoDataUrl) {
-                useSimulatedPhysicalPhoto();
+                showToast('Wajib mengambil foto paket fisik terlebih dahulu (Kamera / Galeri)!', 'error');
+                return;
             }
 
             const trx = document.getElementById('input-trx').value;
@@ -3313,16 +3154,21 @@
 
         function submitCompleteDelivery() {
             const receiverInput = document.getElementById('confirm-receiver-name');
-            const receiverName = receiverInput ? (receiverInput.value || 'Penerima') : 'Penerima';
+            const receiverName = receiverInput ? (receiverInput.value.trim() || 'Penerima') : 'Penerima';
             const optionSelect = document.getElementById('confirm-completion-option');
             const completionOption = optionSelect ? optionSelect.value : 'Diterima langsung';
+
+            if (!proofPhotoDataUrl) {
+                showToast('Wajib mengambil foto bukti serah terima terlebih dahulu!', 'error');
+                return;
+            }
 
             const pkg = packages.find(p => p.id === activeCompletingId);
             if (pkg) {
                 pkg.status = 'completed';
                 pkg.courier = loggedUser.name;
                 pkg.completedTimestamp = formatTimestampIndo(Date.now());
-                pkg.proofPhotoUrl = proofPhotoDataUrl ? proofPhotoDataUrl : 'https://placehold.co/300x200/059669/ffffff?text=Bukti+' + encodeURIComponent(receiverName);
+                pkg.proofPhotoUrl = proofPhotoDataUrl;
                 pkg.signatureDataUrl = (hasSignatureStroke && sigCanvas) ? sigCanvas.toDataURL('image/png') : null;
                 pkg.completionOption = completionOption + ' (' + receiverName + ')';
                 
@@ -3330,7 +3176,7 @@
                 addAuditLog(`Kurir (${loggedUser.name}) menyelesaikan pengiriman paket ${pkg.id} ke ${pkg.recipient} (${completionOption})`, loggedUser.name, 'KURIR');
                 closeCompleteModal();
                 renderCourierView();
-                showToast('Pengiriman & Tanda Tangan disimpan!');
+                showToast('Pengiriman & Bukti Terima berhasil disimpan ke Cloud!');
                 speakText('Pengiriman paket selesai');
             }
         }
@@ -4023,10 +3869,31 @@
         window.onload = function() {
             initSignaturePad();
             initFirebase();
-            const headerBadge = document.getElementById('header-user-badge');
-            if(headerBadge) headerBadge.innerText = `Masuk: ${loggedUser.name} (${loggedUser.role.toUpperCase()})`;
-            switchRole(loggedUser.role);
-            renderPetugasStatusView();
+
+            try {
+                const savedSession = localStorage.getItem('kurir_bns_logged_user');
+                if (savedSession) {
+                    const sessionObj = JSON.parse(savedSession);
+                    if (sessionObj && sessionObj.name && sessionObj.role) {
+                        loggedUser = sessionObj;
+                        document.getElementById('header-avatar-img').src = loggedUser.avatar || 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
+                        const authScreen = document.getElementById('auth-screen');
+                        if(authScreen) authScreen.classList.add('hidden');
+                        const headerBadge = document.getElementById('header-user-badge');
+                        if(headerBadge) headerBadge.innerText = `Masuk: ${sessionObj.name} (${sessionObj.role.toUpperCase()})`;
+                        switchRole(sessionObj.role);
+                    } else {
+                        selectLoginRole('petugas');
+                        document.getElementById('auth-screen')?.classList.remove('hidden');
+                    }
+                } else {
+                    selectLoginRole('petugas');
+                    document.getElementById('auth-screen')?.classList.remove('hidden');
+                }
+            } catch(e) {
+                selectLoginRole('petugas');
+                document.getElementById('auth-screen')?.classList.remove('hidden');
+            }
 
             setInterval(() => {
                 if (currentRole === 'petugas' || currentRole === 'kurir') {
