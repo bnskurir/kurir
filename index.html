@@ -1351,6 +1351,11 @@
                     renderBroadcastBanner();
                 }
             }, (err) => console.warn('broadcast listener:', err));
+
+            // Sinkronisasi tambahan ke jalur artifacts standar jika digunakan
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'packages'), mergePackages, () => {});
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'members'), mergeMembers, () => {});
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'directory'), mergeDirectory, () => {});
         }
 
         function saveLocal() {
@@ -1370,9 +1375,7 @@
                 const cleanCol = colName.replace('_col', '');
                 try {
                     await setDoc(doc(db, cleanCol, String(id)), data);
-                    if (colName !== cleanCol) {
-                        await setDoc(doc(db, colName, String(id)), data);
-                    }
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', cleanCol, String(id)), data);
                 } catch (e) {
                     console.warn(`Gagal sinkronisasi ke ${cleanCol}:`, e);
                 }
@@ -1455,6 +1458,64 @@
             } else {
                 window.showToast('Izin notifikasi ditolak', 'warning');
             }
+        };
+
+        window.handleLoginEmailInput = (val) => {
+            const clean = (val || '').trim().toLowerCase();
+            const found = members.find(m => (m.email || '').toLowerCase() === clean || (m.name || '').toLowerCase() === clean);
+            const avatarEl = document.getElementById('login-detected-avatar');
+            const nameEl = document.getElementById('login-detected-name');
+            if (found) {
+                if (avatarEl) avatarEl.src = found.avatar || 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
+                if (nameEl) nameEl.textContent = `${found.name} (${found.role.toUpperCase()})`;
+            } else {
+                if (avatarEl) avatarEl.src = 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
+                if (nameEl) nameEl.textContent = 'Masukkan Username & Kata Sandi';
+            }
+        };
+
+        window.togglePasswordVisibility = () => {
+            const inp = document.getElementById('login-password');
+            const icon = document.getElementById('password-toggle-icon');
+            if (!inp) return;
+            if (inp.type === 'password') {
+                inp.type = 'text';
+                if (icon) icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                inp.type = 'password';
+                if (icon) icon.className = 'fa-solid fa-eye';
+            }
+        };
+
+        function exportPackagesToCsv(filenamePrefix = 'Laporan_Paket_BNS') {
+            if (!packages || packages.length === 0) return window.showToast('Belum ada data paket untuk diekspor', 'warning');
+            const headers = ['ID Transaksi', 'No Resi', 'Waktu Masuk', 'Sumber', 'Penerima', 'Peran', 'Tujuan', 'No WA', 'Kategori', 'SLA', 'Petugas', 'Kurir', 'Status', 'Diterima Oleh', 'Waktu Selesai'];
+            const rows = packages.map(p => [
+                p.id || '', p.resi || '', p.timestamp || '', p.sourceLabel || '', p.recipient || '',
+                p.recipientRole || '', p.destination || '', p.phone || '', p.category || '', p.sla || '',
+                p.officer || '', p.courier || '', p.status || '', p.completedBy || '', p.completedTime || ''
+            ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+            const csvContent = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${filenamePrefix}_${Date.now()}.csv`;
+            a.click();
+            window.showToast('Laporan CSV berhasil diunduh!', 'success');
+        }
+
+        window.exportPetugasReport = () => exportPackagesToCsv('Laporan_Petugas_BNS');
+        window.exportCourierReport = () => exportPackagesToCsv('Laporan_Kurir_BNS');
+        window.exportAdminReport = () => exportPackagesToCsv('Laporan_Admin_BNS');
+        window.exportAuditCsv = () => {
+            if (!auditLogs || auditLogs.length === 0) return window.showToast('Belum ada log aktivitas', 'warning');
+            const headers = ['ID Log', 'Waktu', 'Pelaku', 'Peran', 'Aksi', 'Detail'];
+            const rows = auditLogs.map(l => [l.id, l.time, l.actor, l.role, l.action, l.details].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
+            const blob = new Blob([[headers.join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Audit_Log_BNS_${Date.now()}.csv`;
+            a.click();
         };
 
         window.handleLogin = (e) => {
@@ -1607,7 +1668,25 @@
             if (typeof fileOrDataUrl === 'string') {
                 callback(fileOrDataUrl);
             } else {
-                reader.onload = (e) => callback(e.target.result);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        const maxDim = 1280;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+                        }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, w, h);
+                        callback(canvas.toDataURL('image/jpeg', 0.88));
+                    };
+                    img.src = e.target.result;
+                };
                 reader.readAsDataURL(fileOrDataUrl);
             }
         }
@@ -1649,7 +1728,7 @@
             canvas.height = video.videoHeight || 1080;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
             capturedPhysicalPhoto = dataUrl;
             document.getElementById('physical-photo-thumb').src = dataUrl;
             document.getElementById('physical-photo-preview-wrap').classList.remove('hidden');
@@ -1742,7 +1821,7 @@
             if (!pendingPackageSummary) return;
             const pkg = pendingPackageSummary;
             packages.unshift(pkg);
-            await syncDoc('packages_col', pkg.id, pkg);
+            await syncDoc('packages', pkg.id, pkg);
             addAuditLog('INPUT PAKET', `Paket ${pkg.id} untuk ${pkg.recipient}`);
             window.closeSummaryModal();
             document.getElementById('package-form').reset();
@@ -1930,7 +2009,7 @@
             p.status = 'delivering';
             p.courier = currentUser?.name || 'Kurir';
             p.takenAt = Date.now();
-            await syncDoc('packages_col', p.id, p);
+            await syncDoc('packages', p.id, p);
             addAuditLog('AMBIL PAKET', `${p.courier} mengambil paket ${p.id}`);
             refreshAllViews();
             window.showToast(`Paket ${p.id} siap diantar!`, 'success');
@@ -1944,7 +2023,7 @@
                     p.status = 'delivering';
                     p.courier = currentUser?.name || 'Kurir';
                     p.takenAt = Date.now();
-                    await syncDoc('packages_col', p.id, p);
+                    await syncDoc('packages', p.id, p);
                 }
             }
             window.clearCourierSelection();
@@ -2013,7 +2092,7 @@
             if (p) {
                 p.status = 'pending';
                 p.exceptionNote = `${reason}${note ? ' - ' + note : ''}`;
-                await syncDoc('packages_col', p.id, p);
+                await syncDoc('packages', p.id, p);
                 addAuditLog('KENDALA', `${p.id}: ${p.exceptionNote}`);
             }
             window.closeExceptionModal();
@@ -2111,7 +2190,7 @@
             c.height = v.videoHeight || 1080;
             const ctx = c.getContext('2d');
             ctx.drawImage(v, 0, 0, c.width, c.height);
-            const url = c.toDataURL('image/jpeg', 1.0);
+            const url = c.toDataURL('image/jpeg', 0.95);
             capturedProofPhoto = url;
             document.getElementById('proof-thumb-img').src = url;
             document.getElementById('proof-thumb-container').classList.remove('hidden');
@@ -2134,7 +2213,7 @@
                     if (capturedProofPhoto) p.photoProof = capturedProofPhoto;
                     if (sigData) p.signature = sigData;
                     if (!p.courier || p.courier === 'Belum Ditugaskan') p.courier = currentUser?.name || 'Kurir';
-                    await syncDoc('packages_col', p.id, p);
+                    await syncDoc('packages', p.id, p);
                 }
             }
             addAuditLog('SELESAI', `${activeCompletingPkgIds.length} paket diterima oleh ${receiverName}`);
@@ -2358,7 +2437,7 @@
             p.status = document.getElementById('edit-pkg-status').value;
             p.sla = document.getElementById('edit-pkg-sla').value;
             p.notes = document.getElementById('edit-pkg-notes').value.trim();
-            await syncDoc('packages_col', p.id, p);
+            await syncDoc('packages', p.id, p);
             window.closeAdminEditPackageModal();
             refreshAllViews();
         };
@@ -2470,7 +2549,7 @@
                 phone: document.getElementById('dir-phone').value.trim()
             };
             directory.push(obj);
-            await syncDoc('directory_col', obj.id, obj);
+            await syncDoc('directory', obj.id, obj);
             populateDirectoryDatalist();
             window.closeDirectoryModal();
             refreshAllViews();
@@ -2478,7 +2557,7 @@
         window.deleteDirectoryItem = async (id) => {
             directory = directory.filter(x => x.id !== id);
             saveLocal();
-            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'directory_col', id)); } catch (e) {} }
+            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'directory', id)); } catch (e) {} }
             populateDirectoryDatalist();
             refreshAllViews();
         };
@@ -2502,7 +2581,7 @@
             const m = members.find(x => x.id === id);
             if (!m) return;
             m.active = m.active === false ? true : false;
-            await syncDoc('members_col', m.id, m);
+            await syncDoc('members', m.id, m);
             refreshAllViews();
         };
 
@@ -2521,7 +2600,7 @@
                 avatar: `https://placehold.co/100x100/4338ca/ffffff?text=U`
             };
             members.push(obj);
-            await syncDoc('members_col', obj.id, obj);
+            await syncDoc('members', obj.id, obj);
             window.closeMemberModal();
             refreshAllViews();
         };
@@ -2558,16 +2637,16 @@
             e.preventDefault();
             const req = { id: 'RST-' + Date.now(), email: document.getElementById('forgot-email-input').value.trim(), reason: 'Lupa sandi' };
             resetRequests.push(req);
-            await syncDoc('reset_requests_col', req.id, req);
+            await syncDoc('reset_requests', req.id, req);
             window.closeForgotPasswordModal();
             renderAdminResets();
         };
         window.approvePasswordReset = async (id, email) => {
             const m = members.find(x => (x.email || '').toLowerCase() === (email || '').toLowerCase());
-            if (m) { m.password = '123'; await syncDoc('members_col', m.id, m); }
+            if (m) { m.password = '123'; await syncDoc('members', m.id, m); }
             resetRequests = resetRequests.filter(x => x.id !== id);
             saveLocal();
-            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'reset_requests_col', id)); } catch (e) {} }
+            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'reset_requests', id)); } catch (e) {} }
             renderAdminResets();
         };
 
@@ -2601,7 +2680,7 @@
                 document.getElementById('header-avatar-img').src = url;
                 localStorage.setItem('kurir_bns_session', JSON.stringify(currentUser));
                 const m = members.find(x => x.id === currentUser.id);
-                if (m) { m.avatar = url; await syncDoc('members_col', m.id, m); }
+                if (m) { m.avatar = url; await syncDoc('members', m.id, m); }
             });
         };
         window.handleUpdateOwnPassword = async (e) => {
@@ -2611,7 +2690,7 @@
             currentUser.password = np;
             localStorage.setItem('kurir_bns_session', JSON.stringify(currentUser));
             const m = members.find(x => x.id === currentUser.id);
-            if (m) { m.password = np; await syncDoc('members_col', m.id, m); }
+            if (m) { m.password = np; await syncDoc('members', m.id, m); }
             window.closeProfileModal();
             window.showToast('Sandi diperbarui!', 'success');
         };
@@ -2628,7 +2707,7 @@
             for (const p of packages) {
                 if (p.status === 'completed' && (p.photoPhysical || p.photoProof)) {
                     p.photoPhysical = ''; p.photoProof = '';
-                    await syncDoc('packages_col', p.id, p);
+                    await syncDoc('packages', p.id, p);
                 }
             }
             window.closeBackupModal();
