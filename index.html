@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurir BNS - Sekolah & Manajemen Paket Realtime</title>
+    <title>Kurir BNS Express - Sekolah & Manajemen Paket Realtime</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -532,7 +532,7 @@
                 </div>
                 <div class="flex items-center space-x-1.5">
                     <button id="btn-batch-take" onclick="window.executeBatchTake()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-3 py-1 rounded-xl text-[9px] shadow"><i class="fa-solid fa-hand-holding-hand mr-1"></i> Ambil Sekaligus</button>
-                    <button id="btn-batch-complete" onclick="window.openBatchCompleteModal()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-3 py-1 rounded-xl text-[9px] shadow"><i class="fa-solid fa-check-double mr-1"></i> Serah Terima Sekaligus (1x TTD)</button>
+                    <button id="btn-batch-complete" onclick="window.openBatchCompleteModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-3 py-1 rounded-xl text-[9px] shadow"><i class="fa-solid fa-check-double mr-1"></i> Serah Terima Sekaligus (1x TTD)</button>
                 </div>
             </div>
 
@@ -1165,10 +1165,10 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { initializeFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Matikan log warning/error internal Firestore agar konsol tetap bersih saat beralih ke mode offline/polling
+        // Silent log untuk menjaga kebersihan konsol browser
         try { setLogLevel('silent'); } catch (e) {}
 
-        // Fungsi Sanitizer XSS untuk mengamankan render HTML dinamis
+        // Fungsi Sanitizer XSS untuk keamanan render string dinamis
         function escapeHtml(str) {
             return String(str ?? '')
                 .replace(/&/g, '&amp;')
@@ -1564,7 +1564,6 @@
         let resetRequests = [];
         let currentBroadcast = { text: '', updatedAt: '' };
 
-        // --- PENYIMPANAN CACHE LOKAL (FALLBACK OFFLINE INSTAN) ---
         function saveLocalCache() {
             try {
                 localStorage.setItem('kurir_bns_cache_packages', JSON.stringify(packages.slice(0, 150)));
@@ -1990,7 +1989,6 @@
             };
             try {
                 const app = initializeApp(firebaseConfig);
-                // Gunakan experimentalForceLongPolling agar koneksi Firestore menembus proxy/iframe tanpa error timeout 10 detik
                 db = initializeFirestore(app, {
                     experimentalForceLongPolling: true,
                     ignoreUndefinedProperties: true
@@ -2097,7 +2095,6 @@
             saveLocalCache();
             if (!db) return false;
             try {
-                // Non-blocking sync agar UI tidak membeku saat koneksi lambat/offline
                 setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id)), pkgObj, { merge: true }).catch(() => {});
                 return true;
             } catch (e) { return false; }
@@ -2196,7 +2193,7 @@
             if (db) { try { setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(logEntry.id)), logEntry).catch(() => {}); } catch(e) {} }
         }
 
-        function showToast(message, type = 'success') {
+        window.showToast = function(message, type = 'success') {
             const container = document.getElementById('toast-container');
             if(!container) return;
             const toast = document.createElement('div');
@@ -2205,8 +2202,7 @@
             toast.innerHTML = `<i class="fa-solid fa-circle-info text-xs"></i><span>${escapeHtml(message)}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
-        }
-        window.showToast = showToast;
+        };
 
         window.startVoiceSearch = function(inputId, callbackFn) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2928,7 +2924,6 @@
             if (tab === 'audit') window.renderAuditLogs();
         };
 
-        // --- SUPER ADMIN OVERVIEW: RADAR SLA, WORKLOAD KURIR & GRAFIK CHART.JS ---
         function renderAdminOverview() {
             const total = packages.length;
             const deliv = packages.filter(p => p.status === 'delivering').length;
@@ -2939,7 +2934,6 @@
             document.getElementById('stat-comp-pkg').innerText = comp;
             document.getElementById('stat-success-rate').innerText = `${rate}%`;
 
-            // 1. Radar Paket Lewat SLA / Menginap
             const overdueList = packages.filter(p => p.status !== 'completed' && (getPackageSlaRemainMinutes(p) < 0 || p.exceptionStatus));
             const overdueBadge = document.getElementById('overdue-watchlist-badge');
             if (overdueBadge) overdueBadge.innerText = `${overdueList.length} Paket Kritis`;
@@ -2966,7 +2960,6 @@
                 }
             }
 
-            // 2. Monitor Beban Kerja Kurir Realtime
             const workloadContainer = document.getElementById('admin-courier-workload-list');
             if (workloadContainer) {
                 const courierMembers = members.filter(m => m.role === 'kurir');
@@ -2998,7 +2991,6 @@
                 }
             }
 
-            // 3. Render 4 Grafik Chart.js
             renderAdminCharts();
         }
 
@@ -3044,7 +3036,6 @@
             createOrUpdate('dest', 'chartExpedition', 'bar', topDests.length ? topDests.map(x => x[0]) : ['Ruang Guru'], topDests.length ? topDests.map(x => x[1]) : [0], ['#4f46e5', '#7c3aed', '#0ea5e9', '#10b981', '#f59e0b']);
         }
 
-        // --- MODAL 360° PACKAGE INSPECTOR & EDIT ADMIN ---
         window.openInspectPackageModal = function(pkgId) {
             const p = packages.find(item => String(item.id) === String(pkgId));
             if (!p) return;
@@ -3150,7 +3141,6 @@
             showToast(`Data paket ${p.id} berhasil diperbarui Admin!`);
         };
 
-        // --- MANAJEMEN & HAPUS TRANSAKSI ADMIN (DENGAN FITUR PILIH BANYAK / BULK DELETE) ---
         function updateAdminPkgBatchBar() {
             const bar = document.getElementById('admin-pkg-batch-bar');
             const countEl = document.getElementById('admin-batch-selected-count');
@@ -3418,8 +3408,9 @@
             if (!m) return;
             window.openCustomConfirm('Hapus Anggota', `Yakin ingin menghapus akun ${m.name}?`, async () => {
                 members = members.filter(item => String(item.id) !== String(id));
+                saveLocalCache();
                 if (db) {
-                    try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id))); } catch (e) {}
+                    try { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(id))).catch(() => {}); } catch (e) {}
                 }
                 updateCourierAndRecipientDropdowns();
                 renderAdminMembers();
@@ -3464,10 +3455,11 @@
             window.openCustomConfirm('Bersihkan Audit Log', 'Hapus seluruh riwayat aktivitas dari tampilan?', async () => {
                 if (db) {
                     for (const l of auditLogs.slice(0, 100)) {
-                        try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(l.id))); } catch (e) {}
+                        try { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(l.id))).catch(() => {}); } catch (e) {}
                     }
                 }
                 auditLogs = [];
+                saveLocalCache();
                 window.renderAuditLogs();
                 showToast('Audit log dibersihkan');
             });
@@ -3542,6 +3534,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            loadLocalCache();
+
             if (localStorage.getItem('kurir_bns_dark_mode') === '1') {
                 document.body.classList.add('dark-mode');
                 const icon = document.getElementById('dark-mode-icon');
@@ -3551,7 +3545,6 @@
             }
             if (localStorage.getItem('kurir_bns_wakelock') === '1') requestWakeLock();
 
-            loadLocalCache();
             initSignaturePad();
             initFirebase();
             updateCourierAndRecipientDropdowns();
