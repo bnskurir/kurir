@@ -532,7 +532,7 @@
                 </div>
                 <div class="flex items-center space-x-1.5">
                     <button id="btn-batch-take" onclick="window.executeBatchTake()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-3 py-1 rounded-xl text-[9px] shadow"><i class="fa-solid fa-hand-holding-hand mr-1"></i> Ambil Sekaligus</button>
-                    <button id="btn-batch-complete" onclick="window.openBatchCompleteModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-3 py-1 rounded-xl text-[9px] shadow"><i class="fa-solid fa-check-double mr-1"></i> Serah Terima Sekaligus (1x TTD)</button>
+                    <button id="btn-batch-complete" onclick="window.openBatchCompleteModal()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-3 py-1 rounded-xl text-[9px] shadow"><i class="fa-solid fa-check-double mr-1"></i> Serah Terima Sekaligus (1x TTD)</button>
                 </div>
             </div>
 
@@ -590,7 +590,7 @@
                 <div class="bg-white/10 p-1.5 rounded-xl flex items-center space-x-1">
                     <div class="relative">
                         <label class="block text-[7.5px] uppercase font-bold text-emerald-200 mb-0.5">Filter Nama / Ruangan</label>
-                        <input type="text" id="receiver-session-name" oninput="window.renderReceiverView()" placeholder="Semua / Ketik nama..." class="px-2 py-1 pr-6 rounded-lg bg-white text-slate-800 text-[9.5px] font-semibold w-40">
+                        <input type="text" id="receiver-session-name" oninput="window.renderReceiverView()" placeholder="Ketik nama / ruangan Anda..." class="px-2 py-1 pr-6 rounded-lg bg-white text-slate-800 text-[9.5px] font-semibold w-44">
                     </div>
                 </div>
             </div>
@@ -1163,7 +1163,20 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Matikan log warning/error internal Firestore agar konsol tetap bersih saat beralih ke mode offline/polling
+        try { setLogLevel('silent'); } catch (e) {}
+
+        // Fungsi Sanitizer XSS untuk mengamankan render HTML dinamis
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
         let deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -1201,6 +1214,7 @@
 
         let loggedUser = { role: 'petugas', name: '', email: '', isSuperAdmin: false, avatar: 'https://placehold.co/100x100/4338ca/ffffff?text=BNS' };
         let currentRole = 'petugas';
+        let currentCourierSubTab = 'pending';
         let sourceType = 'external';
         let physicalPhotoDataUrl = null;
         let physicalCameraStream = null;
@@ -1361,13 +1375,13 @@
                             ${p.status === 'completed' ? 'DITERIMA' : (p.status === 'delivering' ? 'DIANTAR KURIR' : 'DI POS PIKET')}
                         </span>
                         <div>
-                            <h4 class="text-base font-extrabold text-white">${p.recipient} <span class="text-xs font-semibold text-indigo-400">(${p.role})</span></h4>
-                            <p class="text-xs text-slate-400">Tujuan: <strong class="text-slate-200">${p.destination}</strong> • Kurir: <strong class="text-sky-300">${p.courier || 'Menunggu'}</strong></p>
+                            <h4 class="text-base font-extrabold text-white">${escapeHtml(p.recipient)} <span class="text-xs font-semibold text-indigo-400">(${escapeHtml(p.role)})</span></h4>
+                            <p class="text-xs text-slate-400">Tujuan: <strong class="text-slate-200">${escapeHtml(p.destination)}</strong> • Kurir: <strong class="text-sky-300">${escapeHtml(p.courier || 'Menunggu')}</strong></p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="font-mono text-xs text-indigo-300 font-bold">${p.id}</div>
-                        <div class="text-[11px] text-slate-400">${p.completedTimestamp || p.timestamp}</div>
+                        <div class="font-mono text-xs text-indigo-300 font-bold">${escapeHtml(p.id)}</div>
+                        <div class="text-[11px] text-slate-400">${escapeHtml(p.completedTimestamp || p.timestamp)}</div>
                     </div>
                 </div>
             `).join('');
@@ -1550,6 +1564,44 @@
         let resetRequests = [];
         let currentBroadcast = { text: '', updatedAt: '' };
 
+        // --- PENYIMPANAN CACHE LOKAL (FALLBACK OFFLINE INSTAN) ---
+        function saveLocalCache() {
+            try {
+                localStorage.setItem('kurir_bns_cache_packages', JSON.stringify(packages.slice(0, 150)));
+                localStorage.setItem('kurir_bns_cache_members', JSON.stringify(members));
+                localStorage.setItem('kurir_bns_cache_directory', JSON.stringify(schoolDirectory));
+                localStorage.setItem('kurir_bns_cache_audit', JSON.stringify(auditLogs.slice(0, 100)));
+            } catch (e) {}
+        }
+
+        function loadLocalCache() {
+            try {
+                const cPkgs = JSON.parse(localStorage.getItem('kurir_bns_cache_packages') || 'null');
+                if (Array.isArray(cPkgs) && cPkgs.length > 0) {
+                    packages = cPkgs.filter(p => !deletedPkgBlacklist.has(String(p.id)));
+                }
+                const cMem = JSON.parse(localStorage.getItem('kurir_bns_cache_members') || 'null');
+                if (Array.isArray(cMem) && cMem.length > 0) members = cMem;
+                const cDir = JSON.parse(localStorage.getItem('kurir_bns_cache_directory') || 'null');
+                if (Array.isArray(cDir) && cDir.length > 0) schoolDirectory = cDir;
+                const cAud = JSON.parse(localStorage.getItem('kurir_bns_cache_audit') || 'null');
+                if (Array.isArray(cAud) && cAud.length > 0) auditLogs = cAud;
+            } catch (e) {}
+        }
+
+        function updateConnectionBadge(isOnline, customLabel = null) {
+            const dot = document.getElementById('connection-dot');
+            const text = document.getElementById('connection-text');
+            if (dot) {
+                dot.className = isOnline
+                    ? "w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block"
+                    : "w-1.5 h-1.5 rounded-full bg-amber-400 connection-indicator inline-block";
+            }
+            if (text) {
+                text.innerText = customLabel || (isOnline ? `Cloud Sync (${packages.length} Paket)` : `Local Sync (${packages.length} Paket)`);
+            }
+        }
+
         function getMemberUsername(m) {
             if (!m) return '';
             if (m.username) return String(m.username).trim().toLowerCase();
@@ -1570,7 +1622,7 @@
             const editCourierSelect = document.getElementById('edit-pkg-courier');
             const couriers = members.filter(m => m.role === 'kurir' && m.status !== 'Nonaktif');
             const optionsHtml = `<option value="Belum Ditugaskan">-- Antrian Terbuka --</option>` +
-                couriers.map(c => `<option value="${c.name}">${c.name} (Kurir)</option>`).join('');
+                couriers.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)} (Kurir)</option>`).join('');
             if (courierSelect) {
                 const currentVal = courierSelect.value;
                 courierSelect.innerHTML = optionsHtml;
@@ -1588,7 +1640,7 @@
                     }
                 });
                 recipientDatalist.innerHTML = Array.from(uniqueRecipients.values())
-                    .map(r => `<option value="${String(r.name).replace(/"/g, '&quot;')}">${r.role}${r.room ? ' - ' + r.room : ''}</option>`).join('');
+                    .map(r => `<option value="${escapeHtml(r.name)}">${escapeHtml(r.role)}${r.room ? ' - ' + escapeHtml(r.room) : ''}</option>`).join('');
             }
         }
 
@@ -1601,13 +1653,13 @@
             }
             tbody.innerHTML = schoolDirectory.map(d => `
                 <tr class="hover:bg-slate-50 transition">
-                    <td class="p-2 font-bold text-slate-800">${d.name}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-[8px]">${d.role}</span></td>
-                    <td class="p-2 font-semibold text-rose-600">${d.room}</td>
-                    <td class="p-2 font-mono text-emerald-700">${d.phone || '-'}</td>
+                    <td class="p-2 font-bold text-slate-800">${escapeHtml(d.name)}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-[8px]">${escapeHtml(d.role)}</span></td>
+                    <td class="p-2 font-semibold text-rose-600">${escapeHtml(d.room)}</td>
+                    <td class="p-2 font-mono text-emerald-700">${escapeHtml(d.phone || '-')}</td>
                     <td class="p-2 text-right space-x-1.5">
-                        <button type="button" onclick="window.openDirectoryModal('${d.id}')" class="px-2 py-1 rounded bg-indigo-50 text-indigo-600 hover:bg-indigo-100"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button type="button" onclick="window.deleteDirectoryItem('${d.id}')" class="px-2 py-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" onclick="window.openDirectoryModal('${escapeHtml(d.id)}')" class="px-2 py-1 rounded bg-indigo-50 text-indigo-600 hover:bg-indigo-100"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button type="button" onclick="window.deleteDirectoryItem('${escapeHtml(d.id)}')" class="px-2 py-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -1635,8 +1687,9 @@
             let dirObj = editId ? schoolDirectory.find(d => d.id === editId) : null;
             if (dirObj) { Object.assign(dirObj, { name, role, room, phone }); }
             else { dirObj = { id: 'dir-' + Date.now(), name, role, room, phone }; schoolDirectory.push(dirObj); }
+            saveLocalCache();
             if (db && dirObj) {
-                try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'directory_col', String(dirObj.id)), dirObj, { merge: true }); } catch (err) {}
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'directory_col', String(dirObj.id)), dirObj, { merge: true }).catch(() => {});
             }
             updateCourierAndRecipientDropdowns();
             window.renderAdminDirectory();
@@ -1647,7 +1700,8 @@
         window.deleteDirectoryItem = function(id) {
             window.openCustomConfirm('Hapus Kontak Direktori', 'Yakin ingin menghapus kontak ini?', async () => {
                 schoolDirectory = schoolDirectory.filter(d => d.id !== id);
-                if (db) { try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'directory_col', String(id))); } catch (e) {} }
+                saveLocalCache();
+                if (db) { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'directory_col', String(id))).catch(() => {}); }
                 updateCourierAndRecipientDropdowns();
                 window.renderAdminDirectory();
                 showToast('Kontak dihapus');
@@ -1767,7 +1821,7 @@
 
         window.getSlaBadgeHtml = function(pkg) {
             if (pkg.status === 'completed') return `<span class="px-1.5 py-0.2 rounded text-[7.5px] font-bold bg-emerald-100 text-emerald-700"><i class="fa-solid fa-check-double mr-0.5"></i>SLA Tuntas</span>`;
-            if (pkg.exceptionStatus) return `<span class="px-1.5 py-0.2 rounded text-[7.5px] font-bold bg-rose-100 text-rose-700 border border-rose-300"><i class="fa-solid fa-triangle-exclamation mr-0.5"></i>${pkg.exceptionStatus}</span>`;
+            if (pkg.exceptionStatus) return `<span class="px-1.5 py-0.2 rounded text-[7.5px] font-bold bg-rose-100 text-rose-700 border border-rose-300"><i class="fa-solid fa-triangle-exclamation mr-0.5"></i>${escapeHtml(pkg.exceptionStatus)}</span>`;
             const remainMin = getPackageSlaRemainMinutes(pkg);
             const formatDur = (mins) => {
                 const a = Math.abs(mins);
@@ -1851,8 +1905,8 @@
             }
             container.innerHTML = resetRequests.map(r => `
                 <div class="p-2 rounded-lg border bg-slate-50 flex justify-between items-center text-[9px]">
-                    <div><strong>${r.name}</strong> (${r.email}) • ${r.reason}</div>
-                    ${r.status === 'Pending' ? `<button type="button" onclick="window.approveResetRequest('${r.id}')" class="bg-emerald-600 text-white font-bold px-2 py-1 rounded text-[8px]">Reset ke 123456</button>` : `<span class="text-emerald-700 font-bold">Sudah Direset</span>`}
+                    <div><strong>${escapeHtml(r.name)}</strong> (${escapeHtml(r.email)}) • ${escapeHtml(r.reason)}</div>
+                    ${r.status === 'Pending' ? `<button type="button" onclick="window.approveResetRequest('${escapeHtml(r.id)}')" class="bg-emerald-600 text-white font-bold px-2 py-1 rounded text-[8px]">Reset ke 123456</button>` : `<span class="text-emerald-700 font-bold">Sudah Direset</span>`}
                 </div>
             `).join('');
         };
@@ -1936,11 +1990,19 @@
             };
             try {
                 const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
+                // Gunakan experimentalForceLongPolling agar koneksi Firestore menembus proxy/iframe tanpa error timeout 10 detik
+                db = initializeFirestore(app, {
+                    experimentalForceLongPolling: true,
+                    ignoreUndefinedProperties: true
+                });
                 auth = getAuth(app);
                 setupRealtimeSync();
-                signInAnonymously(auth).catch(() => {});
-            } catch (e) {}
+                signInAnonymously(auth).catch(() => {
+                    updateConnectionBadge(false);
+                });
+            } catch (e) {
+                updateConnectionBadge(false);
+            }
         }
 
         function setupRealtimeSync() {
@@ -1966,11 +2028,15 @@
                         if (newestPkg) sendSystemBannerNotification(`📦 Paket Baru: ${newestPkg.recipient}`, `Tujuan: ${newestPkg.destination}`);
                     }
                     lastPackageCount = sortedCloud.length;
-                    packages = sortedCloud;
-                    const statusText = document.getElementById('connection-text');
-                    if (statusText) statusText.innerText = `Cloud Sync (${packages.length} Paket)`;
+                    if (sortedCloud.length > 0 || packages.length === 0) {
+                        packages = sortedCloud;
+                        saveLocalCache();
+                    }
+                    updateConnectionBadge(!snapshot.metadata.fromCache);
                     updateCourierAndRecipientDropdowns();
                     refreshActiveView();
+                }, () => {
+                    updateConnectionBadge(false);
                 });
 
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'members_col'), (snapshot) => {
@@ -1985,20 +2051,22 @@
                         if (!members.some(m => matchesMemberLogin(m, 'admin'))) {
                             members.unshift({ id: 'usr-superadm', name: 'Administrator', username: 'admin', email: 'admin', password: '123456', role: 'admin', status: 'Aktif' });
                         }
+                        saveLocalCache();
                     }
                     updateCourierAndRecipientDropdowns();
                     if (currentRole === 'admin') renderAdminMembers();
-                });
+                }, () => {});
 
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'directory_col'), (snapshot) => {
                     const cloudDir = [];
                     snapshot.forEach(docSnap => cloudDir.push(docSnap.data()));
                     if (cloudDir.length > 0) {
                         schoolDirectory = cloudDir;
+                        saveLocalCache();
                         updateCourierAndRecipientDropdowns();
                         if (currentRole === 'admin') window.renderAdminDirectory();
                     }
-                });
+                }, () => {});
 
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'settings_col'), (snapshot) => {
                     snapshot.forEach(docSnap => {
@@ -2007,22 +2075,30 @@
                             updateGlobalBroadcastBanner();
                         }
                     });
-                });
+                }, () => {});
 
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col'), (snapshot) => {
                     const cloudLogs = [];
                     snapshot.forEach(docSnap => cloudLogs.push(docSnap.data()));
-                    auditLogs = cloudLogs.sort((a,b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
-                    window.renderAuditLogs();
-                });
-            } catch (e) {}
+                    if (cloudLogs.length > 0) {
+                        auditLogs = cloudLogs.sort((a,b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
+                        saveLocalCache();
+                        window.renderAuditLogs();
+                    }
+                }, () => {});
+            } catch (e) {
+                updateConnectionBadge(false);
+            }
         }
 
         async function syncPackageToFirebase(pkgObj) {
-            if (!db || !pkgObj) return false;
+            if (!pkgObj) return false;
+            deletedPkgBlacklist.delete(String(pkgObj.id));
+            saveLocalCache();
+            if (!db) return false;
             try {
-                deletedPkgBlacklist.delete(String(pkgObj.id));
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id)), pkgObj, { merge: true });
+                // Non-blocking sync agar UI tidak membeku saat koneksi lambat/offline
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(pkgObj.id)), pkgObj, { merge: true }).catch(() => {});
                 return true;
             } catch (e) { return false; }
         }
@@ -2035,12 +2111,13 @@
             packages = packages.filter(p => String(p.id) !== targetId && String(p._docId || '') !== docKey);
             selectedAdminPkgIds.delete(targetId);
             selectedCourierPkgIds.delete(targetId);
+            saveLocalCache();
 
             if (db) {
                 try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', targetId));
+                    deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', targetId)).catch(() => {});
                     if (docKey && docKey !== targetId) {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', docKey));
+                        deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', docKey)).catch(() => {});
                     }
                 } catch (e) {}
             }
@@ -2099,8 +2176,9 @@
         };
 
         async function syncMemberToFirebase(memberObj) {
+            saveLocalCache();
             if (!db) return;
-            try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true }); } catch (e) {}
+            try { setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members_col', String(memberObj.id)), memberObj, { merge: true }).catch(() => {}); } catch (e) {}
         }
 
         async function addAuditLog(actionText, actorName = null, actorRole = null) {
@@ -2113,8 +2191,9 @@
                 action: actionText
             };
             auditLogs.unshift(logEntry);
+            saveLocalCache();
             window.renderAuditLogs();
-            if (db) { try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(logEntry.id)), logEntry); } catch(e) {} }
+            if (db) { try { setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs_col', String(logEntry.id)), logEntry).catch(() => {}); } catch(e) {} }
         }
 
         function showToast(message, type = 'success') {
@@ -2123,7 +2202,7 @@
             const toast = document.createElement('div');
             const bgClass = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-indigo-600');
             toast.className = `p-2.5 rounded-2xl shadow-xl text-[10px] font-bold text-white toast-anim flex items-center space-x-2 pointer-events-auto ${bgClass}`;
-            toast.innerHTML = `<i class="fa-solid fa-circle-info text-xs"></i><span>${message}</span>`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info text-xs"></i><span>${escapeHtml(message)}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -2145,24 +2224,35 @@
 
         window.togglePasswordVisibility = function() {
             const pwdInput = document.getElementById('login-password');
-            if (pwdInput) pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+            const icon = document.getElementById('password-toggle-icon');
+            if (pwdInput) {
+                const isPwd = pwdInput.type === 'password';
+                pwdInput.type = isPwd ? 'text' : 'password';
+                if (icon) icon.className = isPwd ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            }
         };
 
         window.selectLoginRole = function(role) {
             ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
                 const btn = document.getElementById(`login-btn-${r}`);
                 if (btn) btn.className = r === role
-                    ? "p-1.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-1 shadow-sm"
-                    : "p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1";
+                    ? "p-1.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-1 shadow-sm btn-glow"
+                    : "p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1 hover:bg-white/60";
             });
             const passwordGroup = document.getElementById('password-field-group');
             const passwordInput = document.getElementById('login-password');
+            const labelName = document.getElementById('login-label-name');
+            const userInput = document.getElementById('login-username');
             if (role === 'penerima') {
                 passwordGroup?.classList.add('hidden');
                 if (passwordInput) passwordInput.required = false;
+                if (labelName) labelName.innerText = 'Nama Penerima / Ruangan';
+                if (userInput) userInput.placeholder = 'Ketik nama Anda (cth: Budi Santoso)...';
             } else {
                 passwordGroup?.classList.remove('hidden');
                 if (passwordInput) passwordInput.required = true;
+                if (labelName) labelName.innerText = 'Username';
+                if (userInput) userInput.placeholder = 'Ketik username (cth: admin / gari)...';
             }
             loggedUser.role = role;
         };
@@ -2175,19 +2265,23 @@
                 loggedUser = { name: username, username: username.toLowerCase(), email: username.toLowerCase(), role: 'penerima', isSuperAdmin: false, avatar: `https://placehold.co/100x100/059669/ffffff?text=${encodeURIComponent(username.slice(0,2).toUpperCase())}` };
                 localStorage.setItem('kurir_bns_logged_user', JSON.stringify(loggedUser));
                 document.getElementById('header-user-badge').innerText = `Masuk: ${username} (PENERIMA)`;
+                const recInput = document.getElementById('receiver-session-name');
+                if (recInput) recInput.value = username;
                 runLoginLoadingTransition(loggedUser, () => { window.switchRole('penerima'); });
                 return;
             }
             const password = document.getElementById('login-password').value;
             const foundUser = members.find(m => matchesMemberLogin(m, username));
             if (!foundUser || foundUser.password !== password) {
-                document.getElementById('login-error-txt') && (document.getElementById('login-error-text').innerText = 'Username atau kata sandi salah.');
+                const errTextEl = document.getElementById('login-error-text');
+                if (errTextEl) errTextEl.innerText = 'Username atau kata sandi salah.';
                 document.getElementById('login-error-alert')?.classList.remove('hidden');
                 showToast('Username atau kata sandi salah!', 'error');
                 return;
             }
             if (foundUser.status === 'Nonaktif') {
-                document.getElementById('login-error-text').innerText = 'Akun sedang dinonaktifkan sementara oleh Admin.';
+                const errTextEl = document.getElementById('login-error-text');
+                if (errTextEl) errTextEl.innerText = 'Akun sedang dinonaktifkan sementara oleh Admin.';
                 document.getElementById('login-error-alert')?.classList.remove('hidden');
                 showToast('Akun Anda sedang Nonaktif. Hubungi Admin.', 'error');
                 return;
@@ -2227,13 +2321,25 @@
             });
             if (role === 'petugas') { window.switchPetugasTab('input'); window.renderPetugasForm(); }
             if (role === 'kurir') { window.switchCourierSubTab('pending'); window.renderCourierView(); }
-            if (role === 'penerima') window.renderReceiverView();
+            if (role === 'penerima') {
+                const recInput = document.getElementById('receiver-session-name');
+                if (recInput && !recInput.value && !loggedUser.isSuperAdmin && loggedUser.name) {
+                    recInput.value = loggedUser.name;
+                }
+                window.renderReceiverView();
+            }
             if (role === 'admin') { window.switchAdminTab('overview'); renderAdminOverview(); }
         };
 
         window.switchPetugasTab = function(tab) {
             ['input', 'status'].forEach(t => {
                 document.getElementById(`petugas-content-${t}`)?.classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById(`petugas-tab-${t}`);
+                if (btn) {
+                    btn.className = t === tab
+                        ? "flex-1 py-1.5 px-3 rounded-xl text-[10px] font-bold transition bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md flex items-center justify-center space-x-1.5"
+                        : "flex-1 py-1.5 px-3 rounded-xl text-[10px] font-bold transition text-slate-600 hover:bg-white/60 flex items-center justify-center space-x-1.5";
+                }
             });
             if (tab === 'status') window.renderPetugasStatusView();
         };
@@ -2241,10 +2347,26 @@
         window.togglePetugasFullscreen = function() {
             isPetugasFullscreen = !isPetugasFullscreen;
             document.getElementById('petugas-content-status')?.classList.toggle('fullscreen-mode', isPetugasFullscreen);
+            const icon = document.getElementById('petugas-fullscreen-icon');
+            const txt = document.getElementById('petugas-fullscreen-text');
+            if (icon) icon.className = isPetugasFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+            if (txt) txt.innerText = isPetugasFullscreen ? 'Keluar Fullscreen' : 'Fullscreen';
         };
 
         window.switchSourceType = function(type) {
             sourceType = type;
+            const btnExt = document.getElementById('btn-src-ext');
+            const btnInt = document.getElementById('btn-src-int');
+            if (btnExt) {
+                btnExt.className = type === 'external'
+                    ? "px-3 py-1 rounded-lg text-[9px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"
+                    : "px-3 py-1 rounded-lg text-[9px] font-bold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1";
+            }
+            if (btnInt) {
+                btnInt.className = type === 'internal'
+                    ? "px-3 py-1 rounded-lg text-[9px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"
+                    : "px-3 py-1 rounded-lg text-[9px] font-bold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1";
+            }
             window.renderPetugasForm();
         };
 
@@ -2480,6 +2602,11 @@
             addAuditLog(`Petugas (${loggedUser.name}) menginput paket baru ${pkg.id} untuk ${pkg.recipient}`, loggedUser.name, 'PETUGAS');
             physicalPhotoDataUrl = null;
             document.getElementById('physical-photo-preview-wrap')?.classList.add('hidden');
+            const badge = document.getElementById('photo-status-badge');
+            if (badge) {
+                badge.className = "text-[8px] bg-amber-100/90 text-amber-800 px-2 py-0.5 rounded-full font-semibold inline-block border border-amber-200";
+                badge.innerText = "Belum Diambil";
+            }
             document.getElementById('package-form')?.reset();
             window.renderPetugasForm();
             refreshActiveView();
@@ -2490,6 +2617,10 @@
             const q = (document.getElementById('filter-petugas-search')?.value || '').toLowerCase();
             const period = document.getElementById('filter-petugas-period')?.value || 'today';
             const slaFilter = document.getElementById('filter-petugas-sla')?.value || 'all';
+
+            const periodLabels = { today: 'Hari Ini', tomorrow: 'Terjadwal', yesterday: 'Kemarin', week: '1 Minggu', month: '1 Bulan', all: 'Semua Waktu' };
+            const activeBadge = document.getElementById('petugas-period-active-badge');
+            if (activeBadge) activeBadge.innerText = periodLabels[period] || 'Hari Ini';
 
             const filtered = packages.filter(p => {
                 const matchQ = !q || p.recipient?.toLowerCase().includes(q) || p.id?.toLowerCase().includes(q) || p.resi?.toLowerCase().includes(q) || p.destination?.toLowerCase().includes(q);
@@ -2506,29 +2637,32 @@
             document.getElementById('count-petugas-delivering-badge').innerText = delivList.length;
             document.getElementById('count-petugas-completed-badge').innerText = compList.length;
 
-            const cardHtml = (p) => `
+            const cardHtml = (p) => {
+                const safeId = String(p.id).replace(/'/g, "\\'");
+                return `
                 <div class="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-1 text-[9px]">
                     <div class="flex justify-between items-center">
-                        <span class="font-mono font-bold text-indigo-700">${p.id}</span>
+                        <span class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</span>
                         ${window.getSlaBadgeHtml(p)}
                     </div>
-                    <div class="font-bold text-slate-800">${p.recipient} <span class="text-slate-500 font-normal">(${p.role})</span></div>
-                    <div class="text-rose-600 font-semibold"><i class="fa-solid fa-location-dot mr-1"></i>${p.destination}</div>
+                    <div class="font-bold text-slate-800">${escapeHtml(p.recipient)} <span class="text-slate-500 font-normal">(${escapeHtml(p.role)})</span></div>
+                    <div class="text-rose-600 font-semibold"><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(p.destination)}</div>
                     <div class="text-[8px] text-slate-500 flex justify-between pt-1 border-t">
-                        <span>Kurir: <strong>${p.courier || '-'}</strong></span>
+                        <span>Kurir: <strong>${escapeHtml(p.courier || '-')}</strong></span>
                         <div class="space-x-1">
-                            <button type="button" onclick="window.openQrLabelModal('${p.id}')" class="text-indigo-600 font-bold" title="Cetak QR"><i class="fa-solid fa-qrcode"></i></button>
-                            <button type="button" onclick="window.sendWhatsAppNotification('${p.id}')" class="text-emerald-600 font-bold" title="Kirim WA"><i class="fa-brands fa-whatsapp"></i></button>
+                            <button type="button" onclick="window.openQrLabelModal('${safeId}')" class="text-indigo-600 font-bold" title="Cetak QR"><i class="fa-solid fa-qrcode"></i></button>
+                            <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="text-emerald-600 font-bold" title="Kirim WA"><i class="fa-brands fa-whatsapp"></i></button>
                         </div>
                     </div>
                 </div>
-            `;
+            `};
             document.getElementById('list-petugas-status-pending').innerHTML = pendingList.map(cardHtml).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Kosong</div>`;
             document.getElementById('list-petugas-status-delivering').innerHTML = delivList.map(cardHtml).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Kosong</div>`;
             document.getElementById('list-petugas-status-completed').innerHTML = compList.map(cardHtml).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Kosong</div>`;
         };
 
         window.switchCourierSubTab = function(sub) {
+            currentCourierSubTab = sub;
             ['pending', 'delivering', 'completed'].forEach(s => {
                 document.getElementById(`courier-panel-${s}`)?.classList.toggle('hidden', s !== sub);
                 const btn = document.getElementById(`courier-subtab-${s}`);
@@ -2563,9 +2697,13 @@
         function updateCourierBatchBar() {
             const bar = document.getElementById('courier-batch-bar');
             const countEl = document.getElementById('batch-selected-count');
+            const btnTake = document.getElementById('btn-batch-take');
+            const btnComplete = document.getElementById('btn-batch-complete');
             if (!bar || !countEl) return;
             countEl.innerText = `${selectedCourierPkgIds.size} Paket Dipilih`;
             bar.classList.toggle('hidden', selectedCourierPkgIds.size === 0);
+            if (btnTake) btnTake.classList.toggle('hidden', currentCourierSubTab !== 'pending');
+            if (btnComplete) btnComplete.classList.toggle('hidden', currentCourierSubTab !== 'delivering');
         }
 
         window.executeBatchTake = async function() {
@@ -2611,42 +2749,46 @@
             document.getElementById('count-delivering-badge').innerText = deliv.length;
             document.getElementById('count-completed-badge').innerText = comp.length;
 
-            document.getElementById('list-courier-pending').innerHTML = pend.map(p => `
+            document.getElementById('list-courier-pending').innerHTML = pend.map(p => {
+                const safeId = String(p.id).replace(/'/g, "\\'");
+                return `
                 <div class="p-3 rounded-xl bg-slate-50 border flex flex-wrap justify-between items-center gap-2 text-[9.5px]">
                     <div class="flex items-center space-x-2.5">
-                        <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${p.id}')" class="w-4 h-4 rounded">
+                        <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${safeId}')" class="w-4 h-4 rounded">
                         <div>
-                            <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-indigo-700">${p.id}</span> ${window.getSlaBadgeHtml(p)}</div>
-                            <div class="font-extrabold text-slate-800">${p.recipient} (${p.role}) • <span class="text-rose-600">${p.destination}</span></div>
-                            <div class="text-[8.5px] text-slate-500">Resi: ${p.resi} • Catatan: ${p.notes || '-'}</div>
+                            <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</span> ${window.getSlaBadgeHtml(p)}</div>
+                            <div class="font-extrabold text-slate-800">${escapeHtml(p.recipient)} (${escapeHtml(p.role)}) • <span class="text-rose-600">${escapeHtml(p.destination)}</span></div>
+                            <div class="text-[8.5px] text-slate-500">Resi: ${escapeHtml(p.resi)} • Catatan: ${escapeHtml(p.notes || '-')}</div>
                         </div>
                     </div>
-                    <button type="button" onclick="window.takePackage('${p.id}')" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow">Ambil & Antar</button>
-                </div>
-            `).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada antrian paket.</div>`;
+                    <button type="button" onclick="window.takePackage('${safeId}')" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow">Ambil & Antar</button>
+                </div>`;
+            }).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada antrian paket.</div>`;
 
-            document.getElementById('list-courier-delivering').innerHTML = deliv.map(p => `
+            document.getElementById('list-courier-delivering').innerHTML = deliv.map(p => {
+                const safeId = String(p.id).replace(/'/g, "\\'");
+                return `
                 <div class="p-3 rounded-xl bg-slate-50 border flex flex-wrap justify-between items-center gap-2 text-[9.5px]">
                     <div class="flex items-center space-x-2.5">
-                        <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${p.id}')" class="w-4 h-4 rounded">
+                        <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${safeId}')" class="w-4 h-4 rounded">
                         <div>
-                            <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-sky-700">${p.id}</span> ${window.getSlaBadgeHtml(p)}</div>
-                            <div class="font-extrabold text-slate-800">${p.recipient} • <span class="text-rose-600">${p.destination}</span></div>
-                            <div class="text-[8.5px] text-slate-500">Kurir: <strong>${p.courier}</strong></div>
+                            <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-sky-700">${escapeHtml(p.id)}</span> ${window.getSlaBadgeHtml(p)}</div>
+                            <div class="font-extrabold text-slate-800">${escapeHtml(p.recipient)} • <span class="text-rose-600">${escapeHtml(p.destination)}</span></div>
+                            <div class="text-[8.5px] text-slate-500">Kurir: <strong>${escapeHtml(p.courier)}</strong></div>
                         </div>
                     </div>
                     <div class="flex items-center space-x-1.5">
-                        <button type="button" onclick="window.openExceptionModal('${p.id}')" class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1.5 rounded-xl text-[8.5px]">Kendala / Titip Pos</button>
-                        <button type="button" onclick="window.openCompleteModal('${p.id}')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow">Selesaikan</button>
+                        <button type="button" onclick="window.openExceptionModal('${safeId}')" class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1.5 rounded-xl text-[8.5px]">Kendala / Titip Pos</button>
+                        <button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow">Selesaikan</button>
                     </div>
-                </div>
-            `).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada paket sedang dikirim.</div>`;
+                </div>`;
+            }).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada paket sedang dikirim.</div>`;
 
             document.getElementById('list-courier-completed').innerHTML = comp.map(p => `
                 <div class="p-3 rounded-xl bg-slate-50 border flex justify-between items-center text-[9.5px]">
                     <div>
-                        <span class="font-mono font-bold text-emerald-700">${p.id}</span> • <strong>${p.recipient}</strong> (${p.destination})
-                        <div class="text-[8px] text-slate-500">Selesai: ${p.completedTimestamp || p.timestamp} • ${p.completionOption || ''}</div>
+                        <span class="font-mono font-bold text-emerald-700">${escapeHtml(p.id)}</span> • <strong>${escapeHtml(p.recipient)}</strong> (${escapeHtml(p.destination)})
+                        <div class="text-[8px] text-slate-500">Selesai: ${escapeHtml(p.completedTimestamp || p.timestamp)} • ${escapeHtml(p.completionOption || '')}</div>
                     </div>
                     <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[8px]">Tuntas</span>
                 </div>
@@ -2740,24 +2882,33 @@
         };
 
         window.renderReceiverView = function() {
-            const q = (document.getElementById('receiver-session-name')?.value || '').toLowerCase();
+            const inputEl = document.getElementById('receiver-session-name');
+            const q = (inputEl?.value || '').trim().toLowerCase();
             const st = document.getElementById('filter-receiver-status')?.value || 'all';
+            const container = document.getElementById('receiver-packages-list');
+            if (!container) return;
+
+            if (!q && !loggedUser.isSuperAdmin) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-500 text-[9.5px]"><i class="fa-solid fa-magnifying-glass mr-1 text-emerald-600"></i>Silakan ketik <strong>Nama Anda</strong> atau <strong>Ruangan</strong> pada kolom di atas untuk melihat paket milik Anda.</div>`;
+                return;
+            }
+
             const list = packages.filter(p => {
                 const matchName = !q || p.recipient?.toLowerCase().includes(q) || p.destination?.toLowerCase().includes(q);
                 const matchSt = st === 'all' || (st === 'completed' ? p.status === 'completed' : p.status !== 'completed');
                 return matchName && matchSt;
             });
-            const container = document.getElementById('receiver-packages-list');
-            if (!container) return;
-            container.innerHTML = list.map(p => `
+            container.innerHTML = list.map(p => {
+                const safeId = String(p.id).replace(/'/g, "\\'");
+                return `
                 <div class="p-3 rounded-xl bg-slate-50 border flex flex-wrap justify-between items-center gap-2 text-[9.5px]">
                     <div>
-                        <span class="font-mono font-bold text-indigo-700">${p.id}</span> • <strong>${p.recipient}</strong> (${p.destination})
-                        <div class="text-[8.5px] text-slate-500">Status: <strong>${p.status.toUpperCase()}</strong> • Kurir: ${p.courier || '-'}</div>
+                        <span class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</span> • <strong>${escapeHtml(p.recipient)}</strong> (${escapeHtml(p.destination)})
+                        <div class="text-[8.5px] text-slate-500">Status: <strong>${escapeHtml(p.status.toUpperCase())}</strong> • Kurir: ${escapeHtml(p.courier || '-')}</div>
                     </div>
-                    ${p.status !== 'completed' ? `<button type="button" onclick="window.openCompleteModal('${p.id}')" class="bg-emerald-600 text-white font-bold px-3 py-1 rounded-xl text-[9px]">Konfirmasi Terima</button>` : `<span class="text-emerald-700 font-bold text-[8.5px]">Sudah Diterima</span>`}
-                </div>
-            `).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada paket ditemukan.</div>`;
+                    ${p.status !== 'completed' ? `<button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 text-white font-bold px-3 py-1 rounded-xl text-[9px]">Konfirmasi Terima</button>` : `<span class="text-emerald-700 font-bold text-[8.5px]">Sudah Diterima</span>`}
+                </div>`;
+            }).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada paket ditemukan untuk "${escapeHtml(q)}".</div>`;
         };
 
         window.switchAdminTab = function(tab) {
@@ -2802,9 +2953,9 @@
                         return `
                         <div class="p-2 rounded-xl bg-rose-50/90 border border-rose-200 flex justify-between items-center gap-2 text-[9px]">
                             <div>
-                                <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-rose-700">${p.id}</span> ${window.getSlaBadgeHtml(p)}</div>
-                                <div class="font-bold text-slate-800">${p.recipient} • <span class="text-rose-600">${p.destination}</span></div>
-                                <div class="text-[8px] text-slate-500">Kurir: <strong>${p.courier || 'Belum Diambil'}</strong></div>
+                                <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-rose-700">${escapeHtml(p.id)}</span> ${window.getSlaBadgeHtml(p)}</div>
+                                <div class="font-bold text-slate-800">${escapeHtml(p.recipient)} • <span class="text-rose-600">${escapeHtml(p.destination)}</span></div>
+                                <div class="text-[8px] text-slate-500">Kurir: <strong>${escapeHtml(p.courier || 'Belum Diambil')}</strong></div>
                             </div>
                             <div class="flex items-center space-x-1 shrink-0">
                                 <button type="button" onclick="window.openAdminEditPackageModal('${safeId}')" class="px-2 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[8px]">Alihkan</button>
@@ -2834,7 +2985,7 @@
                             <div class="flex items-center space-x-2">
                                 <div class="w-6 h-6 rounded-lg ${carrying > 0 ? 'bg-sky-600 text-white' : 'bg-slate-200 text-slate-600'} flex items-center justify-center font-bold text-[8px]"><i class="fa-solid fa-motorcycle"></i></div>
                                 <div>
-                                    <div class="font-extrabold text-slate-800">${cName}</div>
+                                    <div class="font-extrabold text-slate-800">${escapeHtml(cName)}</div>
                                     <div class="text-[8px] text-slate-500">Total Selesai: ${totalDone} paket</div>
                                 </div>
                             </div>
@@ -2912,26 +3063,26 @@
                 <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-2xl border text-center">
                     <div>
                         <span class="text-[8px] text-slate-400 uppercase font-bold block">1. Diinput Petugas</span>
-                        <strong class="text-indigo-700 block">${p.petugas || '-'}</strong>
-                        <span class="text-[8px] text-slate-500">${p.timestamp || '-'}</span>
+                        <strong class="text-indigo-700 block">${escapeHtml(p.petugas || '-')}</strong>
+                        <span class="text-[8px] text-slate-500">${escapeHtml(p.timestamp || '-')}</span>
                     </div>
                     <div class="border-x px-1">
                         <span class="text-[8px] text-slate-400 uppercase font-bold block">2. Kurir Pengantar</span>
-                        <strong class="text-sky-700 block">${p.courier || 'Belum Ditugaskan'}</strong>
-                        <span class="text-[8px] text-slate-500">SLA: ${p.sla || '-'}</span>
+                        <strong class="text-sky-700 block">${escapeHtml(p.courier || 'Belum Ditugaskan')}</strong>
+                        <span class="text-[8px] text-slate-500">SLA: ${escapeHtml(p.sla || '-')}</span>
                     </div>
                     <div>
                         <span class="text-[8px] text-slate-400 uppercase font-bold block">3. Diterima Tujuan</span>
-                        <strong class="text-emerald-700 block">${p.status === 'completed' ? 'TUNTAS' : p.status.toUpperCase()}</strong>
-                        <span class="text-[8px] text-slate-500">${p.completedTimestamp || durationText}</span>
+                        <strong class="text-emerald-700 block">${p.status === 'completed' ? 'TUNTAS' : escapeHtml(p.status.toUpperCase())}</strong>
+                        <span class="text-[8px] text-slate-500">${escapeHtml(p.completedTimestamp || durationText)}</span>
                     </div>
                 </div>
                 <div class="bg-slate-50 p-2.5 rounded-2xl border space-y-1">
-                    <div class="flex justify-between"><span>No. Resi / Sumber:</span><strong>${p.resi || '-'} (${(p.source || 'external').toUpperCase()})</strong></div>
-                    <div class="flex justify-between"><span>Pengirim / Vendor:</span><strong>${p.source === 'external' ? (p.vendor + ' - ' + p.originLocation) : (p.senderInternal + ' - ' + p.roomSender)}</strong></div>
-                    <div class="flex justify-between"><span>No. WhatsApp Penerima:</span><strong>${p.phone || '-'}</strong></div>
-                    <div class="flex justify-between"><span>Durasi Penyelesaian:</span><strong class="text-indigo-600">${durationText}</strong></div>
-                    <div class="flex justify-between"><span>Keterangan / Catatan:</span><strong>${p.completionOption || p.notes || '-'}</strong></div>
+                    <div class="flex justify-between"><span>No. Resi / Sumber:</span><strong>${escapeHtml(p.resi || '-')} (${escapeHtml((p.source || 'external').toUpperCase())})</strong></div>
+                    <div class="flex justify-between"><span>Pengirim / Vendor:</span><strong>${escapeHtml(p.source === 'external' ? (p.vendor + ' - ' + p.originLocation) : (p.senderInternal + ' - ' + p.roomSender))}</strong></div>
+                    <div class="flex justify-between"><span>No. WhatsApp Penerima:</span><strong>${escapeHtml(p.phone || '-')}</strong></div>
+                    <div class="flex justify-between"><span>Durasi Penyelesaian:</span><strong class="text-indigo-600">${escapeHtml(durationText)}</strong></div>
+                    <div class="flex justify-between"><span>Keterangan / Catatan:</span><strong>${escapeHtml(p.completionOption || p.notes || '-')}</strong></div>
                 </div>
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div class="p-2 rounded-xl border bg-slate-50">
@@ -3071,15 +3222,15 @@
                         <input type="checkbox" ${isChecked} onchange="window.toggleSelectAdminPkg('${safeId}')" class="w-4 h-4 rounded cursor-pointer accent-rose-600">
                     </td>
                     <td class="p-2">
-                        <div class="font-mono font-bold text-indigo-700">${p.id}</div>
-                        <div class="text-[8px] text-slate-400">${p.timestamp || '-'}</div>
+                        <div class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</div>
+                        <div class="text-[8px] text-slate-400">${escapeHtml(p.timestamp || '-')}</div>
                     </td>
-                    <td class="p-2 uppercase font-semibold">${p.source || '-'}</td>
+                    <td class="p-2 uppercase font-semibold">${escapeHtml(p.source || '-')}</td>
                     <td class="p-2">
-                        <strong>${p.recipient || '-'}</strong>
-                        <div class="text-rose-600 text-[8px] font-semibold">${p.destination || '-'}</div>
+                        <strong>${escapeHtml(p.recipient || '-')}</strong>
+                        <div class="text-rose-600 text-[8px] font-semibold">${escapeHtml(p.destination || '-')}</div>
                     </td>
-                    <td class="p-2">P: ${p.petugas || '-'}<br>K: <strong>${p.courier || '-'}</strong></td>
+                    <td class="p-2">P: ${escapeHtml(p.petugas || '-')}<br>K: <strong>${escapeHtml(p.courier || '-')}</strong></td>
                     <td class="p-2">
                         <div class="flex items-center space-x-1">
                             ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Awal" class="w-7 h-7 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
@@ -3088,7 +3239,7 @@
                         </div>
                     </td>
                     <td class="p-2">
-                        <div class="font-bold uppercase text-[8px] mb-0.5">${p.status || '-'}</div>
+                        <div class="font-bold uppercase text-[8px] mb-0.5">${escapeHtml(p.status || '-')}</div>
                         ${window.getSlaBadgeHtml(p)}
                     </td>
                     <td class="p-2 text-right whitespace-nowrap space-x-1">
@@ -3162,7 +3313,7 @@
                 const entries = Object.entries(officerMap).sort((a,b) => b[1] - a[1]);
                 offEl.innerHTML = entries.map(([name, cnt]) => `
                     <div class="p-2 rounded-xl bg-white border flex justify-between items-center text-[9px]">
-                        <span class="font-bold text-slate-700">${name}</span>
+                        <span class="font-bold text-slate-700">${escapeHtml(name)}</span>
                         <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-extrabold">${cnt} Paket Diinput</span>
                     </div>
                 `).join('') || `<div class="text-center py-4 text-slate-400 text-[9px]">Tidak ada data pada periode ini.</div>`;
@@ -3173,7 +3324,7 @@
                 const entries = Object.entries(courierMap).sort((a,b) => b[1].completed - a[1].completed);
                 couEl.innerHTML = entries.map(([name, st]) => `
                     <div class="p-2 rounded-xl bg-white border flex justify-between items-center text-[9px]">
-                        <span class="font-bold text-slate-700">${name}</span>
+                        <span class="font-bold text-slate-700">${escapeHtml(name)}</span>
                         <div class="space-x-1">
                             <span class="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-bold">Total: ${st.total}</span>
                             <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold">Selesai: ${st.completed}</span>
@@ -3193,13 +3344,13 @@
                 return `
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-2">
-                        <div class="font-bold text-slate-800">${m.name}</div>
-                        <div class="font-mono text-[8px] text-indigo-600">@${uname}</div>
+                        <div class="font-bold text-slate-800">${escapeHtml(m.name)}</div>
+                        <div class="font-mono text-[8px] text-indigo-600">@${escapeHtml(uname)}</div>
                     </td>
-                    <td class="p-2 uppercase font-bold text-[8px]">${m.role}</td>
+                    <td class="p-2 uppercase font-bold text-[8px]">${escapeHtml(m.role)}</td>
                     <td class="p-2">
                         <button type="button" onclick="window.toggleMemberStatus('${safeId}')" class="px-2.5 py-0.5 rounded-full text-[8px] font-extrabold transition ${isOff ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-emerald-100 text-emerald-700 border border-emerald-300'}" title="Klik untuk Aktifkan / Nonaktifkan Sementara">
-                            <i class="fa-solid ${isOff ? 'fa-ban' : 'fa-circle-check'} mr-0.5"></i>${m.status || 'Aktif'}
+                            <i class="fa-solid ${isOff ? 'fa-ban' : 'fa-circle-check'} mr-0.5"></i>${escapeHtml(m.status || 'Aktif')}
                         </button>
                     </td>
                     <td class="p-2 text-right space-x-1">
@@ -3294,10 +3445,10 @@
             container.innerHTML = filtered.slice(0, 100).map(l => `
                 <div class="p-2 rounded-xl bg-slate-50 border flex justify-between items-center gap-2 text-[8.5px]">
                     <div>
-                        <span class="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-extrabold uppercase mr-1">${l.role || 'SYS'}</span>
-                        <strong>${l.actor || 'Sistem'}:</strong> ${l.action}
+                        <span class="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-extrabold uppercase mr-1">${escapeHtml(l.role || 'SYS')}</span>
+                        <strong>${escapeHtml(l.actor || 'Sistem')}:</strong> ${escapeHtml(l.action)}
                     </div>
-                    <span class="text-slate-400 font-mono shrink-0">${l.time || ''}</span>
+                    <span class="text-slate-400 font-mono shrink-0">${escapeHtml(l.time || '')}</span>
                 </div>
             `).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Belum ada catatan aktivitas.</div>`;
         };
@@ -3400,6 +3551,7 @@
             }
             if (localStorage.getItem('kurir_bns_wakelock') === '1') requestWakeLock();
 
+            loadLocalCache();
             initSignaturePad();
             initFirebase();
             updateCourierAndRecipientDropdowns();
