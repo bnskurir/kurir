@@ -1123,8 +1123,9 @@
                 const idx = arr.findIndex(m => (m.email || '').toLowerCase() === def.email.toLowerCase());
                 if (idx === -1) {
                     arr.push({ ...def });
-                } else if (!arr[idx].password) {
-                    arr[idx].password = '123';
+                } else {
+                    if (!arr[idx].password) arr[idx].password = def.password;
+                    if (!arr[idx].role) arr[idx].role = def.role;
                 }
             });
             return arr;
@@ -1156,10 +1157,7 @@
         let lastCloudError = '';
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        // ============================================================================
-        // KONFIGURASI API FIREBASE TERTANAM (EMBEDDED FIREBASE API KEY)
-        // Otomatis membaca dari environment atau fallback ke objek yang ditanam di sini
-        // ============================================================================
+        // Embedded Firebase Configuration Backup
         const EMBEDDED_FIREBASE_CONFIG = (() => {
             try {
                 if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -1174,7 +1172,6 @@
                 const saved = localStorage.getItem('kurir_bns_custom_fb_config') || localStorage.getItem('kurir_bns_embedded_fb_backup');
                 if (saved) return JSON.parse(saved);
             } catch (e) {}
-            // Tempat API Key permanen jika di-edit manual di kode sumber:
             return {
                 apiKey: "",
                 authDomain: "",
@@ -1215,8 +1212,8 @@
                     lastCloudError = 'Menunggu injeksi konfigurasi Firebase...';
                     updateConnectionBadge(false);
                     if (!isRetry) {
-                        setTimeout(() => initCloudDatabase(true), 800);
-                        setTimeout(() => initCloudDatabase(true), 2500);
+                        setTimeout(() => initCloudDatabase(true), 1000);
+                        setTimeout(() => initCloudDatabase(true), 3000);
                     }
                     return;
                 }
@@ -1288,7 +1285,7 @@
         window.downloadHtmlWithEmbeddedApi = () => {
             const activeCfg = resolveFirebaseConfig();
             if (!activeCfg || !activeCfg.apiKey) {
-                return window.showToast('API Config belum terdeteksi. Pastikan sudah terhubung atau isi kotak JSON.', 'warning');
+                return window.showToast('API Config belum terdeteksi. Masukkan JSON konfigurasi.', 'warning');
             }
             let htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const targetRegex = /return\s*\{\s*apiKey:\s*""[\s\S]*?appId:\s*""\s*\};/;
@@ -1375,7 +1372,6 @@
             };
 
             onSnapshot(collection(db, 'packages'), mergePackages, (err) => console.warn('packages listener:', err));
-            onSnapshot(collection(db, 'packages_col'), mergePackages, (err) => console.warn('packages_col listener:', err));
 
             const mergeMembers = (snap) => {
                 const arr = [...members];
@@ -1392,7 +1388,6 @@
             };
 
             onSnapshot(collection(db, 'members'), mergeMembers, (err) => console.warn('members listener:', err));
-            onSnapshot(collection(db, 'members_col'), mergeMembers, (err) => console.warn('members_col listener:', err));
 
             const mergeDirectory = (snap) => {
                 const map = new Map();
@@ -1409,7 +1404,6 @@
             };
 
             onSnapshot(collection(db, 'directory'), mergeDirectory, (err) => console.warn('directory listener:', err));
-            onSnapshot(collection(db, 'directory_col'), mergeDirectory, (err) => console.warn('directory_col listener:', err));
 
             onSnapshot(collection(db, 'reset_requests'), (snap) => {
                 const arr = []; snap.forEach(d => arr.push(d.data()));
@@ -1423,11 +1417,6 @@
                     renderBroadcastBanner();
                 }
             }, (err) => console.warn('broadcast listener:', err));
-
-            // Sinkronisasi tambahan ke jalur artifacts standar jika digunakan
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'packages'), mergePackages, () => {});
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'members'), mergeMembers, () => {});
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'directory'), mergeDirectory, () => {});
         }
 
         function saveLocal() {
@@ -1444,12 +1433,10 @@
         async function syncDoc(colName, id, data) {
             saveLocal();
             if (db && isCloudReady && cloudUser) {
-                const cleanCol = colName.replace('_col', '');
                 try {
-                    await setDoc(doc(db, cleanCol, String(id)), data);
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', cleanCol, String(id)), data);
+                    await setDoc(doc(db, colName, String(id)), data);
                 } catch (e) {
-                    console.warn(`Gagal sinkronisasi ke ${cleanCol}:`, e);
+                    console.warn(`Gagal sinkronisasi ke ${colName}:`, e);
                 }
             }
         }
@@ -1534,7 +1521,8 @@
 
         window.handleLoginEmailInput = (val) => {
             const clean = (val || '').trim().toLowerCase();
-            const found = members.find(m => (m.email || '').toLowerCase() === clean || (m.name || '').toLowerCase() === clean);
+            members = ensureDefaultMembers(members);
+            const found = members.find(m => (m.email || '').toLowerCase() === clean || (m.name || '').toLowerCase() === clean || (m.role || '').toLowerCase() === clean);
             const avatarEl = document.getElementById('login-detected-avatar');
             const nameEl = document.getElementById('login-detected-name');
             if (found) {
@@ -1596,7 +1584,7 @@
             const u = (document.getElementById('login-username')?.value || '').trim().toLowerCase();
             const p = (document.getElementById('login-password')?.value || '').trim();
             const user = members.find(m => {
-                const matchUser = (m.email || '').toLowerCase() === u || (m.name || '').toLowerCase() === u || m.role === u;
+                const matchUser = (m.email || '').toLowerCase() === u || (m.name || '').toLowerCase() === u || (m.role || '').toLowerCase() === u;
                 const matchPass = m.password === p || p === '123' || p === 'admin123';
                 return matchUser && matchPass;
             });
@@ -2523,7 +2511,6 @@
             if (db && isCloudReady) {
                 try {
                     await deleteDoc(doc(db, 'packages', String(id)));
-                    await deleteDoc(doc(db, 'packages_col', String(id)));
                 } catch (e) {}
             }
         }
