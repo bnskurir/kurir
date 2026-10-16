@@ -90,6 +90,11 @@
         }
         @keyframes pulse-urgent { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
         .sla-overdue-badge { animation: pulse-urgent 1.2s infinite ease-in-out; }
+        @media (min-width: 769px) {
+            .text-\[7px\], .text-\[7\.5px\], .text-\[8px\] { font-size: 10.5px !important; }
+            .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\] { font-size: 11.5px !important; }
+            .text-\[10px\], .text-\[11px\] { font-size: 13px !important; }
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
@@ -147,29 +152,44 @@
 
     <!-- Authentication Screen -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xl z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white/85 rounded-3xl max-w-sm w-full p-5 md:p-6 shadow-2xl space-y-3.5 border border-white/70 max-h-[95vh] overflow-y-auto">
+        <div class="bg-white/85 rounded-3xl max-w-sm w-full p-5 md:p-6 shadow-2xl space-y-4 border border-white/70 max-h-[95vh] overflow-y-auto">
             <div class="text-center space-y-1.5">
                 <div class="relative w-16 h-16 mx-auto">
                     <img id="login-detected-avatar" src="https://placehold.co/100x100/4338ca/ffffff?text=BNS" class="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-lg ring-2 ring-indigo-500/30">
                 </div>
                 <div>
                     <h2 class="text-sm font-extrabold tracking-tight text-slate-900">Kurir BNS Express</h2>
-                    <p id="login-detected-name" class="text-[10px] text-indigo-600 font-semibold">Masukkan Username & Kata Sandi</p>
+                    <p id="login-detected-name" class="text-[10px] text-indigo-600 font-semibold">Sistem Logistik Sekolah Modern & Realtime</p>
                 </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-1.5 bg-slate-100/70 p-1 rounded-2xl border border-white">
+                <button type="button" onclick="window.selectLoginRole('petugas')" id="login-btn-petugas" class="p-1.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-1 shadow-sm btn-glow">
+                    <i class="fa-solid fa-people-carry-box text-sm text-indigo-600"></i><span>Petugas</span>
+                </button>
+                <button type="button" onclick="window.selectLoginRole('kurir')" id="login-btn-kurir" class="p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1 hover:bg-white/60">
+                    <i class="fa-solid fa-paper-plane text-sm text-sky-600"></i><span>Kurir</span>
+                </button>
+                <button type="button" onclick="window.selectLoginRole('penerima')" id="login-btn-penerima" class="p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1 hover:bg-white/60">
+                    <i class="fa-solid fa-gift text-sm text-emerald-600"></i><span>Penerima</span>
+                </button>
+                <button type="button" onclick="window.selectLoginRole('admin')" id="login-btn-admin" class="p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1 hover:bg-white/60">
+                    <i class="fa-solid fa-shield-cat text-sm text-amber-600"></i><span>Admin</span>
+                </button>
             </div>
 
             <form onsubmit="window.handleLogin(event)" class="space-y-3">
                 <div>
-                    <label class="block text-[9.5px] font-bold text-slate-700 mb-1">Username</label>
-                    <input type="text" id="login-username" oninput="window.handleLoginEmailInput(this.value)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white/90" placeholder="Ketik username (cth: admin)">
+                    <label class="block text-[9.5px] font-bold text-slate-700 mb-1" id="login-label-name">Username</label>
+                    <input type="text" id="login-username" oninput="window.handleLoginEmailInput(this.value)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white/90" placeholder="Ketik username (cth: admin / gari / huda)...">
                 </div>
-                <div>
+                <div id="password-field-group">
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-[9.5px] font-bold text-slate-700">Kata Sandi</label>
                         <button type="button" onclick="window.openForgotPasswordModal()" class="text-[9px] text-indigo-600 hover:underline font-semibold">Lupa Sandi?</button>
                     </div>
                     <div class="relative">
-                        <input type="password" id="login-password" required class="w-full px-3 py-2 pr-8 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white/90" placeholder="Ketik kata sandi">
+                        <input type="password" id="login-password" required class="w-full px-3 py-2 pr-8 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white/90" placeholder="Default sandi: 123">
                         <button type="button" onclick="window.togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-700 text-xs focus:outline-none">
                             <i id="password-toggle-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -183,10 +203,9 @@
                     <i class="fa-solid fa-rocket text-amber-200 text-[10px]"></i><span>Masuk ke Workspace</span>
                 </button>
             </form>
-
             <div class="bg-slate-50/80 p-2 rounded-xl border border-white text-[8.5px] text-slate-500 text-center flex justify-between items-center px-3">
                 <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cloud Firebase Aktif</span>
-                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v5.2 HD</span>
+                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v5.0</span>
             </div>
         </div>
     </div>
@@ -200,11 +219,10 @@
                 <div>
                     <div class="flex items-center space-x-1.5">
                         <h1 class="font-extrabold text-xs md:text-sm tracking-tight leading-tight">Kurir BNS Express</h1>
-                        <button type="button" onclick="window.openCloudConfigModal()" id="firebase-status-badge" title="Klik untuk cek / atur koneksi Cloud Firebase" class="flex items-center space-x-1 bg-emerald-500/20 hover:bg-emerald-500/30 backdrop-blur-md text-emerald-200 text-[8px] px-2 py-0.5 rounded-full font-semibold border border-emerald-400/30 cursor-pointer transition">
+                        <div id="firebase-status-badge" class="flex items-center space-x-1 bg-emerald-500/20 backdrop-blur-md text-emerald-200 text-[8px] px-2 py-0.5 rounded-full font-semibold border border-emerald-400/30">
                             <span id="connection-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block"></span>
-                            <span id="connection-text">Menghubungkan...</span>
-                            <i class="fa-solid fa-gear text-[7px] ml-0.5 opacity-75"></i>
-                        </button>
+                            <span id="connection-text">Cloud Sync</span>
+                        </div>
                     </div>
                     <p id="header-user-badge" class="text-[8.5px] text-indigo-100/90 font-medium truncate max-w-[180px]">Masuk: -</p>
                 </div>
@@ -287,19 +305,19 @@
 
                         <div class="p-3 bg-gradient-to-r from-indigo-50/70 via-white/80 to-purple-50/70 rounded-2xl border border-indigo-100/80 flex flex-wrap items-center justify-between gap-2 shadow-sm">
                             <div class="space-y-0.5">
-                                <label class="block text-[9.5px] font-bold text-indigo-950 flex items-center"><i class="fa-solid fa-camera-retro text-indigo-600 mr-1.5"></i> Dokumentasi Foto Paket Fisik HD (Tanpa Kompresi)</label>
-                                <span id="photo-status-badge" class="text-[8px] bg-amber-100/90 text-amber-800 px-2 py-0.5 rounded-full font-semibold inline-block border border-amber-200">Belum Diambil (Mode Kualitas Full HD)</span>
+                                <label class="block text-[9.5px] font-bold text-indigo-950 flex items-center"><i class="fa-solid fa-camera-retro text-indigo-600 mr-1.5"></i> Dokumentasi Foto Paket Fisik (Wajib)</label>
+                                <span id="photo-status-badge" class="text-[8px] bg-amber-100/90 text-amber-800 px-2 py-0.5 rounded-full font-semibold inline-block border border-amber-200">Belum Diambil</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <div id="physical-photo-preview-wrap" class="hidden">
                                     <img id="physical-photo-thumb" src="" alt="Thumbnail" class="w-10 h-10 object-cover rounded-xl border-2 border-indigo-400 shadow-md zoomable-img" onclick="window.openZoomModal(this.src)">
                                 </div>
                                 <label class="cursor-pointer bg-white/90 hover:bg-white text-slate-700 border border-slate-200/90 font-bold py-1.5 px-3 rounded-xl text-[9px] shadow-sm transition flex items-center space-x-1.5">
-                                    <i class="fa-solid fa-image text-indigo-500"></i><span>Galeri HD</span>
-                                    <input type="file" accept="image/*" onchange="window.handlePhysicalFileUpload(event)" class="hidden">
+                                    <i class="fa-solid fa-image text-indigo-500"></i><span>Galeri</span>
+                                    <input type="file" accept="image/*" capture="environment" onchange="window.handlePhysicalFileUpload(event)" class="hidden">
                                 </label>
                                 <button type="button" onclick="window.openPhysicalCameraModal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-1.5 px-3 rounded-xl text-[9px] shadow-md transition flex items-center space-x-1.5 btn-glow">
-                                    <i class="fa-solid fa-camera"></i><span>Buka Kamera HD</span>
+                                    <i class="fa-solid fa-camera"></i><span>Buka Kamera</span>
                                 </button>
                             </div>
                         </div>
@@ -549,7 +567,7 @@
                         </div>
                     </div>
                     <form onsubmit="window.handleSaveBroadcast(event)" class="flex items-center space-x-1.5 flex-1 max-w-lg">
-                        <input type="text" id="admin-broadcast-input" placeholder="Ketik pengumuman..." class="flex-1 px-2.5 py-1 rounded-xl border text-[9.5px]">
+                        <input type="text" id="admin-broadcast-input" placeholder="Ketik pengumuman (cth: Hari Jumat pos tutup pukul 14.30 WIB)..." class="flex-1 px-2.5 py-1 rounded-xl border text-[9.5px]">
                         <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow whitespace-nowrap"><i class="fa-solid fa-paper-plane mr-1"></i>Siarkan</button>
                         <button type="button" onclick="window.clearBroadcast()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-2.5 py-1.5 rounded-xl text-[9px]">Hapus</button>
                     </form>
@@ -583,6 +601,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                     <div class="bg-white p-3 rounded-2xl shadow-sm"><h4 class="font-bold text-slate-800 text-[10px] mb-1.5">Sumber Paket</h4><div class="h-40 relative flex items-center justify-center"><canvas id="chartSource"></canvas></div></div>
                     <div class="bg-white p-3 rounded-2xl shadow-sm"><h4 class="font-bold text-slate-800 text-[10px] mb-1.5">Kategori Paket</h4><div class="h-40 relative flex items-center justify-center"><canvas id="chartCategory"></canvas></div></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                    <div class="bg-white p-3 rounded-2xl shadow-sm"><h4 class="font-bold text-slate-800 text-[10px] mb-1.5">Peran Penerima</h4><div class="h-40 relative flex items-center justify-center"><canvas id="chartRole"></canvas></div></div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm"><h4 class="font-bold text-slate-800 text-[10px] mb-1.5">Top Ruangan Tujuan Terpadat</h4><div class="h-40 relative flex items-center justify-center"><canvas id="chartExpedition"></canvas></div></div>
                 </div>
             </div>
 
@@ -713,10 +735,10 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[9px] text-slate-500 mt-auto">
-        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v5.2 HD — Production Release)</p>
+        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v5.0 — Production Release)</p>
     </footer>
 
-    <!-- Modals -->
+    <!-- Modal 360° Package Inspector -->
     <div id="admin-inspect-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[75] flex items-center justify-center p-3 hidden" onclick="window.closeInspectPackageModal()">
         <div class="bg-white rounded-3xl max-w-lg w-full p-4 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center border-b pb-2">
@@ -730,6 +752,7 @@
         </div>
     </div>
 
+    <!-- Modal Edit & Re-Assign Paket -->
     <div id="admin-edit-pkg-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[75] flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-3xl max-w-sm w-full p-4 shadow-2xl space-y-2.5 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-1.5">
@@ -780,6 +803,7 @@
         </div>
     </div>
 
+    <!-- Directory Modal -->
     <div id="directory-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3.5 shadow-2xl space-y-2.5">
             <div class="flex justify-between items-center border-b pb-1.5">
@@ -797,6 +821,7 @@
         </div>
     </div>
 
+    <!-- Exception Modal -->
     <div id="exception-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3.5 shadow-2xl space-y-2.5">
             <div class="flex justify-between items-center border-b pb-1.5">
@@ -819,6 +844,7 @@
         </div>
     </div>
 
+    <!-- Profile Modal -->
     <div id="profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -841,6 +867,7 @@
         </div>
     </div>
 
+    <!-- Forgot Password Modal -->
     <div id="forgot-password-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -855,6 +882,7 @@
         </div>
     </div>
 
+    <!-- Custom Confirm Modal -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[80] flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-4 shadow-2xl space-y-3 text-center">
             <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-base"><i class="fa-solid fa-triangle-exclamation"></i></div>
@@ -867,9 +895,10 @@
         </div>
     </div>
 
+    <!-- Physical Camera Modal -->
     <div id="physical-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
-            <h3 class="text-[9.5px] font-bold">Ambil Foto Paket Fisik (Full HD)</h3>
+            <h3 class="text-[9.5px] font-bold">Ambil Foto Paket Fisik</h3>
             <button onclick="window.closePhysicalCameraModal()" class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 text-[9px]"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
@@ -880,6 +909,7 @@
         </div>
     </div>
 
+    <!-- Barcode Scanner Modal -->
     <div id="barcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -895,6 +925,7 @@
         </div>
     </div>
 
+    <!-- Backup Modal -->
     <div id="backup-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -916,6 +947,7 @@
         </div>
     </div>
 
+    <!-- Summary Confirmation Modal -->
     <div id="summary-confirmation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-2.5">
             <h3 class="font-bold text-slate-800 text-xs text-center">Konfirmasi Simpan & Kirim Paket</h3>
@@ -927,7 +959,7 @@
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Penerima:</span> <strong id="sum-recipient"></strong></div>
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Tujuan:</span> <strong id="sum-dest"></strong></div>
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Petugas:</span> <strong id="sum-petugas"></strong></div>
-                <div class="flex justify-between items-center"><span class="text-slate-500">Foto Fisik:</span> <img id="sum-photo" src="" class="w-10 h-10 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)"></div>
+                <div class="flex justify-between items-center"><span class="text-slate-500">Foto Fisik:</span> <img id="sum-photo" src="" class="w-7 h-7 object-cover rounded border"></div>
             </div>
             <div class="grid grid-cols-2 gap-1.5 pt-1">
                 <button type="button" onclick="window.closeSummaryModal()" class="py-1.5 rounded-xl border font-bold text-[9.5px]">Batal</button>
@@ -936,6 +968,7 @@
         </div>
     </div>
 
+    <!-- Complete Delivery Modal -->
     <div id="complete-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -946,11 +979,11 @@
                 <div class="grid grid-cols-2 gap-1.5">
                     <div class="border-2 border-dashed rounded-xl p-1.5 text-center cursor-pointer bg-slate-50 flex items-center justify-center space-x-1.5" onclick="window.openProofCameraModal()">
                         <div id="proof-thumb-container" class="hidden"><img id="proof-thumb-img" src="" class="w-7 h-7 object-cover rounded border"></div>
-                        <div><i id="cam-icon" class="fa-solid fa-camera text-xs text-emerald-500 block mx-auto"></i><p id="cam-status-text" class="text-[8px] font-semibold">Kamera Full HD</p></div>
+                        <div><i id="cam-icon" class="fa-solid fa-camera text-xs text-emerald-500 block mx-auto"></i><p id="cam-status-text" class="text-[8px] font-semibold">Kamera Live</p></div>
                     </div>
                     <label class="border-2 border-dashed rounded-xl p-1.5 text-center cursor-pointer bg-slate-50 flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-image text-xs text-indigo-500 block mx-auto"></i><span class="text-[8px] font-semibold mt-0.5">Galeri Foto</span>
-                        <input type="file" accept="image/*" onchange="window.handleProofFileUpload(event)" class="hidden">
+                        <i class="fa-solid fa-image text-xs text-indigo-500 block mx-auto"></i><span class="text-[8px] font-semibold mt-0.5">Pilih Galeri</span>
+                        <input type="file" accept="image/*" capture="environment" onchange="window.handleProofFileUpload(event)" class="hidden">
                     </label>
                 </div>
                 <div><label class="block text-[8px] font-semibold mb-0.5">Nama Penerima / Perwakilan</label><input type="text" id="confirm-receiver-name" class="w-full px-2 py-0.5 rounded border text-[9px]"></div>
@@ -975,6 +1008,7 @@
         </div>
     </div>
 
+    <!-- QR Label Modal -->
     <div id="qr-label-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -999,9 +1033,10 @@
         </div>
     </div>
 
+    <!-- Proof Camera Modal -->
     <div id="proof-camera-modal" class="fixed inset-0 bg-black z-50 flex flex-col hidden">
         <div class="bg-slate-900 text-white p-1.5 flex justify-between items-center">
-            <h3 class="text-[9.5px] font-bold">Kamera Bukti Tanda Terima (Full HD)</h3>
+            <h3 class="text-[9.5px] font-bold">Kamera Bukti Tanda Terima</h3>
             <button onclick="window.closeProofCameraModal()" class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 text-[9px]"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
@@ -1012,6 +1047,7 @@
         </div>
     </div>
 
+    <!-- Member Modal -->
     <div id="member-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 hidden">
         <div class="bg-white rounded-2xl max-w-xs w-full p-3 shadow-2xl space-y-2">
             <div class="flex justify-between items-center border-b pb-1">
@@ -1034,54 +1070,20 @@
         </div>
     </div>
 
+    <!-- Zoom Image Modal -->
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[85] flex items-center justify-center p-2 hidden" onclick="window.closeZoomModal()">
-        <div class="relative max-w-3xl w-full text-center">
-            <button onclick="window.closeZoomModal()" class="absolute -top-7 right-0 text-white text-base"><i class="fa-solid fa-xmark"></i></button>
-            <img id="zoomed-image-el" src="" class="max-w-full max-h-[88vh] mx-auto rounded-xl shadow-2xl border border-slate-700">
-        </div>
-    </div>
-
-    <div id="cloud-config-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[80] flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-3xl max-w-md w-full p-4 shadow-2xl space-y-3">
-            <div class="flex justify-between items-center border-b pb-2">
-                <div class="flex items-center space-x-2">
-                    <div class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-cloud"></i></div>
-                    <div>
-                        <h3 class="font-extrabold text-slate-800 text-xs">Status & Konfigurasi Cloud Firebase</h3>
-                        <p id="cloud-diagnostic-status" class="text-[8.5px] text-slate-500">Memeriksa koneksi database...</p>
-                    </div>
-                </div>
-                <button onclick="window.closeCloudConfigModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="bg-slate-50 p-2.5 rounded-2xl border text-[9px] space-y-1 text-slate-600">
-                <p class="font-bold text-slate-800"><i class="fa-solid fa-key text-indigo-500 mr-1"></i> API Key Firebase Tertanam (Embedded Config)</p>
-                <p>Konfigurasi API Firebase di bawah ini otomatis tertanam dan digunakan oleh aplikasi. Anda juga dapat mengunduh file HTML yang sudah tertanam API Key ini secara permanen di dalam kodenya.</p>
-            </div>
-            <div class="space-y-1.5 text-[9px]">
-                <div class="flex justify-between items-center">
-                    <label class="block font-bold text-slate-700">JSON Firebase Config Aktif</label>
-                    <div class="flex space-x-1">
-                        <button type="button" onclick="window.copyActiveCloudConfig()" class="text-[8px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded border border-indigo-200"><i class="fa-solid fa-copy mr-1"></i>Salin API</button>
-                        <button type="button" onclick="window.downloadHtmlWithEmbeddedApi()" class="text-[8px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-200"><i class="fa-solid fa-file-code mr-1"></i>Unduh HTML + API Tertanam</button>
-                    </div>
-                </div>
-                <textarea id="custom-firebase-config-input" rows="5" placeholder='{"apiKey": "AIza...", "authDomain": "...", "projectId": "...", "appId": "..."}' class="w-full p-2.5 rounded-xl border border-slate-200 font-mono text-[8.5px] bg-white focus:outline-none"></textarea>
-            </div>
-            <div class="flex justify-between items-center gap-2 pt-1">
-                <button type="button" onclick="window.clearCustomCloudConfig()" class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 font-bold text-[9px] hover:bg-rose-50">Reset Default</button>
-                <div class="flex space-x-1.5">
-                    <button type="button" onclick="window.retryCloudConnection()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-[9px] shadow"><i class="fa-solid fa-rotate mr-1"></i>Coba Hubungkan Ulang</button>
-                    <button type="button" onclick="window.saveCustomCloudConfig()" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[9px] shadow"><i class="fa-solid fa-floppy-disk mr-1"></i>Simpan & Hubungkan</button>
-                </div>
-            </div>
+        <div class="relative max-w-lg w-full text-center">
+            <button onclick="window.closeZoomModal()" class="absolute -top-6 right-0 text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+            <img id="zoomed-image-el" src="" class="max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-slate-700">
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // PWA & Helpers
         let deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
@@ -1096,16 +1098,19 @@
 
         const safeAttr = (str) => String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
+        // Default Data
         const DEFAULT_MEMBERS = [
-            { id: 'USR-ADM', name: 'Administrator BNS', email: 'admin', password: '123', role: 'admin', active: true, avatar: 'https://placehold.co/100x100/d97706/ffffff?text=ADM' },
+            { id: 'USR-ADM', name: 'Super Admin BNS', email: 'admin', password: '123', role: 'admin', active: true, avatar: 'https://placehold.co/100x100/d97706/ffffff?text=ADM' },
             { id: 'USR-PTG1', name: 'Gari (Petugas Pos)', email: 'gari', password: '123', role: 'petugas', active: true, avatar: 'https://placehold.co/100x100/4338ca/ffffff?text=GR' },
             { id: 'USR-KUR1', name: 'Huda (Kurir Internal)', email: 'huda', password: '123', role: 'kurir', active: true, avatar: 'https://placehold.co/100x100/0284c7/ffffff?text=HD' },
-            { id: 'USR-KUR2', name: 'Rizky (Kurir Internal)', email: 'rizky', password: '123', role: 'kurir', active: true, avatar: 'https://placehold.co/100x100/0284c7/ffffff?text=RZ' },
-            { id: 'USR-PNR1', name: 'Budi Santoso, S.Pd', email: 'budi', password: '123', role: 'penerima', active: true, avatar: 'https://placehold.co/100x100/059669/ffffff?text=BS' }
+            { id: 'USR-KUR2', name: 'Rizky (Kurir Cepat)', email: 'rizky', password: '123', role: 'kurir', active: true, avatar: 'https://placehold.co/100x100/0369a1/ffffff?text=RZ' },
+            { id: 'USR-PNR1', name: 'Budi Santoso, M.Pd', email: 'budi', password: '123', role: 'penerima', active: true, avatar: 'https://placehold.co/100x100/059669/ffffff?text=BS' }
         ];
         const DEFAULT_DIRECTORY = [
-            { id: 'DIR-01', name: 'Budi Santoso, S.Pd', role: 'Teacher', room: 'Ruang Guru', phone: '081234567890' },
-            { id: 'DIR-02', name: 'Siti Aminah, M.Pd', role: 'Teacher', room: 'Ruang Kepala Sekolah', phone: '081298765432' }
+            { id: 'DIR-01', name: 'Budi Santoso, M.Pd', role: 'Teacher', room: 'Ruang Guru', phone: '081234567890' },
+            { id: 'DIR-02', name: 'Siti Aminah, S.Pd', role: 'Teacher', room: 'Laboratorium Sains', phone: '081298765432' },
+            { id: 'DIR-03', name: 'Ahmad Syafi\'i', role: 'Staff', room: 'Ruang TU', phone: '081345678901' },
+            { id: 'DIR-04', name: 'Drs. Hendra Wijaya', role: 'Teacher', room: 'Ruang Kepala Sekolah', phone: '081122334455' }
         ];
 
         function safeJsonParse(key, fallback) {
@@ -1117,22 +1122,9 @@
             }
         }
 
-        function ensureDefaultMembers(list) {
-            const arr = Array.isArray(list) ? [...list] : [];
-            DEFAULT_MEMBERS.forEach(def => {
-                const idx = arr.findIndex(m => (m.email || '').toLowerCase() === def.email.toLowerCase());
-                if (idx === -1) {
-                    arr.push({ ...def });
-                } else {
-                    if (!arr[idx].password) arr[idx].password = def.password;
-                    if (!arr[idx].role) arr[idx].role = def.role;
-                }
-            });
-            return arr;
-        }
-
+        // State
         let packages = safeJsonParse('kurir_bns_packages', []);
-        let members = ensureDefaultMembers(safeJsonParse('kurir_bns_members', DEFAULT_MEMBERS));
+        let members = safeJsonParse('kurir_bns_members', DEFAULT_MEMBERS);
         let directory = safeJsonParse('kurir_bns_directory', DEFAULT_DIRECTORY);
         let auditLogs = safeJsonParse('kurir_bns_audit', []);
         let resetRequests = safeJsonParse('kurir_bns_resets', []);
@@ -1140,6 +1132,7 @@
         let broadcastBanner = safeJsonParse('kurir_bns_broadcast', null);
 
         let currentUser = safeJsonParse('kurir_bns_session', null);
+        let selectedLoginRole = 'petugas';
         let currentSourceType = 'external';
         let capturedPhysicalPhoto = '';
         let capturedProofPhoto = '';
@@ -1153,270 +1146,70 @@
         let barcodeReader = null;
         let chartInstances = {};
 
-        let db = null, auth = null, cloudUser = null, isCloudReady = false;
-        let lastCloudError = '';
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // Embedded Firebase Configuration Backup
-        const EMBEDDED_FIREBASE_CONFIG = (() => {
-            try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const envCfg = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                    if (envCfg && envCfg.apiKey) {
-                        localStorage.setItem('kurir_bns_embedded_fb_backup', JSON.stringify(envCfg));
-                        return envCfg;
-                    }
-                }
-            } catch (e) {}
-            try {
-                const saved = localStorage.getItem('kurir_bns_custom_fb_config') || localStorage.getItem('kurir_bns_embedded_fb_backup');
-                if (saved) return JSON.parse(saved);
-            } catch (e) {}
-            return {
-                apiKey: "",
-                authDomain: "",
-                projectId: "",
-                storageBucket: "",
-                messagingSenderId: "",
-                appId: ""
-            };
-        })();
-
-        function resolveFirebaseConfig() {
-            const customRaw = localStorage.getItem('kurir_bns_custom_fb_config');
-            if (customRaw) {
-                try {
-                    const parsed = JSON.parse(customRaw);
-                    if (parsed && parsed.apiKey && parsed.projectId) return parsed;
-                } catch (e) {}
-            }
-            if (EMBEDDED_FIREBASE_CONFIG && EMBEDDED_FIREBASE_CONFIG.apiKey && EMBEDDED_FIREBASE_CONFIG.projectId) {
-                return EMBEDDED_FIREBASE_CONFIG;
-            }
+        // Firebase Setup
+        let db = null, isCloudReady = false;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kurir-bns-school-v5';
+        try {
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                try {
-                    const envCfg = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                    if (envCfg && envCfg.apiKey) {
-                        localStorage.setItem('kurir_bns_embedded_fb_backup', JSON.stringify(envCfg));
-                        return envCfg;
-                    }
-                } catch (e) {}
-            }
-            return null;
-        }
-
-        async function initCloudDatabase(isRetry = false) {
-            try {
-                const configObj = resolveFirebaseConfig();
-                if (!configObj || !configObj.apiKey) {
-                    lastCloudError = 'Menunggu injeksi konfigurasi Firebase...';
-                    updateConnectionBadge(false);
-                    if (!isRetry) {
-                        setTimeout(() => initCloudDatabase(true), 1000);
-                        setTimeout(() => initCloudDatabase(true), 3000);
-                    }
-                    return;
-                }
-
-                const firebaseApp = getApps().length === 0 ? initializeApp(configObj) : getApp();
-                auth = getAuth(firebaseApp);
+                const firebaseApp = initializeApp(JSON.parse(__firebase_config));
+                const auth = getAuth(firebaseApp);
                 db = getFirestore(firebaseApp);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (tokenErr) {
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (u) => {
-                    if (u) {
-                        cloudUser = u;
-                        isCloudReady = true;
-                        lastCloudError = '';
-                        updateConnectionBadge(true);
-                        setupRealtimeListeners();
-                    }
-                });
-
-                if (auth.currentUser) {
-                    cloudUser = auth.currentUser;
+                signInAnonymously(auth).then(() => {
                     isCloudReady = true;
-                    lastCloudError = '';
                     updateConnectionBadge(true);
                     setupRealtimeListeners();
-                }
-            } catch (e) {
-                lastCloudError = e.message || String(e);
-                console.warn('Cloud init fallback:', e);
+                }).catch(() => updateConnectionBadge(false));
+            } else {
                 updateConnectionBadge(false);
             }
-        }
-        initCloudDatabase();
-
-        window.openCloudConfigModal = () => {
-            const activeCfg = resolveFirebaseConfig();
-            const diag = document.getElementById('cloud-diagnostic-status');
-            if (diag) {
-                diag.textContent = isCloudReady
-                    ? `✅ Terhubung ke Cloud Firebase (Project: ${activeCfg?.projectId || appId} | UID: ${cloudUser?.uid?.slice(0, 8)}...)`
-                    : `⚠️ Mode Lokal Aktif — ${lastCloudError || 'Klik Coba Hubungkan Ulang'}`;
-                diag.className = isCloudReady ? 'text-[8.5px] text-emerald-600 font-bold' : 'text-[8.5px] text-amber-600 font-bold';
-            }
-            const inp = document.getElementById('custom-firebase-config-input');
-            if (inp) {
-                inp.value = activeCfg ? JSON.stringify(activeCfg, null, 2) : (localStorage.getItem('kurir_bns_custom_fb_config') || '');
-            }
-            document.getElementById('cloud-config-modal').classList.remove('hidden');
-        };
-        window.closeCloudConfigModal = () => document.getElementById('cloud-config-modal').classList.add('hidden');
-
-        window.copyActiveCloudConfig = () => {
-            const inp = document.getElementById('custom-firebase-config-input');
-            if (!inp || !inp.value.trim()) return window.showToast('Tidak ada konfigurasi API untuk disalin', 'warning');
-            inp.select();
-            document.execCommand('copy');
-            window.showToast('API Key & Config Firebase berhasil disalin!', 'success');
-        };
-
-        window.downloadHtmlWithEmbeddedApi = () => {
-            const activeCfg = resolveFirebaseConfig();
-            if (!activeCfg || !activeCfg.apiKey) {
-                return window.showToast('API Config belum terdeteksi. Masukkan JSON konfigurasi.', 'warning');
-            }
-            let htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-            const targetRegex = /return\s*\{\s*apiKey:\s*""[\s\S]*?appId:\s*""\s*\};/;
-            const replacement = `return ${JSON.stringify(activeCfg, null, 16)};`;
-            if (targetRegex.test(htmlSource)) {
-                htmlSource = htmlSource.replace(targetRegex, replacement);
-            }
-            const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'index.html';
-            a.click();
-            window.showToast('File index.html dengan API Key tertanam permanen berhasil diunduh!', 'success');
-        };
-
-        window.retryCloudConnection = async () => {
-            window.showToast('Menghubungkan ulang ke Cloud Firebase...', 'info');
-            listenersAttached = false;
-            await initCloudDatabase(true);
-            window.openCloudConfigModal();
-            if (isCloudReady) window.showToast('Berhasil terhubung ke Cloud Firebase!', 'success');
-        };
-
-        window.saveCustomCloudConfig = () => {
-            const raw = (document.getElementById('custom-firebase-config-input')?.value || '').trim();
-            if (!raw) return window.showToast('Masukkan JSON konfigurasi Firebase terlebih dahulu', 'warning');
-            try {
-                const cleaned = raw.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":').replace(/'/g, '"');
-                const parsed = JSON.parse(cleaned);
-                if (!parsed.apiKey || !parsed.projectId) {
-                    return window.showToast('Config harus memiliki minimal apiKey dan projectId', 'error');
-                }
-                localStorage.setItem('kurir_bns_custom_fb_config', JSON.stringify(parsed, null, 2));
-                window.showToast('Konfigurasi disimpan! Memuat ulang koneksi Cloud...', 'success');
-                setTimeout(() => window.location.reload(), 600);
-            } catch (e) {
-                window.showToast('Format JSON Firebase Config tidak valid.', 'error');
-            }
-        };
-
-        window.clearCustomCloudConfig = () => {
-            localStorage.removeItem('kurir_bns_custom_fb_config');
-            document.getElementById('custom-firebase-config-input').value = '';
-            window.showToast('Dikembalikan ke konfigurasi bawaan', 'info');
-            setTimeout(() => window.location.reload(), 600);
-        };
+        } catch (e) { updateConnectionBadge(false); }
 
         function updateConnectionBadge(online) {
             const dot = document.getElementById('connection-dot');
             const txt = document.getElementById('connection-text');
-            const badge = document.getElementById('firebase-status-badge');
             if (!dot || !txt) return;
             if (online && navigator.onLine) {
                 dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 connection-indicator inline-block';
-                txt.textContent = 'Cloud Terhubung';
-                if (badge) badge.className = 'flex items-center space-x-1 bg-emerald-500/20 hover:bg-emerald-500/30 backdrop-blur-md text-emerald-200 text-[8px] px-2 py-0.5 rounded-full font-semibold border border-emerald-400/30 cursor-pointer transition';
+                txt.textContent = 'Cloud Sync';
             } else {
                 dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400 inline-block';
-                txt.textContent = 'Mode Lokal Aktif';
-                if (badge) badge.className = 'flex items-center space-x-1 bg-amber-500/20 hover:bg-amber-500/30 backdrop-blur-md text-amber-200 text-[8px] px-2 py-0.5 rounded-full font-semibold border border-amber-400/30 cursor-pointer transition';
+                txt.textContent = 'Local Mode';
             }
         }
         window.addEventListener('online', () => updateConnectionBadge(isCloudReady));
         window.addEventListener('offline', () => updateConnectionBadge(false));
 
-        let listenersAttached = false;
         function setupRealtimeListeners() {
-            if (!db || !cloudUser || listenersAttached) return;
-            listenersAttached = true;
-            
-            const mergePackages = (snap) => {
-                const map = new Map();
-                packages.forEach(p => { if (p && p.id && !deletedIds.has(p.id)) map.set(p.id, p); });
+            if (!db) return;
+            const base = ['artifacts', appId, 'public', 'data'];
+            onSnapshot(collection(db, ...base, 'packages_col'), (snap) => {
+                const arr = [];
                 snap.forEach(d => {
                     const data = d.data();
-                    const id = data.id || d.id;
-                    if (!deletedIds.has(d.id) && !deletedIds.has(id)) {
-                        map.set(id, { ...data, id, _docId: d.id });
-                    }
+                    if (!deletedIds.has(d.id) && !deletedIds.has(data.id)) arr.push({ ...data, _docId: d.id });
                 });
-                packages = Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                saveLocal();
-                refreshAllViews();
-            };
-
-            onSnapshot(collection(db, 'packages'), mergePackages, (err) => console.warn('packages listener:', err));
-
-            const mergeMembers = (snap) => {
-                const arr = [...members];
-                snap.forEach(d => {
-                    const data = d.data();
-                    const idx = arr.findIndex(m => m.id === data.id || (m.email && data.email && m.email.toLowerCase() === data.email.toLowerCase()));
-                    if (idx >= 0) arr[idx] = { ...arr[idx], ...data };
-                    else arr.push(data);
-                });
-                members = ensureDefaultMembers(arr);
-                saveLocal();
-                populateDirectoryDatalist();
-                refreshAllViews();
-            };
-
-            onSnapshot(collection(db, 'members'), mergeMembers, (err) => console.warn('members listener:', err));
-
-            const mergeDirectory = (snap) => {
-                const map = new Map();
-                directory.forEach(item => { if (item && item.id) map.set(item.id, item); });
-                snap.forEach(d => {
-                    const data = d.data();
-                    const id = data.id || d.id;
-                    map.set(id, { ...data, id });
-                });
-                directory = Array.from(map.values());
-                saveLocal();
-                populateDirectoryDatalist();
-                refreshAllViews();
-            };
-
-            onSnapshot(collection(db, 'directory'), mergeDirectory, (err) => console.warn('directory listener:', err));
-
-            onSnapshot(collection(db, 'reset_requests'), (snap) => {
-                const arr = []; snap.forEach(d => arr.push(d.data()));
-                if (arr.length > 0) { resetRequests = arr; saveLocal(); renderAdminResets(); }
-            }, (err) => console.warn('reset_requests listener:', err));
-
-            onSnapshot(doc(db, 'settings', 'broadcast'), (d) => {
-                if (d.exists()) {
-                    broadcastBanner = d.data();
-                    localStorage.setItem('kurir_bns_broadcast', JSON.stringify(broadcastBanner));
-                    renderBroadcastBanner();
+                if (arr.length > 0 || packages.length === 0) {
+                    packages = arr.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    saveLocal(); refreshAllViews();
                 }
-            }, (err) => console.warn('broadcast listener:', err));
+            }, () => {});
+            onSnapshot(collection(db, ...base, 'members_col'), (snap) => {
+                const arr = []; snap.forEach(d => arr.push(d.data()));
+                if (arr.length > 0) { members = arr; saveLocal(); refreshAllViews(); }
+            }, () => {});
+            onSnapshot(collection(db, ...base, 'directory_col'), (snap) => {
+                const arr = []; snap.forEach(d => arr.push(d.data()));
+                if (arr.length > 0) { directory = arr; saveLocal(); populateDirectoryDatalist(); refreshAllViews(); }
+            }, () => {});
+            onSnapshot(collection(db, ...base, 'reset_requests_col'), (snap) => {
+                const arr = []; snap.forEach(d => arr.push(d.data()));
+                resetRequests = arr; saveLocal(); renderAdminResets();
+            }, () => {});
+            onSnapshot(doc(db, ...base, 'settings_col', 'broadcast'), (d) => {
+                broadcastBanner = d.exists() ? d.data() : null;
+                localStorage.setItem('kurir_bns_broadcast', JSON.stringify(broadcastBanner));
+                renderBroadcastBanner();
+            }, () => {});
         }
 
         function saveLocal() {
@@ -1432,15 +1225,12 @@
 
         async function syncDoc(colName, id, data) {
             saveLocal();
-            if (db && isCloudReady && cloudUser) {
-                try {
-                    await setDoc(doc(db, colName, String(id)), data);
-                } catch (e) {
-                    console.warn(`Gagal sinkronisasi ke ${colName}:`, e);
-                }
+            if (db && isCloudReady) {
+                try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', colName, String(id)), data); } catch (e) {}
             }
         }
 
+        // Toast & Audio
         window.showToast = (msg, type = 'info') => {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -1483,6 +1273,7 @@
             window.renderAuditLogs();
         }
 
+        // Dark Mode, Wake Lock & System Notifications
         window.toggleDarkMode = () => {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
@@ -1503,7 +1294,7 @@
                 } else {
                     wakeLockSentinel = await navigator.wakeLock.request('screen');
                     document.getElementById('wake-lock-icon').className = 'fa-solid fa-bolt text-emerald-300 text-[9px]';
-                    window.showToast('Layar dijaga tetap menyala', 'success');
+                    window.showToast('Layar dijaga tetap menyala (Anti-Sleep aktif)', 'success');
                 }
             } catch (e) { window.showToast('Gagal mengaktifkan Layar Aktif', 'warning'); }
         };
@@ -1519,84 +1310,48 @@
             }
         };
 
+        // Authentication & Role Navigation
+        window.selectLoginRole = (role) => {
+            selectedLoginRole = role;
+            ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
+                const btn = document.getElementById(`login-btn-${r}`);
+                if (!btn) return;
+                if (r === role) btn.className = 'p-1.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-700 text-[10px] font-bold transition flex flex-col items-center space-y-1 shadow-sm btn-glow';
+                else btn.className = 'p-1.5 rounded-xl border-2 border-transparent text-slate-600 text-[10px] font-bold transition flex flex-col items-center space-y-1 hover:bg-white/60';
+            });
+        };
+
         window.handleLoginEmailInput = (val) => {
-            const clean = (val || '').trim().toLowerCase();
-            members = ensureDefaultMembers(members);
-            const found = members.find(m => (m.email || '').toLowerCase() === clean || (m.name || '').toLowerCase() === clean || (m.role || '').toLowerCase() === clean);
-            const avatarEl = document.getElementById('login-detected-avatar');
-            const nameEl = document.getElementById('login-detected-name');
+            const v = (val || '').trim().toLowerCase();
+            const found = members.find(m => (m.email || '').toLowerCase() === v || (m.name || '').toLowerCase().includes(v));
             if (found) {
-                if (avatarEl) avatarEl.src = found.avatar || 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
-                if (nameEl) nameEl.textContent = `${found.name} (${found.role.toUpperCase()})`;
-            } else {
-                if (avatarEl) avatarEl.src = 'https://placehold.co/100x100/4338ca/ffffff?text=BNS';
-                if (nameEl) nameEl.textContent = 'Masukkan Username & Kata Sandi';
+                document.getElementById('login-detected-avatar').src = found.avatar || 'https://placehold.co/100x100/4338ca/ffffff?text=U';
+                document.getElementById('login-detected-name').textContent = `${found.name} (${found.role.toUpperCase()})`;
+                window.selectLoginRole(found.role);
             }
         };
 
         window.togglePasswordVisibility = () => {
             const inp = document.getElementById('login-password');
-            const icon = document.getElementById('password-toggle-icon');
-            if (!inp) return;
-            if (inp.type === 'password') {
-                inp.type = 'text';
-                if (icon) icon.className = 'fa-solid fa-eye-slash';
-            } else {
-                inp.type = 'password';
-                if (icon) icon.className = 'fa-solid fa-eye';
-            }
-        };
-
-        function exportPackagesToCsv(filenamePrefix = 'Laporan_Paket_BNS') {
-            if (!packages || packages.length === 0) return window.showToast('Belum ada data paket untuk diekspor', 'warning');
-            const headers = ['ID Transaksi', 'No Resi', 'Waktu Masuk', 'Sumber', 'Penerima', 'Peran', 'Tujuan', 'No WA', 'Kategori', 'SLA', 'Petugas', 'Kurir', 'Status', 'Diterima Oleh', 'Waktu Selesai'];
-            const rows = packages.map(p => [
-                p.id || '', p.resi || '', p.timestamp || '', p.sourceLabel || '', p.recipient || '',
-                p.recipientRole || '', p.destination || '', p.phone || '', p.category || '', p.sla || '',
-                p.officer || '', p.courier || '', p.status || '', p.completedBy || '', p.completedTime || ''
-            ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
-            const csvContent = [headers.join(','), ...rows].join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `${filenamePrefix}_${Date.now()}.csv`;
-            a.click();
-            window.showToast('Laporan CSV berhasil diunduh!', 'success');
-        }
-
-        window.exportPetugasReport = () => exportPackagesToCsv('Laporan_Petugas_BNS');
-        window.exportCourierReport = () => exportPackagesToCsv('Laporan_Kurir_BNS');
-        window.exportAdminReport = () => exportPackagesToCsv('Laporan_Admin_BNS');
-        window.exportAuditCsv = () => {
-            if (!auditLogs || auditLogs.length === 0) return window.showToast('Belum ada log aktivitas', 'warning');
-            const headers = ['ID Log', 'Waktu', 'Pelaku', 'Peran', 'Aksi', 'Detail'];
-            const rows = auditLogs.map(l => [l.id, l.time, l.actor, l.role, l.action, l.details].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
-            const blob = new Blob([[headers.join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `Audit_Log_BNS_${Date.now()}.csv`;
-            a.click();
+            const ic = document.getElementById('password-toggle-icon');
+            if (inp.type === 'password') { inp.type = 'text'; ic.className = 'fa-solid fa-eye-slash'; }
+            else { inp.type = 'password'; ic.className = 'fa-solid fa-eye'; }
         };
 
         window.handleLogin = (e) => {
-            if (e && e.preventDefault) e.preventDefault();
-            members = ensureDefaultMembers(members);
-            const u = (document.getElementById('login-username')?.value || '').trim().toLowerCase();
-            const p = (document.getElementById('login-password')?.value || '').trim();
-            const user = members.find(m => {
-                const matchUser = (m.email || '').toLowerCase() === u || (m.name || '').toLowerCase() === u || (m.role || '').toLowerCase() === u;
-                const matchPass = m.password === p || p === '123' || p === 'admin123';
-                return matchUser && matchPass;
-            });
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim().toLowerCase();
+            const p = document.getElementById('login-password').value.trim();
+            const user = members.find(m => ((m.email || '').toLowerCase() === u || (m.name || '').toLowerCase() === u) && m.password === p);
             const errAlert = document.getElementById('login-error-alert');
             if (!user) {
                 errAlert.classList.remove('hidden');
-                document.getElementById('login-error-text').textContent = 'Username atau kata sandi salah.';
+                document.getElementById('login-error-text').textContent = 'Username atau kata sandi salah (Default sandi: 123).';
                 return;
             }
             if (user.active === false) {
                 errAlert.classList.remove('hidden');
-                document.getElementById('login-error-text').textContent = 'Akun sedang dinonaktifkan sementara.';
+                document.getElementById('login-error-text').textContent = 'Akun sedang dinonaktifkan sementara oleh Admin.';
                 return;
             }
             errAlert.classList.add('hidden');
@@ -1609,7 +1364,7 @@
         };
 
         window.logoutApp = () => {
-            addAuditLog('LOGOUT', `${currentUser?.name || 'User'} keluar`);
+            addAuditLog('LOGOUT', `${currentUser?.name || 'User'} keluar dari aplikasi`);
             currentUser = null;
             localStorage.removeItem('kurir_bns_session');
             document.getElementById('auth-screen').classList.remove('hidden');
@@ -1638,12 +1393,12 @@
             const mNav = document.getElementById('mobile-role-nav');
             if (!dNav || !mNav) return;
             dNav.innerHTML = roles.map(r => `
-                <button onclick="window.switchMainView('${r.id}')" id="dnav-${r.id}" class="px-2.5 py-1 rounded-lg transition flex items-center space-x-1 text-white/85 hover:text-white">
+                <button onclick="window.switchMainView('${r.id}')" id="dnav-${r.id}" class="px-2.5 py-1 rounded-lg transition flex items-center space-x-1 text-white/80 hover:text-white">
                     <i class="fa-solid ${r.icon}"></i><span>${r.label}</span>
                 </button>
             `).join('');
             mNav.innerHTML = roles.map(r => `
-                <button onclick="window.switchMainView('${r.id}')" id="mnav-${r.id}" class="py-1.5 rounded-xl font-bold flex flex-col items-center justify-center space-y-0.5 text-white/80">
+                <button onclick="window.switchMainView('${r.id}')" id="mnav-${r.id}" class="py-1.5 rounded-xl font-bold flex flex-col items-center justify-center space-y-0.5 text-white/75">
                     <i class="fa-solid ${r.icon} text-xs"></i><span class="text-[9px]">${r.label}</span>
                 </button>
             `).join('');
@@ -1654,12 +1409,13 @@
                 document.getElementById(`view-${r}`)?.classList.toggle('active', r === role);
                 const dn = document.getElementById(`dnav-${r}`);
                 const mn = document.getElementById(`mnav-${r}`);
-                if (dn) dn.className = r === role ? 'px-2.5 py-1 rounded-lg bg-white text-indigo-700 font-extrabold shadow-sm flex items-center space-x-1' : 'px-2.5 py-1 rounded-lg text-white/85 hover:text-white flex items-center space-x-1';
-                if (mn) mn.className = r === role ? 'py-1.5 rounded-xl bg-white text-indigo-700 font-extrabold shadow flex flex-col items-center justify-center space-y-0.5' : 'py-1.5 rounded-xl text-white/80 flex flex-col items-center justify-center space-y-0.5';
+                if (dn) dn.className = r === role ? 'px-2.5 py-1 rounded-lg bg-white text-indigo-700 font-extrabold shadow-sm flex items-center space-x-1' : 'px-2.5 py-1 rounded-lg text-white/80 hover:text-white flex items-center space-x-1';
+                if (mn) mn.className = r === role ? 'py-1.5 rounded-xl bg-white text-indigo-700 font-extrabold shadow flex flex-col items-center justify-center space-y-0.5' : 'py-1.5 rounded-xl text-white/75 flex flex-col items-center justify-center space-y-0.5';
             });
             refreshAllViews();
         };
 
+        // Petugas Source & Form Handling
         window.switchSourceType = (type) => {
             currentSourceType = type;
             const extBtn = document.getElementById('btn-src-ext');
@@ -1682,7 +1438,7 @@
                     <div>
                         <label class="block text-[9px] font-bold text-slate-700 mb-1"><i class="fa-solid fa-barcode text-indigo-500 mr-1"></i> Nomor Resi / Barcode</label>
                         <div class="flex space-x-1.5">
-                            <input type="text" id="input-resi" placeholder="Scan atau ketik resi..." class="flex-1 px-2.5 py-1.5 rounded-xl border text-[10px]">
+                            <input type="text" id="input-resi" placeholder="Scan atau ketik nomor resi..." class="flex-1 px-2.5 py-1.5 rounded-xl border text-[10px]">
                             <button type="button" onclick="window.openBarcodeModal()" class="bg-indigo-600 text-white px-3 rounded-xl text-[9px] font-bold shadow"><i class="fa-solid fa-qrcode mr-1"></i>Scan</button>
                         </div>
                     </div>
@@ -1717,36 +1473,38 @@
                 document.getElementById('input-recipient-role').value = match.role || 'Teacher';
                 document.getElementById('input-destination').value = match.room || '';
                 document.getElementById('input-phone').value = match.phone || '';
+                window.showToast(`Auto-Complete: ${match.room}`, 'info');
             }
             window.saveFormDraft();
         };
 
-        window.saveFormDraft = () => {};
+        window.saveFormDraft = () => {
+            const draft = {
+                recipient: document.getElementById('input-recipient')?.value || '',
+                destination: document.getElementById('input-destination')?.value || '',
+                phone: document.getElementById('input-phone')?.value || '',
+                notes: document.getElementById('input-notes')?.value || ''
+            };
+            localStorage.setItem('kurir_bns_draft', JSON.stringify(draft));
+        };
 
-        function processHighQualityImage(fileOrDataUrl, callback) {
-            const reader = new FileReader();
-            if (typeof fileOrDataUrl === 'string') {
-                callback(fileOrDataUrl);
-            } else {
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width, h = img.height;
-                        const maxDim = 1280;
-                        if (w > maxDim || h > maxDim) {
-                            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-                            else { w = Math.round((w * maxDim) / h); h = maxDim; }
-                        }
-                        canvas.width = w; canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.imageSmoothingEnabled = true;
-                        ctx.imageSmoothingQuality = 'high';
-                        ctx.drawImage(img, 0, 0, w, h);
-                        callback(canvas.toDataURL('image/jpeg', 0.88));
-                    };
-                    img.src = e.target.result;
-                };
+        // Image Compression & Camera
+        function compressImage(fileOrDataUrl, callback) {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxW = 640;
+                const scale = Math.min(1, maxW / (img.width || 640));
+                canvas.width = (img.width || 640) * scale;
+                canvas.height = (img.height || 480) * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                callback(canvas.toDataURL('image/jpeg', 0.68));
+            };
+            if (typeof fileOrDataUrl === 'string') img.src = fileOrDataUrl;
+            else {
+                const reader = new FileReader();
+                reader.onload = (e) => { img.src = e.target.result; };
                 reader.readAsDataURL(fileOrDataUrl);
             }
         }
@@ -1754,12 +1512,13 @@
         window.handlePhysicalFileUpload = (e) => {
             const file = e.target.files?.[0];
             if (!file) return;
-            processHighQualityImage(file, (dataUrl) => {
+            compressImage(file, (dataUrl) => {
                 capturedPhysicalPhoto = dataUrl;
                 document.getElementById('physical-photo-thumb').src = dataUrl;
                 document.getElementById('physical-photo-preview-wrap').classList.remove('hidden');
-                document.getElementById('photo-status-badge').textContent = 'Foto Full HD Siap (Tanpa Kompresi)';
-                document.getElementById('photo-status-badge').className = 'text-[8px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold inline-block border border-emerald-300';
+                const badge = document.getElementById('photo-status-badge');
+                badge.textContent = 'Foto Siap';
+                badge.className = 'text-[8px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold inline-block border border-emerald-300';
             });
         };
 
@@ -1768,12 +1527,10 @@
             const video = document.getElementById('physical-video-stream');
             modal.classList.remove('hidden');
             try {
-                activeStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
-                });
+                activeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 video.srcObject = activeStream;
             } catch (e) {
-                window.showToast('Kamera tidak dapat diakses, gunakan Galeri Foto.', 'warning');
+                window.showToast('Kamera tidak dapat diakses, gunakan tombol Galeri.', 'warning');
                 window.closePhysicalCameraModal();
             }
         };
@@ -1784,19 +1541,21 @@
         window.capturePhysicalPhoto = () => {
             const video = document.getElementById('physical-video-stream');
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 1920;
-            canvas.height = video.videoHeight || 1080;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-            capturedPhysicalPhoto = dataUrl;
-            document.getElementById('physical-photo-thumb').src = dataUrl;
-            document.getElementById('physical-photo-preview-wrap').classList.remove('hidden');
-            document.getElementById('photo-status-badge').textContent = 'Foto Full HD Siap';
-            document.getElementById('photo-status-badge').className = 'text-[8px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold inline-block border border-emerald-300';
-            window.closePhysicalCameraModal();
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            compressImage(canvas.toDataURL('image/jpeg', 0.8), (dataUrl) => {
+                capturedPhysicalPhoto = dataUrl;
+                document.getElementById('physical-photo-thumb').src = dataUrl;
+                document.getElementById('physical-photo-preview-wrap').classList.remove('hidden');
+                const badge = document.getElementById('photo-status-badge');
+                badge.textContent = 'Foto Siap';
+                badge.className = 'text-[8px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold inline-block border border-emerald-300';
+                window.closePhysicalCameraModal();
+            });
         };
 
+        // Barcode Scanner
         window.openBarcodeModal = async () => {
             document.getElementById('barcode-modal').classList.remove('hidden');
             try {
@@ -1818,6 +1577,7 @@
             if (barcodeReader) { barcodeReader.reset(); barcodeReader = null; }
         };
 
+        // Package Creation & Sequence ID
         function generateTransactionId() {
             const now = new Date();
             const dd = String(now.getDate()).padStart(2, '0');
@@ -1833,7 +1593,7 @@
         window.handlePreparePackageSummary = (e) => {
             e.preventDefault();
             if (!capturedPhysicalPhoto) {
-                capturedPhysicalPhoto = 'https://placehold.co/600x600/4f46e5/ffffff?text=Foto+Paket';
+                capturedPhysicalPhoto = 'https://placehold.co/300x300/4f46e5/ffffff?text=Foto+Paket';
             }
             const id = generateTransactionId();
             const isExt = currentSourceType === 'external';
@@ -1881,21 +1641,23 @@
             if (!pendingPackageSummary) return;
             const pkg = pendingPackageSummary;
             packages.unshift(pkg);
-            await syncDoc('packages', pkg.id, pkg);
-            addAuditLog('INPUT PAKET', `Paket ${pkg.id} untuk ${pkg.recipient}`);
+            await syncDoc('packages_col', pkg.id, pkg);
+            addAuditLog('INPUT PAKET', `Paket ${pkg.id} untuk ${pkg.recipient} (${pkg.destination})`);
             window.closeSummaryModal();
             document.getElementById('package-form').reset();
             capturedPhysicalPhoto = '';
             document.getElementById('physical-photo-preview-wrap').classList.add('hidden');
-            document.getElementById('photo-status-badge').textContent = 'Belum Diambil (Mode Full HD)';
+            document.getElementById('photo-status-badge').textContent = 'Belum Diambil';
             refreshAllViews();
             document.getElementById('celebration-title').textContent = `${pkg.id} Tersimpan!`;
             document.getElementById('celebration-subtitle').textContent = `Paket untuk ${pkg.recipient} (${pkg.destination}) berhasil masuk antrian.`;
             document.getElementById('success-celebration-modal').classList.remove('hidden');
+            window.speakText(`Paket baru untuk ${pkg.recipient} di ${pkg.destination} telah tersimpan.`);
         };
 
         window.closeSuccessCelebration = () => document.getElementById('success-celebration-modal').classList.add('hidden');
 
+        // SLA & Period Filter Helpers
         function getSlaStatus(pkg) {
             if (pkg.status === 'completed') return { label: 'Tuntas', overdue: false, class: 'bg-emerald-100 text-emerald-700' };
             const created = pkg.createdAt || Date.now();
@@ -1933,12 +1695,13 @@
             refreshAllViews();
         };
 
+        // WhatsApp & QR Sticker
         window.sendWhatsAppNotif = (id) => {
             const p = packages.find(x => x.id === id);
             if (!p) return;
             let ph = (p.phone || '').replace(/\D/g, '');
             if (ph.startsWith('0')) ph = '62' + ph.slice(1);
-            const msg = encodeURIComponent(`Halo *${p.recipient}*, paket Anda dengan ID *${p.id}* tujuan *${p.destination}* berstatus: *${p.status.toUpperCase()}*. — Kurir BNS Express.`);
+            const msg = encodeURIComponent(`Halo *${p.recipient}*, paket Anda dengan ID *${p.id}* (${p.sourceLabel}) tujuan *${p.destination}* saat ini berstatus: *${p.status.toUpperCase()}*. Terima kasih — Kurir BNS Express.`);
             window.open(ph ? `https://wa.me/${ph}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
         };
 
@@ -1960,6 +1723,7 @@
             setTimeout(() => document.body.classList.remove('printing-qr'), 500);
         };
 
+        // Petugas Views
         window.switchPetugasTab = (tab) => {
             document.getElementById('petugas-content-input').classList.toggle('hidden', tab !== 'input');
             document.getElementById('petugas-content-status').classList.toggle('hidden', tab !== 'status');
@@ -1981,7 +1745,7 @@
             const slaFilter = document.getElementById('filter-petugas-sla')?.value || 'all';
 
             const filtered = packages.filter(p => {
-                const mQ = !q || (p.recipient || '').toLowerCase().includes(q) || (p.destination || '').toLowerCase().includes(q) || (p.id || '').toLowerCase().includes(q);
+                const mQ = !q || (p.recipient || '').toLowerCase().includes(q) || (p.destination || '').toLowerCase().includes(q) || (p.id || '').toLowerCase().includes(q) || (p.resi || '').toLowerCase().includes(q);
                 const mP = matchPeriod(p, period);
                 const mS = slaFilter === 'all' || (p.sla || '').includes(slaFilter);
                 return mQ && mP && mS;
@@ -2002,8 +1766,8 @@
                         <div class="text-[8px] text-slate-500 flex justify-between items-center border-t pt-1">
                             <span>Kurir: <strong>${safeAttr(p.courier || 'Belum Ditugaskan')}</strong></span>
                             <div class="flex space-x-1">
-                                <button onclick="window.openQrLabelModal('${safeAttr(p.id)}')" class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded font-bold"><i class="fa-solid fa-qrcode"></i></button>
-                                <button onclick="window.sendWhatsAppNotif('${safeAttr(p.id)}')" class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold"><i class="fa-brands fa-whatsapp"></i></button>
+                                <button onclick="window.openQrLabelModal('${safeAttr(p.id)}')" class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded font-bold" title="Cetak QR"><i class="fa-solid fa-qrcode"></i></button>
+                                <button onclick="window.sendWhatsAppNotif('${safeAttr(p.id)}')" class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold" title="Kirim WA"><i class="fa-brands fa-whatsapp"></i></button>
                             </div>
                         </div>
                     </div>
@@ -2023,6 +1787,7 @@
             document.getElementById('list-petugas-status-completed').innerHTML = comp.map(renderCard).join('') || '<p class="text-[9px] text-slate-400 text-center py-6">Kosong</p>';
         };
 
+        // Courier View & Batch Handover
         window.switchCourierSubTab = (sub) => {
             ['pending', 'delivering', 'completed'].forEach(s => {
                 document.getElementById(`courier-panel-${s}`)?.classList.toggle('hidden', s !== sub);
@@ -2041,7 +1806,7 @@
         window.selectAllCourierVisible = (status) => {
             const q = (document.getElementById('filter-kurir-search')?.value || '').toLowerCase();
             const period = document.getElementById('filter-kurir-period')?.value || 'all';
-            packages.filter(p => p.status === status && matchPeriod(p, period) && (!q || (p.recipient || '').toLowerCase().includes(q))).forEach(p => selectedCourierPkgIds.add(p.id));
+            packages.filter(p => p.status === status && matchPeriod(p, period) && (!q || (p.recipient || '').toLowerCase().includes(q) || (p.destination || '').toLowerCase().includes(q))).forEach(p => selectedCourierPkgIds.add(p.id));
             updateCourierBatchBar();
             window.renderCourierView();
         };
@@ -2069,7 +1834,7 @@
             p.status = 'delivering';
             p.courier = currentUser?.name || 'Kurir';
             p.takenAt = Date.now();
-            await syncDoc('packages', p.id, p);
+            await syncDoc('packages_col', p.id, p);
             addAuditLog('AMBIL PAKET', `${p.courier} mengambil paket ${p.id}`);
             refreshAllViews();
             window.showToast(`Paket ${p.id} siap diantar!`, 'success');
@@ -2083,7 +1848,7 @@
                     p.status = 'delivering';
                     p.courier = currentUser?.name || 'Kurir';
                     p.takenAt = Date.now();
-                    await syncDoc('packages', p.id, p);
+                    await syncDoc('packages_col', p.id, p);
                 }
             }
             window.clearCourierSelection();
@@ -2094,7 +1859,7 @@
         window.renderCourierView = () => {
             const q = (document.getElementById('filter-kurir-search')?.value || '').toLowerCase();
             const period = document.getElementById('filter-kurir-period')?.value || 'all';
-            const filtered = packages.filter(p => matchPeriod(p, period) && (!q || (p.recipient || '').toLowerCase().includes(q) || (p.id || '').toLowerCase().includes(q)));
+            const filtered = packages.filter(p => matchPeriod(p, period) && (!q || (p.recipient || '').toLowerCase().includes(q) || (p.destination || '').toLowerCase().includes(q) || (p.id || '').toLowerCase().includes(q)));
 
             const pend = filtered.filter(p => p.status === 'pending');
             const deliv = filtered.filter(p => p.status === 'delivering');
@@ -2118,26 +1883,28 @@
                                     <span class="px-2 py-0.2 rounded-full text-[7.5px] font-bold ${sla.class}">${sla.label}</span>
                                 </div>
                                 <h4 class="font-extrabold text-slate-800 text-[10.5px]">${safeAttr(p.recipient)} <span class="text-[8.5px] font-normal text-slate-500">(${safeAttr(p.recipientRole)})</span></h4>
-                                <p class="text-[9px] text-rose-600 font-bold"><i class="fa-solid fa-location-dot mr-1"></i>${safeAttr(p.destination)}</p>
+                                <p class="text-[9px] text-rose-600 font-bold"><i class="fa-solid fa-location-dot mr-1"></i>${safeAttr(p.destination)} — <span class="text-slate-600 font-normal">${safeAttr(p.sourceLabel)}</span></p>
+                                ${p.exceptionNote ? `<p class="text-[8px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded mt-0.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i>${safeAttr(p.exceptionNote)}</p>` : ''}
                             </div>
                         </div>
                         <div class="flex items-center space-x-1.5">
                             <button onclick="window.sendWhatsAppNotif('${safeAttr(p.id)}')" class="bg-emerald-100 text-emerald-700 px-2.5 py-1.5 rounded-xl text-[9px] font-bold"><i class="fa-brands fa-whatsapp"></i></button>
-                            ${p.status === 'pending' ? `<button onclick="window.takePackage('${safeAttr(p.id)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[9px] font-bold shadow">Ambil</button>` : ''}
+                            ${p.status === 'pending' ? `<button onclick="window.takePackage('${safeAttr(p.id)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[9px] font-bold shadow"><i class="fa-solid fa-hand-holding-box mr-1"></i>Ambil</button>` : ''}
                             ${p.status === 'delivering' ? `
                                 <button onclick="window.openExceptionModal('${safeAttr(p.id)}')" class="bg-amber-100 text-amber-800 px-2.5 py-1.5 rounded-xl text-[9px] font-bold">Kendala</button>
-                                <button onclick="window.openCompleteModal('${safeAttr(p.id)}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[9px] font-bold shadow">Selesaikan</button>
+                                <button onclick="window.openCompleteModal('${safeAttr(p.id)}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[9px] font-bold shadow"><i class="fa-solid fa-check mr-1"></i>Selesaikan</button>
                             ` : ''}
                         </div>
                     </div>
                 `;
             };
 
-            document.getElementById('list-courier-pending').innerHTML = pend.map(renderItem).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Kosong</p>';
-            document.getElementById('list-courier-delivering').innerHTML = deliv.map(renderItem).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Kosong</p>';
-            document.getElementById('list-courier-completed').innerHTML = comp.map(renderItem).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Kosong</p>';
+            document.getElementById('list-courier-pending').innerHTML = pend.map(renderItem).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Tidak ada antrian paket</p>';
+            document.getElementById('list-courier-delivering').innerHTML = deliv.map(renderItem).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Tidak ada paket yang sedang diantar</p>';
+            document.getElementById('list-courier-completed').innerHTML = comp.map(renderItem).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Belum ada paket selesai</p>';
         };
 
+        // Exception & Complete Delivery (Signature Pad)
         window.openExceptionModal = (id) => {
             document.getElementById('exception-pkg-id').value = id;
             document.getElementById('exception-modal').classList.remove('hidden');
@@ -2152,13 +1919,15 @@
             if (p) {
                 p.status = 'pending';
                 p.exceptionNote = `${reason}${note ? ' - ' + note : ''}`;
-                await syncDoc('packages', p.id, p);
-                addAuditLog('KENDALA', `${p.id}: ${p.exceptionNote}`);
+                await syncDoc('packages_col', p.id, p);
+                addAuditLog('KENDALA PAKET', `${p.id}: ${p.exceptionNote}`);
+                window.showToast(`Status kendala disimpan untuk ${p.id}`, 'warning');
             }
             window.closeExceptionModal();
             refreshAllViews();
         };
 
+        // Signature Pad Setup
         let sigCanvas = null, sigCtx = null, isDrawingSig = false, hasDrawnSig = false;
         function initSignaturePad() {
             sigCanvas = document.getElementById('signature-pad-canvas');
@@ -2207,7 +1976,7 @@
             activeCompletingPkgIds = [...selectedCourierPkgIds];
             if (activeCompletingPkgIds.length === 0) return;
             const first = packages.find(x => x.id === activeCompletingPkgIds[0]);
-            document.getElementById('complete-modal-title').textContent = `Serah Terima ${activeCompletingPkgIds.length} Paket`;
+            document.getElementById('complete-modal-title').textContent = `Serah Terima ${activeCompletingPkgIds.length} Paket Sekaligus`;
             document.getElementById('confirm-receiver-name').value = first ? first.recipient : '';
             capturedProofPhoto = '';
             document.getElementById('proof-thumb-container').classList.add('hidden');
@@ -2220,7 +1989,7 @@
         window.handleProofFileUpload = (e) => {
             const f = e.target.files?.[0];
             if (!f) return;
-            processHighQualityImage(f, (url) => {
+            compressImage(f, (url) => {
                 capturedProofPhoto = url;
                 document.getElementById('proof-thumb-img').src = url;
                 document.getElementById('proof-thumb-container').classList.remove('hidden');
@@ -2230,12 +1999,10 @@
         window.openProofCameraModal = async () => {
             document.getElementById('proof-camera-modal').classList.remove('hidden');
             try {
-                activeStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
-                });
+                activeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 document.getElementById('proof-video-stream').srcObject = activeStream;
             } catch (e) {
-                window.showToast('Gagal membuka kamera', 'warning');
+                window.showToast('Gagal membuka kamera bukti', 'warning');
                 window.closeProofCameraModal();
             }
         };
@@ -2246,15 +2013,14 @@
         window.captureProofPhoto = () => {
             const v = document.getElementById('proof-video-stream');
             const c = document.createElement('canvas');
-            c.width = v.videoWidth || 1920;
-            c.height = v.videoHeight || 1080;
-            const ctx = c.getContext('2d');
-            ctx.drawImage(v, 0, 0, c.width, c.height);
-            const url = c.toDataURL('image/jpeg', 0.95);
-            capturedProofPhoto = url;
-            document.getElementById('proof-thumb-img').src = url;
-            document.getElementById('proof-thumb-container').classList.remove('hidden');
-            window.closeProofCameraModal();
+            c.width = v.videoWidth || 640; c.height = v.videoHeight || 480;
+            c.getContext('2d').drawImage(v, 0, 0);
+            compressImage(c.toDataURL('image/jpeg', 0.8), (url) => {
+                capturedProofPhoto = url;
+                document.getElementById('proof-thumb-img').src = url;
+                document.getElementById('proof-thumb-container').classList.remove('hidden');
+                window.closeProofCameraModal();
+            });
         };
 
         window.submitCompleteDelivery = async () => {
@@ -2273,16 +2039,17 @@
                     if (capturedProofPhoto) p.photoProof = capturedProofPhoto;
                     if (sigData) p.signature = sigData;
                     if (!p.courier || p.courier === 'Belum Ditugaskan') p.courier = currentUser?.name || 'Kurir';
-                    await syncDoc('packages', p.id, p);
+                    await syncDoc('packages_col', p.id, p);
                 }
             }
-            addAuditLog('SELESAI', `${activeCompletingPkgIds.length} paket diterima oleh ${receiverName}`);
+            addAuditLog('SELESAI ANTAR', `${activeCompletingPkgIds.length} paket diterima oleh ${receiverName}`);
             window.closeCompleteModal();
             window.clearCourierSelection();
             refreshAllViews();
-            window.showToast('Pengiriman selesai!', 'success');
+            window.showToast('Pengiriman selesai & bukti tersimpan!', 'success');
         };
 
+        // Receiver View
         window.renderReceiverView = () => {
             const q = (document.getElementById('receiver-session-name')?.value || '').toLowerCase();
             const st = document.getElementById('filter-receiver-status')?.value || 'all';
@@ -2296,18 +2063,20 @@
             el.innerHTML = list.map(p => `
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-wrap justify-between items-center gap-2">
                     <div>
-                        <span class="font-mono text-[8.5px] font-bold text-indigo-600">${safeAttr(p.id)}</span>
+                        <span class="font-mono text-[8.5px] font-bold text-indigo-600">${safeAttr(p.id)} • ${safeAttr(p.timestamp)}</span>
                         <h4 class="font-extrabold text-slate-800 text-[10.5px]">${safeAttr(p.recipient)} — ${safeAttr(p.destination)}</h4>
+                        <p class="text-[9px] text-slate-500">Sumber: ${safeAttr(p.sourceLabel)} | Kurir: ${safeAttr(p.courier)}</p>
                     </div>
                     <div>
                         ${p.status === 'completed'
-                            ? `<span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-700 font-bold text-[8.5px]">Diterima</span>`
-                            : `<button onclick="window.openCompleteModal('${safeAttr(p.id)}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold text-[9px] shadow">Konfirmasi</button>`}
+                            ? `<span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-700 font-bold text-[8.5px]"><i class="fa-solid fa-check-double mr-1"></i>Diterima (${safeAttr(p.completedBy || p.recipient)})</span>`
+                            : `<button onclick="window.openCompleteModal('${safeAttr(p.id)}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold text-[9px] shadow">Konfirmasi Terima</button>`}
                     </div>
                 </div>
-            `).join('') || '<p class="text-[9px] text-slate-400 text-center py-6">Tidak ada paket</p>';
+            `).join('') || '<p class="text-[9px] text-slate-400 text-center py-6">Tidak ada paket ditemukan</p>';
         };
 
+        // Admin Control Center
         window.switchAdminTab = (tab) => {
             ['overview', 'packages', 'reports', 'directory', 'members', 'resets', 'audit'].forEach(t => {
                 document.getElementById(`admin-content-${t}`)?.classList.toggle('hidden', t !== tab);
@@ -2317,6 +2086,7 @@
             refreshAllViews();
         };
 
+        // Broadcast Banner
         window.handleSaveBroadcast = async (e) => {
             e.preventDefault();
             const text = document.getElementById('admin-broadcast-input').value.trim();
@@ -2324,19 +2094,20 @@
             broadcastBanner = { text, time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) };
             localStorage.setItem('kurir_bns_broadcast', JSON.stringify(broadcastBanner));
             if (db && isCloudReady) {
-                try { await setDoc(doc(db, 'settings', 'broadcast'), broadcastBanner); } catch (err) {}
+                try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings_col', 'broadcast'), broadcastBanner); } catch (err) {}
             }
             renderBroadcastBanner();
-            window.showToast('Pengumuman disiarkan!', 'success');
+            window.showToast('Pengumuman berhasil disiarkan!', 'success');
         };
 
         window.clearBroadcast = async () => {
             broadcastBanner = null;
             localStorage.removeItem('kurir_bns_broadcast');
             if (db && isCloudReady) {
-                try { await deleteDoc(doc(db, 'settings', 'broadcast')); } catch (err) {}
+                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings_col', 'broadcast')); } catch (err) {}
             }
             renderBroadcastBanner();
+            window.showToast('Siaran pengumuman dihapus', 'info');
         };
 
         function renderBroadcastBanner() {
@@ -2362,24 +2133,37 @@
             document.getElementById('stat-comp-pkg').textContent = comp;
             document.getElementById('stat-success-rate').textContent = `${rate}%`;
 
+            // Overdue Watchlist
             const overdueList = packages.filter(p => p.status !== 'completed' && (getSlaStatus(p).overdue || p.exceptionNote));
             document.getElementById('overdue-watchlist-badge').textContent = `${overdueList.length} Paket`;
             document.getElementById('admin-overdue-watchlist').innerHTML = overdueList.map(p => `
                 <div class="p-2 rounded-xl bg-rose-50/80 border border-rose-200 flex justify-between items-center text-[9px]">
                     <div>
                         <strong class="text-rose-800">${safeAttr(p.id)} — ${safeAttr(p.recipient)}</strong>
-                        <p class="text-[8px] text-slate-600">${safeAttr(p.destination)}</p>
+                        <p class="text-[8px] text-slate-600">${safeAttr(p.destination)} • Kurir: ${safeAttr(p.courier)}</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <button onclick="window.openAdminEditPackageModal('${safeAttr(p.id)}')" class="px-2 py-0.5 bg-indigo-600 text-white rounded font-bold text-[8px]">Alihkan</button>
+                        <button onclick="window.sendWhatsAppNotif('${safeAttr(p.id)}')" class="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[8px]"><i class="fa-brands fa-whatsapp"></i></button>
                     </div>
                 </div>
-            `).join('') || '<p class="text-[9px] text-emerald-600 font-semibold py-4 text-center">Semua paket sesuai jadwal</p>';
+            `).join('') || '<p class="text-[9px] text-emerald-600 font-semibold py-4 text-center">Semua paket berjalan sesuai jadwal SLA!</p>';
 
+            // Courier Workload
             const couriers = members.filter(m => m.role === 'kurir');
             document.getElementById('admin-courier-workload-list').innerHTML = couriers.map(c => {
                 const activeCount = packages.filter(p => p.status === 'delivering' && p.courier === c.name).length;
+                const doneCount = packages.filter(p => p.status === 'completed' && p.courier === c.name).length;
                 return `
                     <div class="p-2 rounded-xl bg-slate-50 border flex justify-between items-center text-[9px]">
-                        <strong>${safeAttr(c.name)}</strong>
-                        <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800">Aktif: ${activeCount}</span>
+                        <div>
+                            <strong class="text-slate-800">${safeAttr(c.name)}</strong>
+                            <span class="ml-1 px-1.5 py-0.2 rounded text-[7.5px] ${c.active !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${c.active !== false ? 'Aktif' : 'Cuti'}</span>
+                        </div>
+                        <div class="space-x-1.5 font-bold">
+                            <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800">Aktif: ${activeCount}</span>
+                            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Selesai: ${doneCount}</span>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -2398,6 +2182,14 @@
             const docCount = packages.filter(p => p.category === 'dokumen').length;
             const foodCount = packages.filter(p => p.category === 'makanan').length;
             const itemCount = packages.filter(p => p.category === 'barang').length;
+            const tCount = packages.filter(p => p.recipientRole === 'Teacher').length;
+            const sCount = packages.filter(p => p.recipientRole === 'Staff').length;
+            const stCount = packages.filter(p => p.recipientRole === 'Student').length;
+
+            const destMap = {};
+            packages.forEach(p => { destMap[p.destination || 'Lainnya'] = (destMap[p.destination || 'Lainnya'] || 0) + 1; });
+            const topDest = Object.entries(destMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            if (topDest.length === 0) topDest.push(['Ruang Guru', 1]);
 
             const draw = (id, type, labels, data, colors) => {
                 try {
@@ -2414,12 +2206,15 @@
 
             draw('chartSource', 'doughnut', ['Eksternal', 'Internal'], [extCount || 1, intCount], ['#4f46e5', '#0ea5e9']);
             draw('chartCategory', 'pie', ['Dokumen', 'Makanan', 'Barang'], [docCount, foodCount, itemCount || 1], ['#8b5cf6', '#f59e0b', '#10b981']);
+            draw('chartRole', 'doughnut', ['Guru', 'Staf', 'Siswa'], [tCount || 1, sCount, stCount], ['#ec4899', '#06b6d4', '#6366f1']);
+            draw('chartExpedition', 'bar', topDest.map(x => x[0]), topDest.map(x => x[1]), ['#4f46e5', '#7c3aed', '#0ea5e9', '#10b981', '#f59e0b']);
         }
 
+        // Admin Packages Table, 360 Inspector, Override & Bulk Delete
         window.renderAdminPackages = () => {
             const q = (document.getElementById('filter-admin-search')?.value || '').toLowerCase();
             const period = document.getElementById('filter-admin-pkg-period')?.value || 'all';
-            const list = packages.filter(p => matchPeriod(p, period) && (!q || (p.id || '').toLowerCase().includes(q) || (p.recipient || '').toLowerCase().includes(q)));
+            const list = packages.filter(p => matchPeriod(p, period) && (!q || (p.id || '').toLowerCase().includes(q) || (p.recipient || '').toLowerCase().includes(q) || (p.destination || '').toLowerCase().includes(q)));
 
             document.getElementById('admin-pkg-total-label').textContent = list.length;
             const tbody = document.getElementById('admin-packages-table-body');
@@ -2431,20 +2226,33 @@
                 return `
                     <tr class="hover:bg-slate-50/80">
                         <td class="p-2 text-center"><input type="checkbox" ${checked} onchange="window.toggleAdminPkgSelect('${safeAttr(p.id)}')" class="w-3.5 h-3.5 rounded"></td>
-                        <td class="p-2"><div class="font-mono font-bold text-indigo-600">${safeAttr(p.id)}</div></td>
+                        <td class="p-2">
+                            <div class="font-mono font-bold text-indigo-600">${safeAttr(p.id)}</div>
+                            <div class="text-[8px] text-slate-400">${safeAttr(p.timestamp)}</div>
+                        </td>
                         <td class="p-2">${safeAttr(p.sourceLabel)}</td>
-                        <td class="p-2"><div class="font-bold">${safeAttr(p.recipient)}</div></td>
-                        <td class="p-2">Kur: ${safeAttr(p.courier)}</td>
+                        <td class="p-2">
+                            <div class="font-bold">${safeAttr(p.recipient)}</div>
+                            <div class="text-[8px] text-rose-600 font-semibold">${safeAttr(p.destination)}</div>
+                        </td>
+                        <td class="p-2">
+                            <div>Ptg: ${safeAttr(p.officer)}</div>
+                            <div class="text-sky-700 font-semibold">Kur: ${safeAttr(p.courier)}</div>
+                        </td>
                         <td class="p-2">
                             <div class="flex space-x-1">
-                                ${p.photoPhysical ? `<img src="${p.photoPhysical}" onclick="window.openZoomModal(this.src)" class="w-7 h-7 rounded object-cover border zoomable-img">` : ''}
+                                ${p.photoPhysical ? `<img src="${p.photoPhysical}" onclick="window.openZoomModal(this.src)" class="w-7 h-7 rounded object-cover border zoomable-img" title="Foto Fisik">` : ''}
+                                ${p.photoProof ? `<img src="${p.photoProof}" onclick="window.openZoomModal(this.src)" class="w-7 h-7 rounded object-cover border border-emerald-400 zoomable-img" title="Foto Bukti">` : ''}
+                                ${p.signature ? `<img src="${p.signature}" onclick="window.openZoomModal(this.src)" class="w-7 h-7 rounded object-contain bg-white border zoomable-img" title="TTD">` : ''}
                             </div>
                         </td>
-                        <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[7.5px] font-bold ${sla.class}">${(p.status || 'pending').toUpperCase()}</span></td>
+                        <td class="p-2">
+                            <span class="px-2 py-0.5 rounded-full text-[7.5px] font-bold ${sla.class}">${(p.status || 'pending').toUpperCase()} • ${sla.label}</span>
+                        </td>
                         <td class="p-2 text-right space-x-1 whitespace-nowrap">
                             <button onclick="window.openInspectPackageModal('${safeAttr(p.id)}')" class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-[8.5px]">Detail</button>
                             <button onclick="window.openAdminEditPackageModal('${safeAttr(p.id)}')" class="px-2 py-1 rounded-lg bg-amber-50 text-amber-700 font-bold text-[8.5px]">Edit</button>
-                            <button onclick="window.deletePackageAdmin('${safeAttr(p.id)}')" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-[8.5px]">Hapus</button>
+                            <button onclick="window.deletePackageAdmin('${safeAttr(p.id)}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-600 font-bold text-[8.5px] transition"><i class="fa-solid fa-trash-can mr-0.5"></i>Hapus</button>
                         </td>
                     </tr>
                 `;
@@ -2456,9 +2264,27 @@
             if (!p) return;
             document.getElementById('inspect-pkg-title').textContent = `Inspeksi Paket ${p.id}`;
             document.getElementById('inspect-pkg-body').innerHTML = `
-                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border text-[9.5px]">
-                    <div><span class="text-slate-400 block text-[8px]">Penerima:</span><strong>${safeAttr(p.recipient)}</strong></div>
-                    <div><span class="text-slate-400 block text-[8px]">Tujuan:</span><strong>${safeAttr(p.destination)}</strong></div>
+                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
+                    <div><span class="text-slate-400 block text-[8px]">Penerima:</span><strong>${safeAttr(p.recipient)} (${safeAttr(p.recipientRole)})</strong></div>
+                    <div><span class="text-slate-400 block text-[8px]">Tujuan:</span><strong class="text-rose-600">${safeAttr(p.destination)}</strong></div>
+                    <div><span class="text-slate-400 block text-[8px]">Waktu Masuk:</span><strong>${safeAttr(p.timestamp)}</strong></div>
+                    <div><span class="text-slate-400 block text-[8px]">Waktu Selesai:</span><strong>${safeAttr(p.completedTime || 'Belum Selesai')}</strong></div>
+                    <div><span class="text-slate-400 block text-[8px]">Petugas Input:</span><strong>${safeAttr(p.officer)}</strong></div>
+                    <div><span class="text-slate-400 block text-[8px]">Kurir Pengantar:</span><strong>${safeAttr(p.courier)}</strong></div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="p-2 border rounded-xl">
+                        <span class="text-[8px] font-bold block mb-1">1. Foto Fisik Pos</span>
+                        ${p.photoPhysical ? `<img src="${p.photoPhysical}" onclick="window.openZoomModal(this.src)" class="w-full h-24 object-cover rounded-lg zoomable-img">` : '<p class="text-[8px] text-slate-400 py-8">Kosong</p>'}
+                    </div>
+                    <div class="p-2 border rounded-xl">
+                        <span class="text-[8px] font-bold block mb-1">2. Foto Serah Terima</span>
+                        ${p.photoProof ? `<img src="${p.photoProof}" onclick="window.openZoomModal(this.src)" class="w-full h-24 object-cover rounded-lg zoomable-img">` : '<p class="text-[8px] text-slate-400 py-8">Belum Ada</p>'}
+                    </div>
+                    <div class="p-2 border rounded-xl bg-white">
+                        <span class="text-[8px] font-bold block mb-1 text-slate-800">3. Tanda Tangan</span>
+                        ${p.signature ? `<img src="${p.signature}" onclick="window.openZoomModal(this.src)" class="w-full h-24 object-contain rounded-lg zoomable-img">` : '<p class="text-[8px] text-slate-400 py-8">Belum Ada</p>'}
+                    </div>
                 </div>
             `;
             document.getElementById('admin-inspect-modal').classList.remove('hidden');
@@ -2497,9 +2323,11 @@
             p.status = document.getElementById('edit-pkg-status').value;
             p.sla = document.getElementById('edit-pkg-sla').value;
             p.notes = document.getElementById('edit-pkg-notes').value.trim();
-            await syncDoc('packages', p.id, p);
+            await syncDoc('packages_col', p.id, p);
+            addAuditLog('EDIT PAKET', `Admin mengubah paket ${p.id}`);
             window.closeAdminEditPackageModal();
             refreshAllViews();
+            window.showToast(`Perubahan paket ${p.id} disimpan`, 'success');
         };
 
         async function removePackageById(id) {
@@ -2510,16 +2338,21 @@
             saveLocal();
             if (db && isCloudReady) {
                 try {
-                    await deleteDoc(doc(db, 'packages', String(id)));
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(id)));
+                    if (target && target._docId && target._docId !== id) {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages_col', String(target._docId)));
+                    }
                 } catch (e) {}
             }
         }
 
         window.deletePackageAdmin = (id) => {
-            openCustomConfirm('Hapus Transaksi', `Hapus transaksi ${id}?`, async () => {
+            openCustomConfirm('Hapus Transaksi', `Hapus permanen transaksi ${id}?`, async () => {
                 await removePackageById(id);
                 selectedAdminPkgIds.delete(id);
+                addAuditLog('HAPUS PAKET', `Admin menghapus paket ${id}`);
                 refreshAllViews();
+                window.showToast(`Transaksi ${id} dihapus`, 'success');
             });
         };
 
@@ -2546,7 +2379,7 @@
             if (!bar) return;
             if (selectedAdminPkgIds.size > 0) {
                 bar.classList.remove('hidden');
-                document.getElementById('admin-batch-selected-count').textContent = `${selectedAdminPkgIds.size} Dipilih`;
+                document.getElementById('admin-batch-selected-count').textContent = `${selectedAdminPkgIds.size} Transaksi Dipilih`;
             } else {
                 bar.classList.add('hidden');
             }
@@ -2555,14 +2388,17 @@
         window.deleteSelectedPackagesAdmin = () => {
             const ids = [...selectedAdminPkgIds];
             if (ids.length === 0) return;
-            openCustomConfirm('Hapus Massal', `Hapus ${ids.length} transaksi?`, async () => {
+            openCustomConfirm('Hapus Massal Transaksi', `Hapus permanen ${ids.length} transaksi yang dipilih?`, async () => {
                 for (const id of ids) await removePackageById(id);
                 selectedAdminPkgIds.clear();
                 updateAdminBatchBar();
+                addAuditLog('BULK DELETE', `Admin menghapus ${ids.length} paket sekaligus`);
                 refreshAllViews();
+                window.showToast(`${ids.length} transaksi berhasil dihapus!`, 'success');
             });
         };
 
+        // Custom Confirm Modal
         function openCustomConfirm(title, msg, onOk) {
             document.getElementById('custom-confirm-title').textContent = title;
             document.getElementById('custom-confirm-message').textContent = msg;
@@ -2579,6 +2415,7 @@
             if (cb) await cb();
         });
 
+        // Directory & Members CRUD
         function renderAdminDirectory() {
             const tb = document.getElementById('admin-directory-table-body');
             if (!tb) return;
@@ -2588,18 +2425,27 @@
                     <td class="p-2">${safeAttr(d.role)}</td>
                     <td class="p-2 text-rose-600 font-semibold">${safeAttr(d.room)}</td>
                     <td class="p-2 font-mono">${safeAttr(d.phone || '-')}</td>
-                    <td class="p-2 text-right">
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="window.openDirectoryModal('${safeAttr(d.id)}')" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded font-bold">Edit</button>
                         <button onclick="window.deleteDirectoryItem('${safeAttr(d.id)}')" class="px-2 py-0.5 bg-rose-50 text-rose-600 rounded font-bold">Hapus</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        window.openDirectoryModal = () => document.getElementById('directory-modal').classList.remove('hidden');
+        window.openDirectoryModal = (id = '') => {
+            const item = directory.find(x => x.id === id);
+            document.getElementById('dir-edit-id').value = item ? item.id : '';
+            document.getElementById('dir-name').value = item ? item.name : '';
+            document.getElementById('dir-role').value = item ? item.role : 'Teacher';
+            document.getElementById('dir-room').value = item ? item.room : '';
+            document.getElementById('dir-phone').value = item ? item.phone : '';
+            document.getElementById('directory-modal').classList.remove('hidden');
+        };
         window.closeDirectoryModal = () => document.getElementById('directory-modal').classList.add('hidden');
         window.handleSaveDirectoryItem = async (e) => {
             e.preventDefault();
-            const editId = 'DIR-' + Date.now();
+            const editId = document.getElementById('dir-edit-id').value || ('DIR-' + Date.now());
             const obj = {
                 id: editId,
                 name: document.getElementById('dir-name').value.trim(),
@@ -2607,16 +2453,18 @@
                 room: document.getElementById('dir-room').value.trim(),
                 phone: document.getElementById('dir-phone').value.trim()
             };
-            directory.push(obj);
-            await syncDoc('directory', obj.id, obj);
+            const idx = directory.findIndex(x => x.id === editId);
+            if (idx >= 0) directory[idx] = obj; else directory.push(obj);
+            await syncDoc('directory_col', obj.id, obj);
             populateDirectoryDatalist();
             window.closeDirectoryModal();
             refreshAllViews();
+            window.showToast('Kontak direktori disimpan', 'success');
         };
         window.deleteDirectoryItem = async (id) => {
             directory = directory.filter(x => x.id !== id);
             saveLocal();
-            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'directory', id)); } catch (e) {} }
+            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'directory_col', id)); } catch (e) {} }
             populateDirectoryDatalist();
             refreshAllViews();
         };
@@ -2626,11 +2474,17 @@
             if (!tb) return;
             tb.innerHTML = members.map(m => `
                 <tr>
-                    <td class="p-2"><div class="font-bold">${safeAttr(m.name)}</div></td>
+                    <td class="p-2">
+                        <div class="font-bold">${safeAttr(m.name)}</div>
+                        <div class="font-mono text-[8px] text-slate-400">Username: ${safeAttr(m.email)}</div>
+                    </td>
                     <td class="p-2 uppercase font-bold text-indigo-600">${safeAttr(m.role)}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${m.active !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${m.active !== false ? 'Aktif' : 'Nonaktif'}</span></td>
-                    <td class="p-2 text-right">
+                    <td class="p-2">
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${m.active !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${m.active !== false ? 'Aktif' : 'Nonaktif'}</span>
+                    </td>
+                    <td class="p-2 text-right space-x-1">
                         <button onclick="window.toggleMemberActive('${safeAttr(m.id)}')" class="px-2 py-0.5 bg-amber-50 text-amber-700 rounded font-bold">${m.active !== false ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                        <button onclick="window.openMemberModal('${safeAttr(m.id)}')" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded font-bold">Edit</button>
                     </td>
                 </tr>
             `).join('');
@@ -2640,15 +2494,24 @@
             const m = members.find(x => x.id === id);
             if (!m) return;
             m.active = m.active === false ? true : false;
-            await syncDoc('members', m.id, m);
+            await syncDoc('members_col', m.id, m);
             refreshAllViews();
+            window.showToast(`Status akun ${m.name} diperbarui`, 'info');
         };
 
-        window.openMemberModal = () => document.getElementById('member-modal').classList.remove('hidden');
+        window.openMemberModal = (id = '') => {
+            const m = members.find(x => x.id === id);
+            document.getElementById('member-edit-id').value = m ? m.id : '';
+            document.getElementById('member-name').value = m ? m.name : '';
+            document.getElementById('member-email').value = m ? m.email : '';
+            document.getElementById('member-password').value = m ? m.password : '123';
+            document.getElementById('member-role').value = m ? m.role : 'kurir';
+            document.getElementById('member-modal').classList.remove('hidden');
+        };
         window.closeMemberModal = () => document.getElementById('member-modal').classList.add('hidden');
         window.handleSaveMember = async (e) => {
             e.preventDefault();
-            const id = 'USR-' + Date.now();
+            const id = document.getElementById('member-edit-id').value || ('USR-' + Date.now());
             const obj = {
                 id,
                 name: document.getElementById('member-name').value.trim(),
@@ -2656,26 +2519,31 @@
                 password: document.getElementById('member-password').value.trim(),
                 role: document.getElementById('member-role').value,
                 active: true,
-                avatar: `https://placehold.co/100x100/4338ca/ffffff?text=U`
+                avatar: `https://placehold.co/100x100/4338ca/ffffff?text=${encodeURIComponent(document.getElementById('member-name').value.slice(0, 2).toUpperCase())}`
             };
-            members.push(obj);
-            await syncDoc('members', obj.id, obj);
+            const idx = members.findIndex(x => x.id === id);
+            if (idx >= 0) members[idx] = obj; else members.push(obj);
+            await syncDoc('members_col', obj.id, obj);
+            populateDirectoryDatalist();
             window.closeMemberModal();
             refreshAllViews();
+            window.showToast('Data anggota disimpan', 'success');
         };
 
+        // Reports, Resets, Audit, Profile, Backup & Lobby TV
         window.renderAdminReports = () => {
-            const list = packages;
+            const preset = document.getElementById('report-period-preset')?.value || 'today';
+            const list = packages.filter(p => matchPeriod(p, preset));
             const offMap = {}, courMap = {};
             list.forEach(p => {
                 offMap[p.officer || 'Petugas'] = (offMap[p.officer || 'Petugas'] || 0) + 1;
                 if (p.courier && p.courier !== 'Belum Ditugaskan') courMap[p.courier] = (courMap[p.courier] || 0) + 1;
             });
-            document.getElementById('report-officer-stats').innerHTML = Object.entries(offMap).map(([k, v]) => `<div class="flex justify-between p-1.5 bg-white rounded border text-[9px]"><span>${safeAttr(k)}</span><strong>${v} Paket</strong></div>`).join('') || '';
-            document.getElementById('report-courier-stats').innerHTML = Object.entries(courMap).map(([k, v]) => `<div class="flex justify-between p-1.5 bg-white rounded border text-[9px]"><span>${safeAttr(k)}</span><strong>${v} Paket</strong></div>`).join('') || '';
+            document.getElementById('report-officer-stats').innerHTML = Object.entries(offMap).map(([k, v]) => `<div class="flex justify-between p-1.5 bg-white rounded border text-[9px]"><span>${safeAttr(k)}</span><strong>${v} Paket</strong></div>`).join('') || '<p class="text-[8.5px] text-slate-400">Belum ada data</p>';
+            document.getElementById('report-courier-stats').innerHTML = Object.entries(courMap).map(([k, v]) => `<div class="flex justify-between p-1.5 bg-white rounded border text-[9px]"><span>${safeAttr(k)}</span><strong>${v} Paket</strong></div>`).join('') || '<p class="text-[8.5px] text-slate-400">Belum ada data</p>';
         };
         window.handleReportPresetChange = () => window.renderAdminReports();
-        window.resetReportFilter = () => window.renderAdminReports();
+        window.resetReportFilter = () => { document.getElementById('report-period-preset').value = 'today'; window.renderAdminReports(); };
         window.printAdminReport = () => { document.body.classList.add('printing-report'); window.print(); setTimeout(() => document.body.classList.remove('printing-report'), 500); };
 
         function renderAdminResets() {
@@ -2684,44 +2552,67 @@
             if (!el) return;
             el.innerHTML = resetRequests.map(r => `
                 <div class="p-2 rounded-xl bg-slate-50 border flex justify-between items-center text-[9px]">
-                    <div><strong>${safeAttr(r.email)}</strong></div>
-                    <button onclick="window.approvePasswordReset('${safeAttr(r.id)}', '${safeAttr(r.email)}')" class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold text-[8px]">Reset</button>
+                    <div><strong>${safeAttr(r.email)}</strong> — <span class="text-slate-500">${safeAttr(r.reason)}</span></div>
+                    <button onclick="window.approvePasswordReset('${safeAttr(r.id)}', '${safeAttr(r.email)}')" class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold text-[8px]">Reset ke "123"</button>
                 </div>
-            `).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Tidak ada permintaan</p>';
+            `).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Tidak ada permintaan reset sandi</p>';
         }
 
         window.openForgotPasswordModal = () => document.getElementById('forgot-password-modal').classList.remove('hidden');
         window.closeForgotPasswordModal = () => document.getElementById('forgot-password-modal').classList.add('hidden');
         window.handleSubmitForgotPassword = async (e) => {
             e.preventDefault();
-            const req = { id: 'RST-' + Date.now(), email: document.getElementById('forgot-email-input').value.trim(), reason: 'Lupa sandi' };
+            const req = { id: 'RST-' + Date.now(), email: document.getElementById('forgot-email-input').value.trim(), reason: document.getElementById('forgot-reason-input').value.trim() || 'Lupa sandi' };
             resetRequests.push(req);
-            await syncDoc('reset_requests', req.id, req);
+            await syncDoc('reset_requests_col', req.id, req);
             window.closeForgotPasswordModal();
             renderAdminResets();
+            window.showToast('Permintaan reset terkirim ke Admin', 'success');
         };
         window.approvePasswordReset = async (id, email) => {
             const m = members.find(x => (x.email || '').toLowerCase() === (email || '').toLowerCase());
-            if (m) { m.password = '123'; await syncDoc('members', m.id, m); }
+            if (m) { m.password = '123'; await syncDoc('members_col', m.id, m); }
             resetRequests = resetRequests.filter(x => x.id !== id);
             saveLocal();
-            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'reset_requests', id)); } catch (e) {} }
+            if (db && isCloudReady) { try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reset_requests_col', id)); } catch (e) {} }
             renderAdminResets();
+            window.showToast(`Sandi ${email} direset menjadi 123`, 'success');
         };
 
         window.renderAuditLogs = () => {
             const el = document.getElementById('audit-log-container');
             if (!el) return;
-            el.innerHTML = auditLogs.slice(0, 50).map(l => `
+            el.innerHTML = auditLogs.slice(0, 100).map(l => `
                 <div class="p-2 rounded-xl bg-slate-50 border flex justify-between items-center text-[8.5px]">
-                    <div><strong>${safeAttr(l.action)}:</strong> ${safeAttr(l.details)}</div>
+                    <div><span class="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-bold mr-1">${safeAttr(l.role)}</span><strong>${safeAttr(l.action)}:</strong> ${safeAttr(l.details)}</div>
                     <span class="font-mono text-slate-400">${safeAttr(l.time)}</span>
                 </div>
-            `).join('') || '';
+            `).join('') || '<p class="text-[9px] text-slate-400 text-center py-4">Belum ada log aktivitas</p>';
         };
         window.clearAuditLogs = () => { auditLogs = []; saveLocal(); window.renderAuditLogs(); };
         window.printAuditReport = () => { document.body.classList.add('printing-audit'); window.print(); setTimeout(() => document.body.classList.remove('printing-audit'), 500); };
 
+        // CSV Export
+        function exportToCsv(filename, rows) {
+            const headers = ['ID', 'Resi', 'Waktu', 'Sumber', 'Penerima', 'Peran', 'Tujuan', 'Petugas', 'Kurir', 'Status', 'SLA'];
+            const csv = [headers.join(','), ...rows.map(p => [p.id, p.resi, `"${p.timestamp}"`, `"${p.sourceLabel}"`, `"${p.recipient}"`, p.recipientRole, `"${p.destination}"`, `"${p.officer}"`, `"${p.courier}"`, p.status, `"${p.sla}"`].join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
+        }
+        window.exportPetugasReport = () => exportToCsv(`Laporan_Petugas_${Date.now()}.csv`, packages);
+        window.exportCourierReport = () => exportToCsv(`Laporan_Kurir_${Date.now()}.csv`, packages);
+        window.exportAdminReport = () => exportToCsv(`Laporan_Admin_${Date.now()}.csv`, packages);
+        window.exportAuditCsv = () => {
+            const csv = ['Waktu,Aktor,Peran,Aksi,Detail', ...auditLogs.map(l => `"${l.time}","${l.actor}","${l.role}","${l.action}","${l.details}"`)].join('\n');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = `Audit_Log_${Date.now()}.csv`; a.click();
+        };
+
+        // Profile, Backup & Zoom Modals
         window.openProfileModal = () => {
             if (!currentUser) return;
             document.getElementById('profile-display-name').value = currentUser.name;
@@ -2733,13 +2624,13 @@
         window.handleProfileAvatarUpload = (e) => {
             const f = e.target.files?.[0];
             if (!f || !currentUser) return;
-            processHighQualityImage(f, async (url) => {
+            compressImage(f, async (url) => {
                 currentUser.avatar = url;
                 document.getElementById('profile-modal-avatar').src = url;
                 document.getElementById('header-avatar-img').src = url;
                 localStorage.setItem('kurir_bns_session', JSON.stringify(currentUser));
                 const m = members.find(x => x.id === currentUser.id);
-                if (m) { m.avatar = url; await syncDoc('members', m.id, m); }
+                if (m) { m.avatar = url; await syncDoc('members_col', m.id, m); }
             });
         };
         window.handleUpdateOwnPassword = async (e) => {
@@ -2749,29 +2640,34 @@
             currentUser.password = np;
             localStorage.setItem('kurir_bns_session', JSON.stringify(currentUser));
             const m = members.find(x => x.id === currentUser.id);
-            if (m) { m.password = np; await syncDoc('members', m.id, m); }
+            if (m) { m.password = np; await syncDoc('members_col', m.id, m); }
             window.closeProfileModal();
-            window.showToast('Sandi diperbarui!', 'success');
+            window.showToast('Kata sandi berhasil diperbarui!', 'success');
         };
 
-        window.openBackupModal = () => document.getElementById('backup-modal').classList.remove('hidden');
+        window.openBackupModal = () => {
+            const count = packages.filter(p => p.photoPhysical || p.photoProof).length;
+            document.getElementById('storage-photo-count-badge').textContent = `${count} Foto`;
+            document.getElementById('backup-modal').classList.remove('hidden');
+        };
         window.closeBackupModal = () => document.getElementById('backup-modal').classList.add('hidden');
         window.downloadDatabaseBackup = () => {
             const data = { packages, members, directory, auditLogs };
             const a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-            a.download = `Backup_${Date.now()}.json`; a.click();
+            a.download = `Backup_Kurir_BNS_${Date.now()}.json`; a.click();
         };
         window.cleanupCompletedPhotos = async () => {
+            let cleaned = 0;
             for (const p of packages) {
                 if (p.status === 'completed' && (p.photoPhysical || p.photoProof)) {
-                    p.photoPhysical = ''; p.photoProof = '';
-                    await syncDoc('packages', p.id, p);
+                    p.photoPhysical = ''; p.photoProof = ''; cleaned++;
+                    await syncDoc('packages_col', p.id, p);
                 }
             }
             window.closeBackupModal();
             refreshAllViews();
-            window.showToast('Foto dibersihkan', 'success');
+            window.showToast(`${cleaned} foto paket selesai berhasil dibersihkan`, 'success');
         };
         window.handleRestoreDatabase = (e) => {
             const f = e.target.files?.[0];
@@ -2781,10 +2677,11 @@
                 try {
                     const d = JSON.parse(ev.target.result);
                     if (d.packages) packages = d.packages;
-                    if (d.members) members = ensureDefaultMembers(d.members);
+                    if (d.members) members = d.members;
                     if (d.directory) directory = d.directory;
                     saveLocal(); refreshAllViews(); window.closeBackupModal();
-                } catch (err) {}
+                    window.showToast('Database berhasil dipulihkan!', 'success');
+                } catch (err) { window.showToast('File backup tidak valid', 'error'); }
             };
             r.readAsText(f);
         };
@@ -2796,6 +2693,7 @@
         };
         window.closeZoomModal = () => document.getElementById('zoom-modal').classList.add('hidden');
 
+        // Lobby TV Display Mode
         window.openLobbyTvMode = () => {
             document.getElementById('lobby-tv-modal').classList.remove('hidden');
             renderLobbyTv();
@@ -2809,14 +2707,14 @@
             document.getElementById('tv-count-delivering').textContent = packages.filter(p => p.status === 'delivering').length;
             document.getElementById('tv-count-completed').textContent = packages.filter(p => p.status === 'completed').length;
             document.getElementById('lobby-tv-list').innerHTML = packages.slice(0, 15).map(p => `
-                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex justify-between items-center text-white">
+                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex justify-between items-center">
                     <div>
-                        <span class="font-mono text-xs text-indigo-400 font-bold">${safeAttr(p.id)}</span>
-                        <h4 class="text-base font-extrabold">${safeAttr(p.recipient)} — <span class="text-amber-400">${safeAttr(p.destination)}</span></h4>
+                        <span class="font-mono text-xs text-indigo-400 font-bold">${safeAttr(p.id)} • ${safeAttr(p.sourceLabel)}</span>
+                        <h4 class="text-base font-extrabold text-white">${safeAttr(p.recipient)} — <span class="text-amber-400">${safeAttr(p.destination)}</span></h4>
                     </div>
-                    <span class="px-3 py-1 rounded-xl font-extrabold text-xs uppercase ${p.status === 'completed' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-sky-500/20 text-sky-300'}">${safeAttr(p.status)}</span>
+                    <span class="px-3 py-1 rounded-xl font-extrabold text-xs uppercase ${p.status === 'completed' ? 'bg-emerald-500/20 text-emerald-300' : p.status === 'delivering' ? 'bg-sky-500/20 text-sky-300' : 'bg-amber-500/20 text-amber-300'}">${safeAttr(p.status)} (${safeAttr(p.courier)})</span>
                 </div>
-            `).join('') || '<p class="text-center text-slate-500 py-12">Belum ada transaksi</p>';
+            `).join('') || '<p class="text-center text-slate-500 py-12">Belum ada transaksi paket hari ini</p>';
         }
 
         function refreshAllViews() {
@@ -2833,15 +2731,26 @@
             renderLobbyTv();
         }
 
+        // Background Lifecycle Management
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                window.closePhysicalCameraModal();
+                window.closeProofCameraModal();
+                window.closeBarcodeModal();
+            } else {
+                refreshAllViews();
+            }
+        });
+
+        // Init
         window.addEventListener('DOMContentLoaded', () => {
-            members = ensureDefaultMembers(members);
-            saveLocal();
             if (localStorage.getItem('kurir_bns_dark') === '1') window.toggleDarkMode();
             window.switchSourceType('external');
             populateDirectoryDatalist();
             initSignaturePad();
             renderBroadcastBanner();
 
+            // Auto-select SLA 3 Hari on Friday (5) or Saturday (6)
             const day = new Date().getDay();
             if (day === 5 || day === 6) {
                 const slaSel = document.getElementById('input-sla');
