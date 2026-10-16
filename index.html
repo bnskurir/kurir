@@ -1054,11 +1054,17 @@
                 <button onclick="window.closeCloudConfigModal()" class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="bg-slate-50 p-2.5 rounded-2xl border text-[9px] space-y-1 text-slate-600">
-                <p class="font-bold text-slate-800"><i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i> Konfigurasi Cloud Firebase</p>
-                <p>Aplikasi otomatis terhubung ke Firebase proyek Anda secara realtime.</p>
+                <p class="font-bold text-slate-800"><i class="fa-solid fa-key text-indigo-500 mr-1"></i> API Key Firebase Tertanam (Embedded Config)</p>
+                <p>Konfigurasi API Firebase di bawah ini otomatis tertanam dan digunakan oleh aplikasi. Anda juga dapat mengunduh file HTML yang sudah tertanam API Key ini secara permanen di dalam kodenya.</p>
             </div>
             <div class="space-y-1.5 text-[9px]">
-                <label class="block font-bold text-slate-700">JSON Firebase Config (Opsional)</label>
+                <div class="flex justify-between items-center">
+                    <label class="block font-bold text-slate-700">JSON Firebase Config Aktif</label>
+                    <div class="flex space-x-1">
+                        <button type="button" onclick="window.copyActiveCloudConfig()" class="text-[8px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded border border-indigo-200"><i class="fa-solid fa-copy mr-1"></i>Salin API</button>
+                        <button type="button" onclick="window.downloadHtmlWithEmbeddedApi()" class="text-[8px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-200"><i class="fa-solid fa-file-code mr-1"></i>Unduh HTML + API Tertanam</button>
+                    </div>
+                </div>
                 <textarea id="custom-firebase-config-input" rows="5" placeholder='{"apiKey": "AIza...", "authDomain": "...", "projectId": "...", "appId": "..."}' class="w-full p-2.5 rounded-xl border border-slate-200 font-mono text-[8.5px] bg-white focus:outline-none"></textarea>
             </div>
             <div class="flex justify-between items-center gap-2 pt-1">
@@ -1150,6 +1156,35 @@
         let lastCloudError = '';
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
+        // ============================================================================
+        // KONFIGURASI API FIREBASE TERTANAM (EMBEDDED FIREBASE API KEY)
+        // Otomatis membaca dari environment atau fallback ke objek yang ditanam di sini
+        // ============================================================================
+        const EMBEDDED_FIREBASE_CONFIG = (() => {
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const envCfg = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                    if (envCfg && envCfg.apiKey) {
+                        localStorage.setItem('kurir_bns_embedded_fb_backup', JSON.stringify(envCfg));
+                        return envCfg;
+                    }
+                }
+            } catch (e) {}
+            try {
+                const saved = localStorage.getItem('kurir_bns_custom_fb_config') || localStorage.getItem('kurir_bns_embedded_fb_backup');
+                if (saved) return JSON.parse(saved);
+            } catch (e) {}
+            // Tempat API Key permanen jika di-edit manual di kode sumber:
+            return {
+                apiKey: "",
+                authDomain: "",
+                projectId: "",
+                storageBucket: "",
+                messagingSenderId: "",
+                appId: ""
+            };
+        })();
+
         function resolveFirebaseConfig() {
             const customRaw = localStorage.getItem('kurir_bns_custom_fb_config');
             if (customRaw) {
@@ -1158,9 +1193,16 @@
                     if (parsed && parsed.apiKey && parsed.projectId) return parsed;
                 } catch (e) {}
             }
+            if (EMBEDDED_FIREBASE_CONFIG && EMBEDDED_FIREBASE_CONFIG.apiKey && EMBEDDED_FIREBASE_CONFIG.projectId) {
+                return EMBEDDED_FIREBASE_CONFIG;
+            }
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 try {
-                    return typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                    const envCfg = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                    if (envCfg && envCfg.apiKey) {
+                        localStorage.setItem('kurir_bns_embedded_fb_backup', JSON.stringify(envCfg));
+                        return envCfg;
+                    }
                 } catch (e) {}
             }
             return null;
@@ -1219,18 +1261,48 @@
         initCloudDatabase();
 
         window.openCloudConfigModal = () => {
+            const activeCfg = resolveFirebaseConfig();
             const diag = document.getElementById('cloud-diagnostic-status');
             if (diag) {
                 diag.textContent = isCloudReady
-                    ? `✅ Terhubung ke Cloud Firebase (App ID: ${appId} | UID: ${cloudUser?.uid?.slice(0, 8)}...)`
+                    ? `✅ Terhubung ke Cloud Firebase (Project: ${activeCfg?.projectId || appId} | UID: ${cloudUser?.uid?.slice(0, 8)}...)`
                     : `⚠️ Mode Lokal Aktif — ${lastCloudError || 'Klik Coba Hubungkan Ulang'}`;
                 diag.className = isCloudReady ? 'text-[8.5px] text-emerald-600 font-bold' : 'text-[8.5px] text-amber-600 font-bold';
             }
             const inp = document.getElementById('custom-firebase-config-input');
-            if (inp) inp.value = localStorage.getItem('kurir_bns_custom_fb_config') || '';
+            if (inp) {
+                inp.value = activeCfg ? JSON.stringify(activeCfg, null, 2) : (localStorage.getItem('kurir_bns_custom_fb_config') || '');
+            }
             document.getElementById('cloud-config-modal').classList.remove('hidden');
         };
         window.closeCloudConfigModal = () => document.getElementById('cloud-config-modal').classList.add('hidden');
+
+        window.copyActiveCloudConfig = () => {
+            const inp = document.getElementById('custom-firebase-config-input');
+            if (!inp || !inp.value.trim()) return window.showToast('Tidak ada konfigurasi API untuk disalin', 'warning');
+            inp.select();
+            document.execCommand('copy');
+            window.showToast('API Key & Config Firebase berhasil disalin!', 'success');
+        };
+
+        window.downloadHtmlWithEmbeddedApi = () => {
+            const activeCfg = resolveFirebaseConfig();
+            if (!activeCfg || !activeCfg.apiKey) {
+                return window.showToast('API Config belum terdeteksi. Pastikan sudah terhubung atau isi kotak JSON.', 'warning');
+            }
+            let htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const targetRegex = /return\s*\{\s*apiKey:\s*""[\s\S]*?appId:\s*""\s*\};/;
+            const replacement = `return ${JSON.stringify(activeCfg, null, 16)};`;
+            if (targetRegex.test(htmlSource)) {
+                htmlSource = htmlSource.replace(targetRegex, replacement);
+            }
+            const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            a.click();
+            window.showToast('File index.html dengan API Key tertanam permanen berhasil diunduh!', 'success');
+        };
 
         window.retryCloudConnection = async () => {
             window.showToast('Menghubungkan ulang ke Cloud Firebase...', 'info');
