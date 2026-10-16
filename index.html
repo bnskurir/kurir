@@ -96,6 +96,8 @@
         .toast-anim { animation: slide-in 0.25s ease forwards; backdrop-filter: blur(16px); }
         .zoomable-img { transition: all 0.25s ease; cursor: zoom-in; border-radius: 0.5rem !important; }
         .zoomable-img:hover { transform: scale(1.06); }
+        /* Memastikan seluruh informasi transaksi membungkus (wrap) dengan rapi dan tidak pernah terpotong */
+        .trx-info-card { word-break: break-word; overflow-wrap: anywhere; }
         .petugas-status-grid-wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; align-items: start; height: calc(100vh - 13.5rem); min-height: 480px; }
         @media (max-width: 768px) { .petugas-status-grid-wrap { grid-template-columns: 1fr; height: auto; gap: 0.75rem; } }
         #petugas-content-status.fullscreen-mode {
@@ -282,7 +284,7 @@
                             <span id="connection-text">Cloud Sync</span>
                         </div>
                     </div>
-                    <p id="header-user-badge" class="text-[8.5px] text-indigo-100/90 font-medium truncate max-w-[180px]">Masuk: -</p>
+                    <p id="header-user-badge" class="text-[8.5px] text-indigo-100/90 font-medium break-words">Masuk: -</p>
                 </div>
             </div>
 
@@ -321,10 +323,10 @@
 
     <!-- Global Broadcast Banner -->
     <div id="global-broadcast-banner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white px-3 py-1.5 shadow-md">
-        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 text-[9.5px] font-bold">
-            <div class="flex items-center space-x-2 truncate">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-[9.5px] font-bold">
+            <div class="flex items-start sm:items-center space-x-2 break-words flex-1">
                 <span class="bg-white text-rose-600 px-2 py-0.5 rounded-full text-[8px] font-extrabold uppercase shrink-0"><i class="fa-solid fa-bullhorn mr-1"></i>Info Admin</span>
-                <span id="global-broadcast-text" class="truncate"></span>
+                <span id="global-broadcast-text" class="break-words leading-snug"></span>
             </div>
             <span id="global-broadcast-time" class="text-[8px] text-amber-100 font-mono shrink-0"></span>
         </div>
@@ -1368,23 +1370,31 @@
                 listEl.innerHTML = `<div class="text-center py-16 text-slate-500 text-base">Belum ada transaksi paket hari ini.</div>`;
                 return;
             }
-            listEl.innerHTML = displayList.map(p => `
-                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-wrap justify-between items-center gap-3">
-                    <div class="flex items-center space-x-3">
-                        <span class="px-3 py-1 rounded-xl font-mono font-extrabold text-xs ${p.status === 'completed' ? 'bg-emerald-500/20 text-emerald-300' : (p.status === 'delivering' ? 'bg-sky-500/20 text-sky-300' : 'bg-amber-500/20 text-amber-300')}">
+            listEl.innerHTML = displayList.map(p => {
+                const srcInfo = p.source === 'external'
+                    ? `Eksternal: ${escapeHtml(p.vendor || '-')} (${escapeHtml(p.originLocation || '-')})`
+                    : `Internal: ${escapeHtml(p.senderInternal || '-')} (${escapeHtml(p.roomSender || '-')})`;
+                return `
+                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-wrap justify-between items-start gap-3 trx-info-card">
+                    <div class="flex items-start space-x-3 flex-1 min-w-[260px]">
+                        <span class="px-3 py-1 rounded-xl font-mono font-extrabold text-xs shrink-0 ${p.status === 'completed' ? 'bg-emerald-500/20 text-emerald-300' : (p.status === 'delivering' ? 'bg-sky-500/20 text-sky-300' : 'bg-amber-500/20 text-amber-300')}">
                             ${p.status === 'completed' ? 'DITERIMA' : (p.status === 'delivering' ? 'DIANTAR KURIR' : 'DI POS PIKET')}
                         </span>
-                        <div>
-                            <h4 class="text-base font-extrabold text-white">${escapeHtml(p.recipient)} <span class="text-xs font-semibold text-indigo-400">(${escapeHtml(p.role)})</span></h4>
-                            <p class="text-xs text-slate-400">Tujuan: <strong class="text-slate-200">${escapeHtml(p.destination)}</strong> • Kurir: <strong class="text-sky-300">${escapeHtml(p.courier || 'Menunggu')}</strong></p>
+                        <div class="space-y-1">
+                            <h4 class="text-base font-extrabold text-white break-words">${escapeHtml(p.recipient)} <span class="text-xs font-semibold text-indigo-400">(${escapeHtml(p.role)})</span></h4>
+                            <p class="text-xs text-slate-300 break-words">Tujuan: <strong class="text-rose-400">${escapeHtml(p.destination)}</strong> • Kategori: <strong class="uppercase text-amber-300">${escapeHtml(p.category || '-')}</strong> • SLA: <strong class="text-indigo-300">${escapeHtml(p.sla || '-')}</strong></p>
+                            <p class="text-xs text-slate-400 break-words">Sumber: <strong class="text-slate-200">${srcInfo}</strong> • Petugas: <strong class="text-slate-200">${escapeHtml(p.petugas || '-')}</strong> • Kurir: <strong class="text-sky-300">${escapeHtml(p.courier || 'Menunggu')}</strong></p>
+                            ${p.notes && p.notes !== '-' ? `<p class="text-xs text-amber-300/90 break-words"><i class="fa-solid fa-note-sticky mr-1"></i>Catatan: ${escapeHtml(p.notes)}</p>` : ''}
                         </div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right shrink-0">
                         <div class="font-mono text-xs text-indigo-300 font-bold">${escapeHtml(p.id)}</div>
-                        <div class="text-[11px] text-slate-400">${escapeHtml(p.completedTimestamp || p.timestamp)}</div>
+                        <div class="font-mono text-[11px] text-slate-400">Resi: ${escapeHtml(p.resi || '-')}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Masuk: ${escapeHtml(p.timestamp || '-')}</div>
+                        ${p.completedTimestamp ? `<div class="text-[11px] text-emerald-400 font-semibold">Selesai: ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function formatTimestampIndo(ms) {
@@ -2635,19 +2645,56 @@
 
             const cardHtml = (p) => {
                 const safeId = String(p.id).replace(/'/g, "\\'");
+                const sourceDetail = p.source === 'external'
+                    ? `Eks: ${escapeHtml(p.vendor || '-')} (${escapeHtml(p.originLocation || '-')})`
+                    : `Int: ${escapeHtml(p.senderInternal || '-')} (${escapeHtml(p.roomSender || '-')})`;
                 return `
-                <div class="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-1 text-[9px]">
-                    <div class="flex justify-between items-center">
-                        <span class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</span>
-                        ${window.getSlaBadgeHtml(p)}
+                <div class="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-1.5 text-[9.5px] trx-info-card">
+                    <div class="flex flex-wrap justify-between items-start gap-1 border-b border-slate-100 pb-1.5">
+                        <div>
+                            <span class="font-mono font-extrabold text-indigo-700 block">${escapeHtml(p.id)}</span>
+                            <span class="font-mono text-[8.5px] text-slate-500 block">Resi: <strong>${escapeHtml(p.resi || '-')}</strong></span>
+                        </div>
+                        <div class="flex flex-col items-end gap-0.5">
+                            ${window.getSlaBadgeHtml(p)}
+                            <span class="px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 font-bold uppercase text-[7.5px]">${escapeHtml(p.category || 'barang')}</span>
+                        </div>
                     </div>
-                    <div class="font-bold text-slate-800">${escapeHtml(p.recipient)} <span class="text-slate-500 font-normal">(${escapeHtml(p.role)})</span></div>
-                    <div class="text-rose-600 font-semibold"><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(p.destination)}</div>
-                    <div class="text-[8px] text-slate-500 flex justify-between pt-1 border-t">
-                        <span>Kurir: <strong>${escapeHtml(p.courier || '-')}</strong></span>
-                        <div class="space-x-1">
-                            <button type="button" onclick="window.openQrLabelModal('${safeId}')" class="text-indigo-600 font-bold" title="Cetak QR"><i class="fa-solid fa-qrcode"></i></button>
-                            <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="text-emerald-600 font-bold" title="Kirim WA"><i class="fa-brands fa-whatsapp"></i></button>
+
+                    <div class="space-y-0.5">
+                        <div class="font-extrabold text-slate-900 text-[10.5px] leading-snug break-words">
+                            <i class="fa-solid fa-user text-indigo-500 mr-1"></i>${escapeHtml(p.recipient)} <span class="text-slate-500 font-semibold text-[9px]">(${escapeHtml(p.role || '-')})</span>
+                        </div>
+                        <div class="text-rose-600 font-bold break-words">
+                            <i class="fa-solid fa-location-dot mr-1"></i>Tujuan: ${escapeHtml(p.destination || '-')}
+                        </div>
+                        <div class="text-slate-600 text-[8.5px] break-words">
+                            <i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i>WA: <strong>${escapeHtml(p.phone || '-')}</strong>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50/90 p-2 rounded-xl border border-slate-200/60 space-y-0.5 text-[8.5px] text-slate-600">
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Sumber:</span> <strong class="text-slate-700">${sourceDetail}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Prioritas SLA:</span> <strong class="text-indigo-700">${escapeHtml(p.sla || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Input:</span> <strong class="text-slate-700">${escapeHtml(p.petugas || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Belum Ditugaskan')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
+                        ${p.completedTimestamp ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Selesai:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Catatan:</span> <span class="text-slate-800 font-medium">${escapeHtml(p.notes || '-')}</span></div>
+                        ${p.completionOption ? `<div class="break-words text-emerald-700 font-bold pt-0.5 border-t border-slate-200/60"><i class="fa-solid fa-circle-check mr-1"></i>Ket. Terima: ${escapeHtml(p.completionOption)}</div>` : ''}
+                        ${p.exceptionStatus ? `<div class="break-words text-rose-600 font-bold pt-0.5 border-t border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Kendala: ${escapeHtml(p.exceptionStatus)}</div>` : ''}
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center space-x-1.5">
+                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik Paket" class="w-7 h-7 object-cover rounded-lg border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti Serah Terima" class="w-7 h-7 object-cover rounded-lg border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="Tanda Tangan Penerima" class="w-7 h-7 object-contain bg-white rounded-lg border border-slate-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button type="button" onclick="window.openInspectPackageModal('${safeId}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[8px]" title="Detail 360°"><i class="fa-solid fa-eye mr-0.5"></i>Detail</button>
+                            <button type="button" onclick="window.openQrLabelModal('${safeId}')" class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[8px]" title="Cetak QR"><i class="fa-solid fa-qrcode"></i></button>
+                            <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[8px]" title="Kirim WA"><i class="fa-brands fa-whatsapp"></i></button>
                         </div>
                     </div>
                 </div>
@@ -2745,50 +2792,98 @@
             document.getElementById('count-delivering-badge').innerText = deliv.length;
             document.getElementById('count-completed-badge').innerText = comp.length;
 
+            const buildCourierMetaHtml = (p) => {
+                const srcInfo = p.source === 'external'
+                    ? `Eksternal: ${escapeHtml(p.vendor || '-')} (${escapeHtml(p.originLocation || '-')})`
+                    : `Internal: ${escapeHtml(p.senderInternal || '-')} (${escapeHtml(p.roomSender || '-')})`;
+                return `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 bg-white/90 p-2.5 rounded-xl border border-slate-200/80 text-[8.5px] text-slate-600 mt-1.5">
+                        <div class="break-words"><span class="text-slate-400 font-semibold">No. Resi:</span> <strong class="font-mono text-slate-800">${escapeHtml(p.resi || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Kategori & SLA:</span> <strong class="uppercase text-purple-700">${escapeHtml(p.category || '-')}</strong> • <strong class="text-indigo-700">${escapeHtml(p.sla || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Sumber Paket:</span> <strong class="text-slate-800">${srcInfo}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">No. WhatsApp:</span> <strong class="text-emerald-700">${escapeHtml(p.phone || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Input:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Belum Ditugaskan')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
+                        ${p.completedTimestamp ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Selesai:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                        <div class="sm:col-span-2 break-words"><span class="text-slate-400 font-semibold">Catatan Paket:</span> <strong class="text-slate-800">${escapeHtml(p.notes || '-')}</strong></div>
+                        ${p.completionOption ? `<div class="sm:col-span-2 break-words text-emerald-700 font-bold border-t pt-1"><i class="fa-solid fa-circle-check mr-1"></i>Keterangan Selesai: ${escapeHtml(p.completionOption)}</div>` : ''}
+                        ${p.exceptionStatus ? `<div class="sm:col-span-2 break-words text-rose-600 font-bold border-t border-rose-200 pt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Kendala: ${escapeHtml(p.exceptionStatus)}</div>` : ''}
+                    </div>
+                `;
+            };
+
             document.getElementById('list-courier-pending').innerHTML = pend.map(p => {
                 const safeId = String(p.id).replace(/'/g, "\\'");
                 return `
-                <div class="p-3 rounded-xl bg-slate-50 border flex flex-wrap justify-between items-center gap-2 text-[9.5px]">
-                    <div class="flex items-center space-x-2.5">
-                        <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${safeId}')" class="w-4 h-4 rounded">
-                        <div>
-                            <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</span> ${window.getSlaBadgeHtml(p)}</div>
-                            <div class="font-extrabold text-slate-800">${escapeHtml(p.recipient)} (${escapeHtml(p.role)}) • <span class="text-rose-600">${escapeHtml(p.destination)}</span></div>
-                            <div class="text-[8.5px] text-slate-500">Resi: ${escapeHtml(p.resi)} • Catatan: ${escapeHtml(p.notes || '-')}</div>
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col gap-2 text-[9.5px] trx-info-card">
+                    <div class="flex flex-wrap justify-between items-start gap-2">
+                        <div class="flex items-start space-x-2.5 flex-1 min-w-[240px]">
+                            <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${safeId}')" class="w-4 h-4 mt-0.5 rounded shrink-0">
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span class="font-mono font-extrabold text-indigo-700">${escapeHtml(p.id)}</span>
+                                    ${window.getSlaBadgeHtml(p)}
+                                </div>
+                                <div class="font-extrabold text-slate-900 text-[10.5px] mt-0.5 break-words">${escapeHtml(p.recipient)} <span class="text-slate-500 font-semibold">(${escapeHtml(p.role)})</span> • <span class="text-rose-600"><i class="fa-solid fa-location-dot mr-0.5"></i>${escapeHtml(p.destination)}</span></div>
+                                ${buildCourierMetaHtml(p)}
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1.5 shrink-0 self-end sm:self-center">
+                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-2.5 py-1.5 rounded-xl text-[9px]" title="Hubungi WA"><i class="fa-brands fa-whatsapp"></i></button>
+                            <button type="button" onclick="window.takePackage('${safeId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-[9px] shadow">Ambil & Antar</button>
                         </div>
                     </div>
-                    <button type="button" onclick="window.takePackage('${safeId}')" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow">Ambil & Antar</button>
                 </div>`;
             }).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada antrian paket.</div>`;
 
             document.getElementById('list-courier-delivering').innerHTML = deliv.map(p => {
                 const safeId = String(p.id).replace(/'/g, "\\'");
                 return `
-                <div class="p-3 rounded-xl bg-slate-50 border flex flex-wrap justify-between items-center gap-2 text-[9.5px]">
-                    <div class="flex items-center space-x-2.5">
-                        <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${safeId}')" class="w-4 h-4 rounded">
-                        <div>
-                            <div class="flex items-center space-x-1.5"><span class="font-mono font-bold text-sky-700">${escapeHtml(p.id)}</span> ${window.getSlaBadgeHtml(p)}</div>
-                            <div class="font-extrabold text-slate-800">${escapeHtml(p.recipient)} • <span class="text-rose-600">${escapeHtml(p.destination)}</span></div>
-                            <div class="text-[8.5px] text-slate-500">Kurir: <strong>${escapeHtml(p.courier)}</strong></div>
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col gap-2 text-[9.5px] trx-info-card">
+                    <div class="flex flex-wrap justify-between items-start gap-2">
+                        <div class="flex items-start space-x-2.5 flex-1 min-w-[240px]">
+                            <input type="checkbox" ${selectedCourierPkgIds.has(p.id) ? 'checked' : ''} onchange="window.toggleSelectCourierPkg('${safeId}')" class="w-4 h-4 mt-0.5 rounded shrink-0">
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span class="font-mono font-extrabold text-sky-700">${escapeHtml(p.id)}</span>
+                                    ${window.getSlaBadgeHtml(p)}
+                                </div>
+                                <div class="font-extrabold text-slate-900 text-[10.5px] mt-0.5 break-words">${escapeHtml(p.recipient)} <span class="text-slate-500 font-semibold">(${escapeHtml(p.role)})</span> • <span class="text-rose-600"><i class="fa-solid fa-location-dot mr-0.5"></i>${escapeHtml(p.destination)}</span></div>
+                                ${buildCourierMetaHtml(p)}
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <button type="button" onclick="window.openExceptionModal('${safeId}')" class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1.5 rounded-xl text-[8.5px]">Kendala / Titip Pos</button>
-                        <button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-[9px] shadow">Selesaikan</button>
+                        <div class="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
+                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-2.5 py-1.5 rounded-xl text-[9px]" title="Hubungi WA"><i class="fa-brands fa-whatsapp"></i></button>
+                            <button type="button" onclick="window.openExceptionModal('${safeId}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-2.5 py-1.5 rounded-xl text-[8.5px]">Kendala / Titip Pos</button>
+                            <button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-[9px] shadow">Selesaikan</button>
+                        </div>
                     </div>
                 </div>`;
             }).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada paket sedang dikirim.</div>`;
 
-            document.getElementById('list-courier-completed').innerHTML = comp.map(p => `
-                <div class="p-3 rounded-xl bg-slate-50 border flex justify-between items-center text-[9.5px]">
-                    <div>
-                        <span class="font-mono font-bold text-emerald-700">${escapeHtml(p.id)}</span> • <strong>${escapeHtml(p.recipient)}</strong> (${escapeHtml(p.destination)})
-                        <div class="text-[8px] text-slate-500">Selesai: ${escapeHtml(p.completedTimestamp || p.timestamp)} • ${escapeHtml(p.completionOption || '')}</div>
+            document.getElementById('list-courier-completed').innerHTML = comp.map(p => {
+                const safeId = String(p.id).replace(/'/g, "\\'");
+                return `
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-wrap justify-between items-start gap-2 text-[9.5px] trx-info-card">
+                    <div class="flex-1 min-w-[240px]">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="font-mono font-extrabold text-emerald-700">${escapeHtml(p.id)}</span>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[8px]">Tuntas Diterima</span>
+                        </div>
+                        <div class="font-extrabold text-slate-900 text-[10.5px] mt-0.5 break-words">${escapeHtml(p.recipient)} <span class="text-slate-500 font-semibold">(${escapeHtml(p.role)})</span> • <span class="text-rose-600">${escapeHtml(p.destination)}</span></div>
+                        ${buildCourierMetaHtml(p)}
                     </div>
-                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[8px]">Tuntas</span>
+                    <div class="flex items-center space-x-1.5 shrink-0">
+                        ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-8 h-8 object-cover rounded-lg border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti" class="w-8 h-8 object-cover rounded-lg border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="TTD Penerima" class="w-8 h-8 object-contain bg-white rounded-lg border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        <button type="button" onclick="window.openInspectPackageModal('${safeId}')" class="px-2.5 py-1.5 rounded-xl bg-white border text-slate-700 font-bold text-[8.5px]"><i class="fa-solid fa-eye mr-1"></i>Detail</button>
+                    </div>
                 </div>
-            `).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Belum ada riwayat selesai.</div>`;
+            `}).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Belum ada riwayat selesai.</div>`;
         };
 
         window.takePackage = async function(id) {
@@ -2896,13 +2991,38 @@
             });
             container.innerHTML = list.map(p => {
                 const safeId = String(p.id).replace(/'/g, "\\'");
+                const srcInfo = p.source === 'external'
+                    ? `Eksternal: ${escapeHtml(p.vendor || '-')} (${escapeHtml(p.originLocation || '-')})`
+                    : `Internal: ${escapeHtml(p.senderInternal || '-')} (${escapeHtml(p.roomSender || '-')})`;
                 return `
-                <div class="p-3 rounded-xl bg-slate-50 border flex flex-wrap justify-between items-center gap-2 text-[9.5px]">
-                    <div>
-                        <span class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</span> • <strong>${escapeHtml(p.recipient)}</strong> (${escapeHtml(p.destination)})
-                        <div class="text-[8.5px] text-slate-500">Status: <strong>${escapeHtml(p.status.toUpperCase())}</strong> • Kurir: ${escapeHtml(p.courier || '-')}</div>
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-wrap justify-between items-start gap-3 text-[9.5px] trx-info-card">
+                    <div class="flex-1 min-w-[240px] space-y-1">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="font-mono font-extrabold text-indigo-700">${escapeHtml(p.id)}</span>
+                            <span class="font-mono text-[8.5px] text-slate-500">Resi: <strong>${escapeHtml(p.resi || '-')}</strong></span>
+                            <span class="px-2 py-0.5 rounded-full text-[8px] font-extrabold uppercase ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : (p.status === 'delivering' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-800')}">${escapeHtml(p.status.toUpperCase())}</span>
+                            ${window.getSlaBadgeHtml(p)}
+                        </div>
+                        <div class="font-extrabold text-slate-900 text-[10.5px] break-words">
+                            ${escapeHtml(p.recipient)} <span class="text-slate-500 font-semibold">(${escapeHtml(p.role || '-')})</span> • <span class="text-rose-600"><i class="fa-solid fa-location-dot mr-0.5"></i>${escapeHtml(p.destination)}</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 bg-white p-2.5 rounded-xl border border-slate-200/70 text-[8.5px] text-slate-600">
+                            <div class="break-words"><span class="text-slate-400 font-semibold">Sumber / Pengirim:</span> <strong class="text-slate-800">${srcInfo}</strong></div>
+                            <div class="break-words"><span class="text-slate-400 font-semibold">Kategori & SLA:</span> <strong class="uppercase text-purple-700">${escapeHtml(p.category || '-')}</strong> • <strong>${escapeHtml(p.sla || '-')}</strong></div>
+                            <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Pos:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
+                            <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Menunggu Kurir')}</strong></div>
+                            <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
+                            ${p.completedTimestamp ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Diterima:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                            <div class="sm:col-span-2 break-words"><span class="text-slate-400 font-semibold">Catatan Paket:</span> <strong class="text-slate-800">${escapeHtml(p.notes || '-')}</strong></div>
+                            ${p.completionOption ? `<div class="sm:col-span-2 break-words text-emerald-700 font-bold border-t pt-1"><i class="fa-solid fa-circle-check mr-1"></i>Keterangan Terima: ${escapeHtml(p.completionOption)}</div>` : ''}
+                        </div>
                     </div>
-                    ${p.status !== 'completed' ? `<button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 text-white font-bold px-3 py-1 rounded-xl text-[9px]">Konfirmasi Terima</button>` : `<span class="text-emerald-700 font-bold text-[8.5px]">Sudah Diterima</span>`}
+                    <div class="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
+                        ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Paket Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti Terima" class="w-9 h-9 object-cover rounded-xl border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="TTD Penerima" class="w-9 h-9 object-contain bg-white rounded-xl border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.status !== 'completed' ? `<button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-[9px] shadow">Konfirmasi Terima</button>` : `<span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-700 font-bold text-[8.5px]"><i class="fa-solid fa-check-double mr-1"></i>Sudah Diterima</span>`}
+                    </div>
                 </div>`;
             }).join('') || `<div class="text-center py-6 text-slate-400 text-[9px]">Tidak ada paket ditemukan untuk "${escapeHtml(q)}".</div>`;
         };
@@ -3206,21 +3326,36 @@
             tbody.innerHTML = list.map(p => {
                 const safeId = String(p.id).replace(/'/g, "\\'");
                 const isChecked = selectedAdminPkgIds.has(String(p.id)) ? 'checked' : '';
+                const srcDetail = p.source === 'external'
+                    ? `${escapeHtml(p.vendor || '-')} (${escapeHtml(p.originLocation || '-')})`
+                    : `${escapeHtml(p.senderInternal || '-')} (${escapeHtml(p.roomSender || '-')})`;
                 return `
-                <tr class="hover:bg-slate-50 transition">
+                <tr class="hover:bg-slate-50 transition align-top trx-info-card">
                     <td class="p-2 text-center">
                         <input type="checkbox" ${isChecked} onchange="window.toggleSelectAdminPkg('${safeId}')" class="w-4 h-4 rounded cursor-pointer accent-rose-600">
                     </td>
-                    <td class="p-2">
-                        <div class="font-mono font-bold text-indigo-700">${escapeHtml(p.id)}</div>
-                        <div class="text-[8px] text-slate-400">${escapeHtml(p.timestamp || '-')}</div>
+                    <td class="p-2 min-w-[140px]">
+                        <div class="font-mono font-bold text-indigo-700 break-words">${escapeHtml(p.id)}</div>
+                        <div class="font-mono text-[8.5px] text-slate-600 break-words">Resi: <strong>${escapeHtml(p.resi || '-')}</strong></div>
+                        <div class="text-[8px] text-slate-500 mt-0.5">Masuk: ${escapeHtml(p.timestamp || '-')}</div>
+                        ${p.completedTimestamp ? `<div class="text-[8px] text-emerald-700 font-semibold">Selesai: ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                     </td>
-                    <td class="p-2 uppercase font-semibold">${escapeHtml(p.source || '-')}</td>
-                    <td class="p-2">
-                        <strong>${escapeHtml(p.recipient || '-')}</strong>
-                        <div class="text-rose-600 text-[8px] font-semibold">${escapeHtml(p.destination || '-')}</div>
+                    <td class="p-2 min-w-[120px]">
+                        <span class="px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 font-bold uppercase text-[7.5px]">${escapeHtml(p.source || '-')}</span>
+                        <div class="text-[8.5px] font-semibold text-slate-700 mt-0.5 break-words">${srcDetail}</div>
+                        <div class="text-[8px] text-purple-700 font-bold uppercase mt-0.5">Kat: ${escapeHtml(p.category || '-')}</div>
                     </td>
-                    <td class="p-2">P: ${escapeHtml(p.petugas || '-')}<br>K: <strong>${escapeHtml(p.courier || '-')}</strong></td>
+                    <td class="p-2 min-w-[160px]">
+                        <div class="font-bold text-slate-900 break-words">${escapeHtml(p.recipient || '-')} <span class="text-slate-500 font-normal">(${escapeHtml(p.role || '-')})</span></div>
+                        <div class="text-rose-600 text-[8.5px] font-bold break-words"><i class="fa-solid fa-location-dot mr-0.5"></i>${escapeHtml(p.destination || '-')}</div>
+                        <div class="text-emerald-700 text-[8px] font-mono break-words"><i class="fa-brands fa-whatsapp mr-0.5"></i>${escapeHtml(p.phone || '-')}</div>
+                        ${p.notes && p.notes !== '-' ? `<div class="text-[8px] text-slate-600 bg-slate-100 p-1 rounded mt-0.5 break-words"><strong>Catatan:</strong> ${escapeHtml(p.notes)}</div>` : ''}
+                    </td>
+                    <td class="p-2 min-w-[130px] text-[8.5px]">
+                        <div class="break-words"><span class="text-slate-400">Petugas:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
+                        <div class="break-words mt-0.5"><span class="text-slate-400">Kurir:</span> <strong class="text-sky-700">${escapeHtml(p.courier || '-')}</strong></div>
+                        ${p.completionOption ? `<div class="text-[8px] text-emerald-700 font-semibold mt-0.5 break-words">${escapeHtml(p.completionOption)}</div>` : ''}
+                    </td>
                     <td class="p-2">
                         <div class="flex items-center space-x-1">
                             ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Awal" class="w-7 h-7 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
@@ -3228,8 +3363,9 @@
                             ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="TTD Penerima" class="w-7 h-7 object-contain bg-white rounded border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                         </div>
                     </td>
-                    <td class="p-2">
+                    <td class="p-2 min-w-[115px]">
                         <div class="font-bold uppercase text-[8px] mb-0.5">${escapeHtml(p.status || '-')}</div>
+                        <div class="text-[8px] text-slate-500 mb-0.5 break-words">SLA: ${escapeHtml(p.sla || '-')}</div>
                         ${window.getSlaBadgeHtml(p)}
                     </td>
                     <td class="p-2 text-right whitespace-nowrap space-x-1">
