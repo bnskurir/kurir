@@ -267,7 +267,7 @@
             </form>
             <div class="bg-slate-50/80 p-2 rounded-xl border border-white text-[8.5px] text-slate-500 text-center flex justify-between items-center px-3">
                 <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cloud Firebase Aktif</span>
-                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.4.8</span>
+                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.4.9</span>
             </div>
         </div>
     </div>
@@ -851,7 +851,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[9px] text-slate-500 mt-auto">
-        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.4.8 — Super Admin Center)</p>
+        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.4.9 — Super Admin Center)</p>
     </footer>
 
     <!-- Modal 360° Package Inspector (Admin) -->
@@ -893,11 +893,11 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block font-bold mb-0.5">Alihkan Kurir</label>
-                        <select id="edit-pkg-courier" class="w-full px-2 py-1 rounded border bg-white"></select>
+                        <select id="edit-pkg-courier" onchange="window.handleAdminEditCourierChange(this.value)" class="w-full px-2 py-1 rounded border bg-white"></select>
                     </div>
                     <div>
                         <label class="block font-bold mb-0.5">Paksa Status</label>
-                        <select id="edit-pkg-status" class="w-full px-2 py-1 rounded border bg-white">
+                        <select id="edit-pkg-status" onchange="window.handleAdminEditStatusChange(this.value)" class="w-full px-2 py-1 rounded border bg-white">
                             <option value="pending">Pending (Antrian Pos)</option>
                             <option value="delivering">Delivering (Sedang Diantar)</option>
                             <option value="completed">Completed (Selesai)</option>
@@ -912,6 +912,17 @@
                         <option value="24 jam (besok)">24 jam (besok)</option>
                         <option value="3 hari (akhir pekan / senin)">3 hari (akhir pekan / senin)</option>
                     </select>
+                </div>
+                <div id="edit-pkg-completion-wrap" class="hidden p-2 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1">
+                    <label class="block font-bold text-emerald-900 text-[8.5px]"><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>Keterangan Diterima / Selesai</label>
+                    <input type="text" id="edit-pkg-completion-option" placeholder="Cth: Diterima langsung oleh yang bersangkutan" class="w-full px-2 py-1 rounded border border-emerald-300 bg-white text-[9px]">
+                </div>
+                <div id="edit-pkg-reset-proof-wrap" class="hidden p-2 rounded-xl bg-amber-50/90 border border-amber-200 space-y-1">
+                    <label class="flex items-center space-x-1.5 cursor-pointer text-[8.5px] font-bold text-amber-900">
+                        <input type="checkbox" id="edit-pkg-clear-proof" checked class="rounded text-amber-600">
+                        <span>Reset Waktu Selesai, Keterangan Terima & Bukti Kurir/TTD</span>
+                    </label>
+                    <p class="text-[7.5px] text-amber-700 leading-tight">Karena status dikembalikan ke Pending / Sedang Diantar, keterangan "Sudah Diterima" otomatis dihapus agar status paket bersih kembali.</p>
                 </div>
                 <div><label class="block font-bold mb-0.5">Catatan Paket</label><input type="text" id="edit-pkg-notes" class="w-full px-2 py-1 rounded border"></div>
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs shadow">Simpan Perubahan Admin</button>
@@ -1556,7 +1567,7 @@
                         <div class="font-mono text-xs text-indigo-300 font-bold">${escapeHtml(p.id)}</div>
                         <div class="font-mono text-[11px] text-slate-400">Resi: ${escapeHtml(p.resi || '-')}</div>
                         <div class="text-[11px] text-slate-400 mt-0.5">Masuk: ${escapeHtml(p.timestamp || '-')}</div>
-                        ${p.completedTimestamp ? `<div class="text-[11px] text-emerald-400 font-semibold">Selesai: ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completedTimestamp) ? `<div class="text-[11px] text-emerald-400 font-semibold">Selesai: ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                     </div>
                 </div>
             `}).join('');
@@ -1607,8 +1618,8 @@
                 escapeCsv(p.petugas || '-'), escapeCsv(p.courier || '-'), escapeCsv(p.recipient || '-'),
                 escapeCsv(p.role || '-'), escapeCsv(p.destination || '-'), escapeCsv(currentRole === 'admin' ? (p.phone || '-') : maskPhoneNumber(p.phone || '-')),
                 escapeCsv(p.category || '-'), escapeCsv(p.sla || '-'), escapeCsv(p.notes || '-'),
-                escapeCsv(p.status || '-'), escapeCsv(p.completionOption || p.exceptionStatus || '-'),
-                escapeCsv(p.timestamp || '-'), escapeCsv(p.completedTimestamp || '-')
+                escapeCsv(p.status || '-'), escapeCsv(p.status === 'completed' ? (p.completionOption || 'Selesai') : (p.exceptionStatus || '-')),
+                escapeCsv(p.timestamp || '-'), escapeCsv(p.status === 'completed' ? (p.completedTimestamp || '-') : '-')
             ].join(','));
             const csvString = "\uFEFF" + headers.map(escapeCsv).join(',') + "\r\n" + rows.join("\r\n");
             const url = URL.createObjectURL(new Blob([csvString], { type: 'text/csv;charset=utf-8;' }));
@@ -2495,7 +2506,7 @@
         };
 
         window.downloadDatabaseBackup = function() {
-            const backupData = { app: 'Kurir BNS Sekolah', version: '4.4.8', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
+            const backupData = { app: 'Kurir BNS Sekolah', version: '4.4.9', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
             const a = document.createElement('a');
             a.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2)));
             a.setAttribute("download", "kurir_bns_backup_" + new Date().toISOString().slice(0,10) + ".json");
@@ -3166,9 +3177,9 @@
                         <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Input:</span> <strong class="text-slate-700">${escapeHtml(p.petugas || '-')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Belum Ditugaskan')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
-                        ${p.completedTimestamp ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Selesai:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completedTimestamp) ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Selesai:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                         <div class="break-words"><span class="text-slate-400 font-semibold">Catatan:</span> <span class="text-slate-800 font-medium">${escapeHtml(p.notes || '-')}</span></div>
-                        ${p.completionOption ? `<div class="break-words text-emerald-700 font-bold pt-0.5 border-t border-slate-200/60"><i class="fa-solid fa-circle-check mr-1"></i>Ket. Terima: ${escapeHtml(p.completionOption)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completionOption) ? `<div class="break-words text-emerald-700 font-bold pt-0.5 border-t border-slate-200/60"><i class="fa-solid fa-circle-check mr-1"></i>Ket. Terima: ${escapeHtml(p.completionOption)}</div>` : ''}
                         ${p.exceptionStatus ? `<div class="break-words text-rose-600 font-bold pt-0.5 border-t border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Kendala: ${escapeHtml(p.exceptionStatus)}</div>` : ''}
                     </div>
 
@@ -3301,9 +3312,9 @@
                         <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Input:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Belum Ditugaskan')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
-                        ${p.completedTimestamp ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Selesai:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completedTimestamp) ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Selesai:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                         <div class="sm:col-span-2 break-words"><span class="text-slate-400 font-semibold">Catatan Paket:</span> <strong class="text-slate-800">${escapeHtml(p.notes || '-')}</strong></div>
-                        ${p.completionOption ? `<div class="sm:col-span-2 break-words text-emerald-700 font-bold border-t pt-1"><i class="fa-solid fa-circle-check mr-1"></i>Keterangan Selesai: ${escapeHtml(p.completionOption)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completionOption) ? `<div class="sm:col-span-2 break-words text-emerald-700 font-bold border-t pt-1"><i class="fa-solid fa-circle-check mr-1"></i>Keterangan Selesai: ${escapeHtml(p.completionOption)}</div>` : ''}
                         ${p.exceptionStatus ? `<div class="sm:col-span-2 break-words text-rose-600 font-bold border-t border-rose-200 pt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Kendala: ${escapeHtml(p.exceptionStatus)}</div>` : ''}
                     </div>
                 `;
@@ -3564,9 +3575,9 @@
                             <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Pos:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
                             <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Menunggu Kurir')}</strong></div>
                             <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
-                            ${p.completedTimestamp ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Diterima:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                            ${(p.status === 'completed' && p.completedTimestamp) ? `<div class="break-words text-emerald-700 font-semibold"><span class="text-emerald-600">Waktu Diterima:</span> ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                             <div class="sm:col-span-2 break-words"><span class="text-slate-400 font-semibold">Catatan Paket:</span> <strong class="text-slate-800">${escapeHtml(p.notes || '-')}</strong></div>
-                            ${p.completionOption ? `<div class="sm:col-span-2 break-words text-emerald-700 font-bold border-t pt-1"><i class="fa-solid fa-circle-check mr-1"></i>Keterangan Terima: ${escapeHtml(p.completionOption)}</div>` : ''}
+                            ${(p.status === 'completed' && p.completionOption) ? `<div class="sm:col-span-2 break-words text-emerald-700 font-bold border-t pt-1"><i class="fa-solid fa-circle-check mr-1"></i>Keterangan Terima: ${escapeHtml(p.completionOption)}</div>` : ''}
                         </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
@@ -3752,7 +3763,7 @@
                     </div>
                     <div class="flex justify-between"><span>PIN Verifikasi Terima:</span><strong class="font-mono text-amber-700 bg-amber-50 px-2 rounded border border-amber-200">${escapeHtml(getOrCreatePackagePin(p))}</strong></div>
                     <div class="flex justify-between"><span>Durasi Penyelesaian:</span><strong class="text-indigo-600">${escapeHtml(durationText)}</strong></div>
-                    <div class="flex justify-between"><span>Keterangan / Catatan:</span><strong>${escapeHtml(p.completionOption || p.notes || '-')}</strong></div>
+                    <div class="flex justify-between"><span>Keterangan / Catatan:</span><strong>${escapeHtml((p.status === 'completed' && p.completionOption) ? p.completionOption : (p.notes || '-'))}</strong></div>
                 </div>
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div class="p-2 rounded-xl border bg-slate-50">
@@ -3776,6 +3787,28 @@
             document.getElementById('admin-inspect-modal').classList.add('hidden');
         };
 
+        window.handleAdminEditStatusChange = function(newStatus) {
+            const compWrap = document.getElementById('edit-pkg-completion-wrap');
+            const resetWrap = document.getElementById('edit-pkg-reset-proof-wrap');
+            const courierEl = document.getElementById('edit-pkg-courier');
+            if (compWrap) compWrap.classList.toggle('hidden', newStatus !== 'completed');
+            if (resetWrap) resetWrap.classList.toggle('hidden', newStatus === 'completed');
+            if (newStatus === 'pending' && courierEl && courierEl.value !== 'Belum Ditugaskan') {
+                // Jika dikembalikan ke Pending (Antrian Pos), default kurir kembali ke Belum Ditugaskan
+                courierEl.value = 'Belum Ditugaskan';
+            }
+        };
+
+        window.handleAdminEditCourierChange = function(newCourier) {
+            const statusEl = document.getElementById('edit-pkg-status');
+            if (!statusEl) return;
+            // Jika status masih pending lalu Admin memilih kurir tertentu, otomatis ubah ke delivering
+            if (newCourier && newCourier !== 'Belum Ditugaskan' && statusEl.value === 'pending') {
+                statusEl.value = 'delivering';
+                window.handleAdminEditStatusChange('delivering');
+            }
+        };
+
         window.openAdminEditPackageModal = function(pkgId) {
             const p = packages.find(item => String(item.id) === String(pkgId));
             if (!p) return;
@@ -3786,9 +3819,15 @@
             document.getElementById('edit-pkg-destination').value = p.destination || '';
             document.getElementById('edit-pkg-phone').value = p.phone || '';
             document.getElementById('edit-pkg-courier').value = p.courier || 'Belum Ditugaskan';
-            document.getElementById('edit-pkg-status').value = p.status || 'pending';
+            const currentSt = p.status || 'pending';
+            document.getElementById('edit-pkg-status').value = currentSt;
             document.getElementById('edit-pkg-sla').value = p.sla || '2 jam (reguler)';
             document.getElementById('edit-pkg-notes').value = p.notes || '';
+            const compInput = document.getElementById('edit-pkg-completion-option');
+            if (compInput) compInput.value = p.completionOption || `Diterima langsung oleh ${p.recipient || 'Penerima'}`;
+            const clearProofChk = document.getElementById('edit-pkg-clear-proof');
+            if (clearProofChk) clearProofChk.checked = true;
+            window.handleAdminEditStatusChange(currentSt);
             document.getElementById('admin-edit-pkg-modal').classList.remove('hidden');
         };
 
@@ -3801,6 +3840,7 @@
             const id = document.getElementById('edit-pkg-id').value;
             const p = packages.find(item => String(item.id) === String(id));
             if (!p) return;
+            const prevStatus = p.status;
             p.recipient = document.getElementById('edit-pkg-recipient').value.trim();
             p.role = document.getElementById('edit-pkg-role').value;
             p.destination = document.getElementById('edit-pkg-destination').value.trim();
@@ -3808,16 +3848,41 @@
             p.courier = document.getElementById('edit-pkg-courier').value;
             p.status = document.getElementById('edit-pkg-status').value;
             p.sla = document.getElementById('edit-pkg-sla').value;
-            p.notes = document.getElementById('edit-pkg-notes').value.trim();
-            if (p.status === 'completed' && !p.completedTimestamp) {
-                p.completedTimestamp = formatTimestampIndo(Date.now());
-                p.completedTimestampRaw = Date.now();
+            p.notes = document.getElementById('edit-pkg-notes').value.trim() || '-';
+
+            if (p.status === 'completed') {
+                if (!p.completedTimestamp) {
+                    p.completedTimestamp = formatTimestampIndo(Date.now());
+                    p.completedTimestampRaw = Date.now();
+                }
+                const compText = document.getElementById('edit-pkg-completion-option')?.value.trim();
+                p.completionOption = compText || p.completionOption || `Diselesaikan oleh Admin (${loggedUser.name || 'Admin'})`;
+                p.exceptionStatus = '';
+            } else {
+                // Status diubah ke 'pending' atau 'delivering' -> wajib bersihkan atribut selesai agar tidak tampil seperti sudah diterima
+                p.completedTimestamp = '';
+                p.completedTimestampRaw = null;
+                p.completionOption = '';
+                const shouldClearProof = document.getElementById('edit-pkg-clear-proof')?.checked ?? true;
+                if (shouldClearProof) {
+                    p.proofPhotoUrl = null;
+                    p.signatureDataUrl = null;
+                }
+                if (p.status === 'pending') {
+                    p.takenTimestampRaw = null;
+                } else if (p.status === 'delivering') {
+                    p.exceptionStatus = '';
+                    if (!p.takenTimestampRaw) p.takenTimestampRaw = Date.now();
+                    // Bersihkan tag [Kendala: ...] lama pada catatan jika status diubah ke sedang diantar kembali
+                    p.notes = String(p.notes || '').replace(/\s*\[Kendala:.*?\]/g, '').trim() || '-';
+                }
             }
+
             await syncPackageToFirebase(p);
-            addAuditLog(`Admin (${loggedUser.name}) mengedit/mengalihkan paket ${p.id} (Kurir: ${p.courier}, Status: ${p.status})`, loggedUser.name, 'ADMIN');
+            addAuditLog(`Admin (${loggedUser.name}) mengedit paket ${p.id}: Status ${prevStatus.toUpperCase()} -> ${p.status.toUpperCase()}, Kurir: ${p.courier}`, loggedUser.name, 'ADMIN');
             window.closeAdminEditPackageModal();
             refreshActiveView();
-            showToast(`Data paket ${p.id} berhasil diperbarui Admin!`);
+            showToast(`Data & status paket ${p.id} berhasil diperbarui!`);
         };
 
         function updateAdminPkgBatchBar() {
@@ -3897,7 +3962,7 @@
                         <div class="font-mono font-bold text-indigo-700 break-words">${escapeHtml(p.id)}</div>
                         <div class="font-mono text-[8.5px] text-slate-600 break-words">Resi: <strong>${escapeHtml(p.resi || '-')}</strong></div>
                         <div class="text-[8px] text-slate-500 mt-0.5">Masuk: ${escapeHtml(p.timestamp || '-')}</div>
-                        ${p.completedTimestamp ? `<div class="text-[8px] text-emerald-700 font-semibold">Selesai: ${escapeHtml(p.completedTimestamp)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completedTimestamp) ? `<div class="text-[8px] text-emerald-700 font-semibold">Selesai: ${escapeHtml(p.completedTimestamp)}</div>` : ''}
                     </td>
                     <td class="p-2 min-w-[120px]">
                         <span class="px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 font-bold uppercase text-[7.5px]">${escapeHtml(p.source || '-')}</span>
@@ -3913,7 +3978,7 @@
                     <td class="p-2 min-w-[130px] text-[8.5px]">
                         <div class="break-words"><span class="text-slate-400">Petugas:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
                         <div class="break-words mt-0.5"><span class="text-slate-400">Kurir:</span> <strong class="text-sky-700">${escapeHtml(p.courier || '-')}</strong></div>
-                        ${p.completionOption ? `<div class="text-[8px] text-emerald-700 font-semibold mt-0.5 break-words">${escapeHtml(p.completionOption)}</div>` : ''}
+                        ${(p.status === 'completed' && p.completionOption) ? `<div class="text-[8px] text-emerald-700 font-semibold mt-0.5 break-words">${escapeHtml(p.completionOption)}</div>` : ''}
                     </td>
                     <td class="p-2">
                         <div class="flex items-center space-x-1">
