@@ -241,7 +241,7 @@
             <form onsubmit="window.handleLogin(event)" class="space-y-3">
                 <div>
                     <label class="block text-[9.5px] font-bold text-slate-700 mb-1" id="login-label-name">Username</label>
-                    <input type="text" id="login-username" oninput="window.handleLoginEmailInput(this.value)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white/90" placeholder="Ketik username (cth: admin / gari)...">
+                    <input type="text" id="login-username" oninput="window.handleLoginEmailInput(this.value)" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white/90" placeholder="Ketik username (cth: admin / aufah)...">
                 </div>
                 <div id="password-field-group">
                     <div class="flex justify-between items-center mb-1">
@@ -265,7 +265,7 @@
             </form>
             <div class="bg-slate-50/80 p-2 rounded-xl border border-white text-[8.5px] text-slate-500 text-center flex justify-between items-center px-3">
                 <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cloud Firebase Aktif</span>
-                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.4</span>
+                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.4.7</span>
             </div>
         </div>
     </div>
@@ -815,7 +815,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[9px] text-slate-500 mt-auto">
-        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.4 — Super Admin Center)</p>
+        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.4.7 — Super Admin Center)</p>
     </footer>
 
     <!-- Modal 360° Package Inspector (Admin) -->
@@ -1042,6 +1042,7 @@
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Sumber:</span> <strong id="sum-source"></strong></div>
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Penerima:</span> <strong id="sum-recipient"></strong></div>
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Tujuan:</span> <strong id="sum-dest"></strong></div>
+                <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">PIN Serah Terima:</span> <strong id="sum-pin" class="font-mono text-emerald-700 bg-emerald-50 px-1.5 rounded"></strong></div>
                 <div class="flex justify-between border-b pb-0.5"><span class="text-slate-500">Petugas:</span> <strong id="sum-petugas"></strong></div>
                 <div class="flex justify-between items-center"><span class="text-slate-500">Foto Fisik:</span> <img id="sum-photo" src="" class="w-7 h-7 object-cover rounded border"></div>
             </div>
@@ -1071,6 +1072,14 @@
                     </label>
                 </div>
                 <div><label class="block text-[8px] font-semibold mb-0.5">Nama Penerima / Perwakilan</label><input type="text" id="confirm-receiver-name" class="w-full px-2 py-0.5 rounded border text-[9px]"></div>
+                <div id="confirm-pin-group" class="p-2 rounded-xl bg-amber-50/90 border border-amber-200 space-y-1">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-[8px] font-extrabold text-amber-900"><i class="fa-solid fa-key text-amber-600 mr-1"></i>PIN Verifikasi Terima (4 Digit)</label>
+                        <span id="confirm-pin-badge" class="text-[7.5px] px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 font-bold">Wajib utk Penerima</span>
+                    </div>
+                    <input type="text" id="confirm-pin-input" maxlength="6" placeholder="Ketik 4 digit PIN paket / 4 digit akhir WA..." class="w-full px-2 py-1 rounded border border-amber-300 text-[9.5px] font-mono font-bold tracking-widest text-center bg-white">
+                    <p id="confirm-pin-hint" class="text-[7.5px] text-amber-700 leading-tight">Masukkan 4 digit PIN Paket (tertera di WA / Stiker QR) atau 4 angka terakhir No. WhatsApp penerima.</p>
+                </div>
                 <div>
                     <label class="block text-[8px] font-semibold mb-0.5">Opsi Keterangan Selesai</label>
                     <select id="confirm-completion-option" class="w-full px-2 py-0.5 rounded border text-[9px] bg-white">
@@ -1108,6 +1117,7 @@
                     <div><span>Kepada:</span> <strong id="qr-label-recipient"></strong></div>
                     <div><span>Tujuan:</span> <strong id="qr-label-dest" class="text-rose-600"></strong></div>
                     <div><span>Prioritas:</span> <strong id="qr-label-sla" class="text-indigo-700"></strong></div>
+                    <div><span>PIN Terima:</span> <strong id="qr-label-pin" class="font-mono text-emerald-700"></strong></div>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-1.5">
@@ -1178,6 +1188,41 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
+        }
+
+        function sanitizeImageUrl(url) {
+            const s = String(url ?? '').trim();
+            if (s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) {
+                return escapeHtml(s);
+            }
+            return '';
+        }
+
+        // Sensor otomatis Nomor WhatsApp untuk menjaga privasi (Cth: 081234567890 -> 0812-••••-7890)
+        function maskPhoneNumber(phone, forceFull = false) {
+            const raw = String(phone ?? '').trim();
+            if (!raw || raw === '-') return '-';
+            if (forceFull) return escapeHtml(raw);
+            const digits = raw.replace(/\D/g, '');
+            if (digits.length < 7) return escapeHtml(raw);
+            const prefix = digits.slice(0, 4);
+            const suffix = digits.slice(-4);
+            return `${prefix}-••••-${suffix}`;
+        }
+
+        // Buat / ambil 4 digit PIN Verifikasi Serah Terima Paket
+        function getOrCreatePackagePin(pkg) {
+            if (!pkg) return '0000';
+            if (pkg.verifyPin && String(pkg.verifyPin).length === 4) return String(pkg.verifyPin);
+            let hash = 0;
+            const str = String(pkg.id || 'BNS');
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            const pin = String(1000 + (Math.abs(hash) % 9000));
+            pkg.verifyPin = pin;
+            return pin;
         }
 
         let deferredPrompt = null;
@@ -1440,7 +1485,7 @@
                 escapeCsv(p.source === 'external' ? (p.vendor || '-') : (p.senderInternal || '-')),
                 escapeCsv(p.source === 'external' ? (p.originLocation || '-') : (p.roomSender || '-')),
                 escapeCsv(p.petugas || '-'), escapeCsv(p.courier || '-'), escapeCsv(p.recipient || '-'),
-                escapeCsv(p.role || '-'), escapeCsv(p.destination || '-'), escapeCsv(p.phone || '-'),
+                escapeCsv(p.role || '-'), escapeCsv(p.destination || '-'), escapeCsv(currentRole === 'admin' ? (p.phone || '-') : maskPhoneNumber(p.phone || '-')),
                 escapeCsv(p.category || '-'), escapeCsv(p.sla || '-'), escapeCsv(p.notes || '-'),
                 escapeCsv(p.status || '-'), escapeCsv(p.completionOption || p.exceptionStatus || '-'),
                 escapeCsv(p.timestamp || '-'), escapeCsv(p.completedTimestamp || '-')
@@ -1580,6 +1625,7 @@
                 localStorage.setItem('kurir_bns_cache_members', JSON.stringify(members));
                 localStorage.setItem('kurir_bns_cache_directory', JSON.stringify(schoolDirectory));
                 localStorage.setItem('kurir_bns_cache_audit', JSON.stringify(auditLogs.slice(0, 100)));
+                localStorage.setItem('kurir_bns_cache_resets', JSON.stringify(resetRequests.slice(0, 100)));
             } catch (e) {}
         }
 
@@ -1595,6 +1641,8 @@
                 if (Array.isArray(cDir) && cDir.length > 0) schoolDirectory = cDir;
                 const cAud = JSON.parse(localStorage.getItem('kurir_bns_cache_audit') || 'null');
                 if (Array.isArray(cAud) && cAud.length > 0) auditLogs = cAud;
+                const cRst = JSON.parse(localStorage.getItem('kurir_bns_cache_resets') || 'null');
+                if (Array.isArray(cRst) && cRst.length > 0) resetRequests = cRst;
             } catch (e) {}
         }
 
@@ -1665,7 +1713,7 @@
                     <td class="p-2 font-bold text-slate-800">${escapeHtml(d.name)}</td>
                     <td class="p-2"><span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-[8px]">${escapeHtml(d.role)}</span></td>
                     <td class="p-2 font-semibold text-rose-600">${escapeHtml(d.room)}</td>
-                    <td class="p-2 font-mono text-emerald-700">${escapeHtml(d.phone || '-')}</td>
+                    <td class="p-2 font-mono text-emerald-700" title="Klik Edit untuk melihat nomor penuh">${maskPhoneNumber(d.phone)}</td>
                     <td class="p-2 text-right space-x-1.5">
                         <button type="button" onclick="window.openDirectoryModal('${escapeHtml(d.id)}')" class="px-2 py-1 rounded bg-indigo-50 text-indigo-600 hover:bg-indigo-100"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button type="button" onclick="window.deleteDirectoryItem('${escapeHtml(d.id)}')" class="px-2 py-1 rounded bg-rose-50 text-rose-600 hover:bg-rose-100"><i class="fa-solid fa-trash"></i></button>
@@ -1785,19 +1833,35 @@
 
         window.closeForgotPasswordModal = function() { document.getElementById('forgot-password-modal').classList.add('hidden'); };
 
-        window.handleSubmitForgotPassword = function(e) {
+        async function syncResetRequestToFirebase(reqObj) {
+            saveLocalCache();
+            if (!db || !reqObj) return;
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reset_requests_col', String(reqObj.id)), reqObj, { merge: true });
+            } catch (e) {}
+        }
+
+        window.handleSubmitForgotPassword = async function(e) {
             e.preventDefault();
             const usernameInput = document.getElementById('forgot-email-input').value.trim();
             const reason = document.getElementById('forgot-reason-input').value.trim() || 'Lupa kata sandi';
             const found = members.find(m => matchesMemberLogin(m, usernameInput));
-            resetRequests.unshift({
-                id: 'rst-' + Date.now(), name: found ? found.name : 'Pengguna',
-                email: found ? getMemberUsername(found) : usernameInput, reason,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' WIB', status: 'Pending'
-            });
+            const nowMs = Date.now();
+            const reqObj = {
+                id: 'rst-' + nowMs,
+                name: found ? found.name : 'Pengguna',
+                email: found ? getMemberUsername(found) : usernameInput,
+                reason,
+                time: formatTimestampIndo(nowMs),
+                timestampRaw: nowMs,
+                status: 'Pending'
+            };
+            resetRequests.unshift(reqObj);
+            await syncResetRequestToFirebase(reqObj);
+            addAuditLog(`Pengajuan reset kata sandi untuk akun @${reqObj.email} (${reason})`, reqObj.name, 'SYSTEM');
             window.renderAdminResets();
             window.closeForgotPasswordModal();
-            showToast('Permintaan reset sandi terkirim ke Admin!');
+            showToast('Permintaan reset sandi terkirim ke Admin secara realtime!');
         };
 
         window.handleRecipientAutoComplete = function(val) {
@@ -1848,8 +1912,10 @@
             if (!p) return;
             let phone = (p.phone || '081234567801').replace(/\D/g, '');
             if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+            const pinCode = getOrCreatePackagePin(p);
             const statusLabel = p.status === 'completed' ? `SUDAH DITERIMA (${p.completionOption || 'Selesai'})` : (p.status === 'delivering' ? `SEDANG DIANTAR oleh Kurir ${p.courier}` : `TELAH TIBA di Pos Logistik Sekolah`);
-            const text = `Halo *${p.recipient}*,\nInfo layanan *Kurir BNS Express Sekolah*:\n\n📦 *ID:* ${p.id}\n🔖 *Resi:* ${p.resi || '-'}\n📍 *Tujuan:* ${p.destination}\n⚡ *Status:* ${statusLabel}\n\nTerima kasih.`;
+            const pinLine = p.status === 'completed' ? '' : `\n🔐 *PIN Konfirmasi Terima:* *${pinCode}*`;
+            const text = `Halo *${p.recipient}*,\nInfo layanan *Kurir BNS Express Sekolah*:\n\n📦 *ID:* ${p.id}\n🔖 *Resi:* ${p.resi || '-'}\n📍 *Tujuan:* ${p.destination}\n⚡ *Status:* ${statusLabel}${pinLine}\n\nTerima kasih.`;
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
         };
 
@@ -1861,6 +1927,8 @@
             document.getElementById('qr-label-recipient').innerText = `${p.recipient} (${p.role})`;
             document.getElementById('qr-label-dest').innerText = p.destination;
             document.getElementById('qr-label-sla').innerText = p.sla;
+            const qrPinEl = document.getElementById('qr-label-pin');
+            if (qrPinEl) qrPinEl.innerText = getOrCreatePackagePin(p);
             document.getElementById('qr-label-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(p.resi || p.id)}`;
             document.getElementById('qr-label-modal').classList.remove('hidden');
         };
@@ -1912,22 +1980,47 @@
                 container.innerHTML = `<div class="text-center py-4 text-slate-400 text-[9px]">Belum ada permintaan reset kata sandi.</div>`;
                 return;
             }
-            container.innerHTML = resetRequests.map(r => `
-                <div class="p-2 rounded-lg border bg-slate-50 flex justify-between items-center text-[9px]">
-                    <div><strong>${escapeHtml(r.name)}</strong> (${escapeHtml(r.email)}) • ${escapeHtml(r.reason)}</div>
-                    ${r.status === 'Pending' ? `<button type="button" onclick="window.approveResetRequest('${escapeHtml(r.id)}')" class="bg-emerald-600 text-white font-bold px-2 py-1 rounded text-[8px]">Reset ke 123456</button>` : `<span class="text-emerald-700 font-bold">Sudah Direset</span>`}
-                </div>
-            `).join('');
+            container.innerHTML = resetRequests.map(r => {
+                const safeId = String(r.id).replace(/'/g, "\'");
+                return `
+                <div class="p-2.5 rounded-xl border bg-slate-50 flex flex-wrap justify-between items-center gap-2 text-[9px]">
+                    <div>
+                        <div><strong>${escapeHtml(r.name)}</strong> (<span class="font-mono text-indigo-600">@${escapeHtml(r.email)}</span>) • ${escapeHtml(r.reason)}</div>
+                        <div class="text-[8px] text-slate-400 font-mono mt-0.5">${escapeHtml(r.time || '')}</div>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        ${r.status === 'Pending'
+                            ? `<button type="button" onclick="window.approveResetRequest('${safeId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg text-[8px] shadow-sm">Reset ke 123456</button>`
+                            : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[8px]">Sudah Direset</span>`}
+                        <button type="button" onclick="window.deleteResetRequest('${safeId}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[8px]" title="Hapus Permintaan"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
         };
 
-        window.approveResetRequest = function(reqId) {
-            const req = resetRequests.find(r => r.id === reqId);
+        window.approveResetRequest = async function(reqId) {
+            const req = resetRequests.find(r => String(r.id) === String(reqId));
             if (!req) return;
             req.status = 'Selesai';
+            await syncResetRequestToFirebase(req);
             const m = members.find(item => matchesMemberLogin(item, req.email));
-            if (m) { m.password = '123456'; syncMemberToFirebase(m); }
+            if (m) {
+                m.password = '123456';
+                await syncMemberToFirebase(m);
+            }
+            addAuditLog(`Admin (${loggedUser.name}) menyetujui reset sandi akun @${req.email} ke default (123456)`, loggedUser.name, 'ADMIN');
             window.renderAdminResets();
-            showToast(`Sandi ${req.email} direset ke 123456`);
+            showToast(`Sandi @${req.email} berhasil direset ke 123456`);
+        };
+
+        window.deleteResetRequest = async function(reqId) {
+            resetRequests = resetRequests.filter(r => String(r.id) !== String(reqId));
+            saveLocalCache();
+            if (db) {
+                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reset_requests_col', String(reqId))); } catch (e) {}
+            }
+            window.renderAdminResets();
+            showToast('Permintaan reset sandi dihapus');
         };
 
         window.handleLoginEmailInput = function(val) {
@@ -2094,6 +2187,14 @@
                         window.renderAuditLogs();
                     }
                 }, () => {});
+
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'reset_requests_col'), (snapshot) => {
+                    const cloudResets = [];
+                    snapshot.forEach(docSnap => cloudResets.push(docSnap.data()));
+                    resetRequests = cloudResets.sort((a,b) => (b.timestampRaw || 0) - (a.timestampRaw || 0));
+                    saveLocalCache();
+                    window.renderAdminResets();
+                }, () => {});
             } catch (e) {
                 updateConnectionBadge(false);
             }
@@ -2153,12 +2254,12 @@
         };
 
         window.downloadDatabaseBackup = function() {
-            const backupData = { app: 'Kurir BNS Sekolah', version: '4.4', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, auditLogs };
+            const backupData = { app: 'Kurir BNS Sekolah', version: '4.4.7', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
             const a = document.createElement('a');
             a.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2)));
             a.setAttribute("download", "kurir_bns_backup_" + new Date().toISOString().slice(0,10) + ".json");
             document.body.appendChild(a); a.click(); a.remove();
-            showToast('Backup database diunduh!');
+            showToast('Backup database lengkap berhasil diunduh!');
         };
 
         window.handleRestoreDatabase = function(e) {
@@ -2170,13 +2271,22 @@
                     const parsed = JSON.parse(ev.target.result);
                     if (Array.isArray(parsed.packages)) packages = parsed.packages;
                     if (Array.isArray(parsed.members)) members = parsed.members;
+                    if (Array.isArray(parsed.schoolDirectory)) schoolDirectory = parsed.schoolDirectory;
+                    if (Array.isArray(parsed.resetRequests)) resetRequests = parsed.resetRequests;
+                    if (Array.isArray(parsed.auditLogs)) auditLogs = parsed.auditLogs;
+                    saveLocalCache();
                     if (db) {
                         for (const p of packages) await syncPackageToFirebase(p);
                         for (const m of members) await syncMemberToFirebase(m);
+                        for (const d of schoolDirectory) {
+                            try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'directory_col', String(d.id)), d, { merge: true }); } catch (e) {}
+                        }
+                        for (const r of resetRequests) await syncResetRequestToFirebase(r);
                     }
+                    updateCourierAndRecipientDropdowns();
                     window.closeBackupModal();
                     refreshActiveView();
-                    showToast('Database berhasil dipulihkan!');
+                    showToast('Database lengkap berhasil dipulihkan!');
                 } catch (err) { showToast('File backup tidak valid!', 'error'); }
             };
             reader.readAsText(file);
@@ -2258,7 +2368,7 @@
                 passwordGroup?.classList.remove('hidden');
                 if (passwordInput) passwordInput.required = true;
                 if (labelName) labelName.innerText = 'Username';
-                if (userInput) userInput.placeholder = 'Ketik username (cth: admin / gari)...';
+                if (userInput) userInput.placeholder = 'Ketik username (cth: admin / aufah)...';
             }
             loggedUser.role = role;
         };
@@ -2376,7 +2486,7 @@
             window.renderPetugasForm();
         };
 
-        window.generateUniqueTrxId = function() {
+        window.generateUniqueTrxId = function(persistSeq = false) {
             const now = new Date();
             const dateCode = String(now.getDate()).padStart(2, '0') + String(now.getMonth() + 1).padStart(2, '0') + String(now.getFullYear()).slice(-2);
             let maxSeq = 1000;
@@ -2390,6 +2500,9 @@
             const savedSeq = parseInt(localStorage.getItem(`kurir_bns_last_seq_${dateCode}`) || '1000', 10);
             if (savedSeq > maxSeq) maxSeq = savedSeq;
             const nextSeq = maxSeq + 1;
+            if (persistSeq) {
+                try { localStorage.setItem(`kurir_bns_last_seq_${dateCode}`, String(nextSeq)); } catch (e) {}
+            }
             const salt = Math.random().toString(36).substring(2, 5).toUpperCase();
             return `${prefix}${nextSeq}-${salt}`;
         };
@@ -2397,7 +2510,7 @@
         window.renderPetugasForm = function() {
             const container = document.getElementById('source-fields-container');
             if (!container) return;
-            const trxId = window.generateUniqueTrxId();
+            const trxId = window.generateUniqueTrxId(false);
             const day = new Date().getDay();
             const slaEl = document.getElementById('input-sla');
             if (slaEl && (day === 5 || day === 6)) slaEl.value = '3 hari (akhir pekan / senin)';
@@ -2405,21 +2518,76 @@
             if (sourceType === 'external') {
                 container.innerHTML = `
                     <div><label class="block text-[8.5px] font-semibold mb-0.5">ID Transaksi (Auto)</label><input type="text" id="input-trx" value="${trxId}" readonly class="w-full px-2 py-1 rounded border text-[9.5px] font-mono font-bold bg-slate-100"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">No Resi</label><div class="flex space-x-1"><input type="text" id="input-resi" required class="w-full px-2 py-1 rounded border text-[9.5px] font-mono"><button type="button" onclick="window.openBarcodeModal()" class="bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded text-[8.5px] font-bold">Scan</button></div></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Vendor / Ekspedisi</label><select id="input-vendor" class="w-full px-2 py-1 rounded border text-[9.5px] bg-white"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="JNE Express">JNE Express</option><option value="J&T Express">J&T Express</option><option value="GoSend / Grab">GoSend / Grab</option><option value="Titipan">Titipan</option></select></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Lokasi Asal</label><input type="text" id="input-origin" value="POS 3" required class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">No Resi</label><div class="flex space-x-1"><input type="text" id="input-resi" oninput="window.saveFormDraft()" required class="w-full px-2 py-1 rounded border text-[9.5px] font-mono"><button type="button" onclick="window.openBarcodeModal()" class="bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded text-[8.5px] font-bold">Scan</button></div></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Vendor / Ekspedisi</label><select id="input-vendor" onchange="window.saveFormDraft()" class="w-full px-2 py-1 rounded border text-[9.5px] bg-white"><option value="Shopee">Shopee</option><option value="Tokopedia">Tokopedia</option><option value="JNE Express">JNE Express</option><option value="J&T Express">J&T Express</option><option value="GoSend / Grab">GoSend / Grab</option><option value="Titipan">Titipan</option></select></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Lokasi Asal</label><input type="text" id="input-origin" oninput="window.saveFormDraft()" value="POS 3" required class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
                 `;
             } else {
                 container.innerHTML = `
                     <div><label class="block text-[8.5px] font-semibold mb-0.5">ID Transaksi (Auto)</label><input type="text" id="input-trx" value="${trxId}" readonly class="w-full px-2 py-1 rounded border text-[9.5px] font-mono font-bold bg-slate-100"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">No Referensi</label><input type="text" id="input-resi" value="INT-${trxId.replace('TRX-', '')}" required class="w-full px-2 py-1 rounded border text-[9.5px] font-mono"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Pengirim Internal</label><input type="text" id="input-sender-internal" required placeholder="Nama Pengirim" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Ruang Pengirim</label><input type="text" id="input-room-sender" required placeholder="Ruang Guru / TU" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">No Referensi</label><input type="text" id="input-resi" oninput="window.saveFormDraft()" value="INT-${trxId.replace('TRX-', '')}" required class="w-full px-2 py-1 rounded border text-[9.5px] font-mono"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Pengirim Internal</label><input type="text" id="input-sender-internal" oninput="window.saveFormDraft()" required placeholder="Nama Pengirim" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Ruang Pengirim</label><input type="text" id="input-room-sender" oninput="window.saveFormDraft()" required placeholder="Ruang Guru / TU" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
                 `;
             }
+            window.loadFormDraft();
         };
 
-        window.saveFormDraft = function() {};
+        window.saveFormDraft = function() {
+            try {
+                const draft = {
+                    sourceType,
+                    resi: document.getElementById('input-resi')?.value || '',
+                    vendor: document.getElementById('input-vendor')?.value || 'Shopee',
+                    origin: document.getElementById('input-origin')?.value || 'POS 3',
+                    senderInternal: document.getElementById('input-sender-internal')?.value || '',
+                    roomSender: document.getElementById('input-room-sender')?.value || '',
+                    recipient: document.getElementById('input-recipient')?.value || '',
+                    role: document.getElementById('input-recipient-role')?.value || 'Student',
+                    destination: document.getElementById('input-destination')?.value || '',
+                    phone: document.getElementById('input-phone')?.value || '',
+                    category: document.getElementById('input-category')?.value || 'dokumen',
+                    sla: document.getElementById('input-sla')?.value || '30 menit (cepat)',
+                    assignCourier: document.getElementById('input-assign-courier')?.value || 'Belum Ditugaskan',
+                    notes: document.getElementById('input-notes')?.value || ''
+                };
+                localStorage.setItem('kurir_bns_form_draft', JSON.stringify(draft));
+            } catch (e) {}
+        };
+
+        window.loadFormDraft = function() {
+            try {
+                const raw = localStorage.getItem('kurir_bns_form_draft');
+                if (!raw) return;
+                const d = JSON.parse(raw);
+                if (!d || d.sourceType !== sourceType) return;
+                const setVal = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el && val !== undefined && val !== null && val !== '') el.value = val;
+                };
+                if (sourceType === 'external') {
+                    setVal('input-resi', d.resi);
+                    setVal('input-vendor', d.vendor);
+                    setVal('input-origin', d.origin);
+                } else {
+                    if (d.resi && !d.resi.startsWith('INT-')) setVal('input-resi', d.resi);
+                    setVal('input-sender-internal', d.senderInternal);
+                    setVal('input-room-sender', d.roomSender);
+                }
+                setVal('input-recipient', d.recipient);
+                setVal('input-recipient-role', d.role);
+                setVal('input-destination', d.destination);
+                setVal('input-phone', d.phone);
+                setVal('input-category', d.category);
+                setVal('input-sla', d.sla);
+                setVal('input-assign-courier', d.assignCourier);
+                setVal('input-notes', d.notes);
+            } catch (e) {}
+        };
+
+        window.clearFormDraft = function() {
+            try { localStorage.removeItem('kurir_bns_form_draft'); } catch (e) {}
+        };
 
         window.openPhysicalCameraModal = function() {
             stopAllActiveMediaStreams();
@@ -2571,6 +2739,7 @@
             const notes = document.getElementById('input-notes').value.trim() || '-';
             const nowMs = Date.now();
             const timeStr = formatTimestampIndo(nowMs);
+            const verifyPin = String(Math.floor(1000 + Math.random() * 9000));
 
             pendingPackagePayload = {
                 id: trxId, resi, source: sourceType,
@@ -2579,6 +2748,7 @@
                 senderInternal: sourceType === 'internal' ? document.getElementById('input-sender-internal').value : '-',
                 roomSender: sourceType === 'internal' ? document.getElementById('input-room-sender').value : '-',
                 recipient, role, destination, phone, category, sla, notes,
+                verifyPin,
                 petugas: loggedUser.name || 'Petugas',
                 courier: assignCourier,
                 status: assignCourier !== 'Belum Ditugaskan' ? 'delivering' : 'pending',
@@ -2592,6 +2762,8 @@
             document.getElementById('sum-source').innerText = sourceType.toUpperCase();
             document.getElementById('sum-recipient').innerText = `${recipient} (${role})`;
             document.getElementById('sum-dest').innerText = destination;
+            const sumPinEl = document.getElementById('sum-pin');
+            if (sumPinEl) sumPinEl.innerText = verifyPin;
             document.getElementById('sum-petugas').innerText = pendingPackagePayload.petugas;
             document.getElementById('sum-photo').src = physicalPhotoDataUrl;
             document.getElementById('summary-confirmation-modal').classList.remove('hidden');
@@ -2602,6 +2774,10 @@
         window.executeSavePackageToFirebase = async function() {
             if (!pendingPackagePayload) return;
             const pkg = pendingPackagePayload;
+            const idMatch = String(pkg.id || '').match(/^TRX-(\d{6})-(\d+)-/);
+            if (idMatch) {
+                try { localStorage.setItem(`kurir_bns_last_seq_${idMatch[1]}`, idMatch[2]); } catch (e) {}
+            }
             packages.unshift(pkg);
             window.closeSummaryModal();
             await syncPackageToFirebase(pkg);
@@ -2613,6 +2789,7 @@
                 badge.className = "text-[8px] bg-amber-100/90 text-amber-800 px-2 py-0.5 rounded-full font-semibold inline-block border border-amber-200";
                 badge.innerText = "Belum Diambil";
             }
+            window.clearFormDraft();
             document.getElementById('package-form')?.reset();
             window.renderPetugasForm();
             refreshActiveView();
@@ -2668,8 +2845,9 @@
                         <div class="text-rose-600 font-bold break-words">
                             <i class="fa-solid fa-location-dot mr-1"></i>Tujuan: ${escapeHtml(p.destination || '-')}
                         </div>
-                        <div class="text-slate-600 text-[8.5px] break-words">
-                            <i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i>WA: <strong>${escapeHtml(p.phone || '-')}</strong>
+                        <div class="text-slate-600 text-[8.5px] break-words flex items-center justify-between">
+                            <span><i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i>WA: <strong title="Nomor disensor demi privasi">${maskPhoneNumber(p.phone)}</strong></span>
+                            <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono font-bold text-[8px]" title="PIN Verifikasi Serah Terima"><i class="fa-solid fa-key mr-0.5"></i>PIN: ${escapeHtml(getOrCreatePackagePin(p))}</span>
                         </div>
                     </div>
 
@@ -2687,9 +2865,9 @@
 
                     <div class="flex items-center justify-between pt-1">
                         <div class="flex items-center space-x-1.5">
-                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik Paket" class="w-7 h-7 object-cover rounded-lg border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                            ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti Serah Terima" class="w-7 h-7 object-cover rounded-lg border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                            ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="Tanda Tangan Penerima" class="w-7 h-7 object-contain bg-white rounded-lg border border-slate-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" title="Foto Fisik Paket" class="w-7 h-7 object-cover rounded-lg border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.proofPhotoUrl ? `<img src="${sanitizeImageUrl(p.proofPhotoUrl)}" title="Foto Bukti Serah Terima" class="w-7 h-7 object-cover rounded-lg border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.signatureDataUrl ? `<img src="${sanitizeImageUrl(p.signatureDataUrl)}" title="Tanda Tangan Penerima" class="w-7 h-7 object-contain bg-white rounded-lg border border-slate-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                         </div>
                         <div class="flex items-center space-x-1">
                             <button type="button" onclick="window.openInspectPackageModal('${safeId}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[8px]" title="Detail 360°"><i class="fa-solid fa-eye mr-0.5"></i>Detail</button>
@@ -2753,6 +2931,7 @@
             if (selectedCourierPkgIds.size === 0) return;
             const courierName = loggedUser.name || 'Kurir';
             let count = 0;
+            const takenIds = [];
             for (const id of selectedCourierPkgIds) {
                 const p = packages.find(item => String(item.id) === String(id));
                 if (p && p.status === 'pending') {
@@ -2761,7 +2940,11 @@
                     p.takenTimestampRaw = Date.now();
                     await syncPackageToFirebase(p);
                     count++;
+                    takenIds.push(p.id);
                 }
+            }
+            if (count > 0) {
+                addAuditLog(`Kurir (${courierName}) mengambil ${count} paket sekaligus (${takenIds.join(', ')})`, courierName, 'KURIR');
             }
             window.clearCourierSelection();
             refreshActiveView();
@@ -2775,6 +2958,10 @@
             proofPhotoDataUrl = null;
             document.getElementById('proof-thumb-container')?.classList.add('hidden');
             document.getElementById('complete-modal-title').innerText = `Serah Terima Sekaligus (${selectedCourierPkgIds.size} Paket)`;
+            const pinInput = document.getElementById('confirm-pin-input');
+            if (pinInput) pinInput.value = '';
+            const pinBadge = document.getElementById('confirm-pin-badge');
+            if (pinBadge) pinBadge.innerText = 'Opsional (Kurir Batch)';
             window.clearSignaturePad();
             document.getElementById('complete-modal').classList.remove('hidden');
         };
@@ -2801,7 +2988,7 @@
                         <div class="break-words"><span class="text-slate-400 font-semibold">No. Resi:</span> <strong class="font-mono text-slate-800">${escapeHtml(p.resi || '-')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Kategori & SLA:</span> <strong class="uppercase text-purple-700">${escapeHtml(p.category || '-')}</strong> • <strong class="text-indigo-700">${escapeHtml(p.sla || '-')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Sumber Paket:</span> <strong class="text-slate-800">${srcInfo}</strong></div>
-                        <div class="break-words"><span class="text-slate-400 font-semibold">No. WhatsApp:</span> <strong class="text-emerald-700">${escapeHtml(p.phone || '-')}</strong></div>
+                        <div class="break-words"><span class="text-slate-400 font-semibold">WA (Privasi):</span> <strong class="text-emerald-700 font-mono">${maskPhoneNumber(p.phone)}</strong> • <span class="text-amber-700 font-mono font-bold">PIN: ${escapeHtml(getOrCreatePackagePin(p))}</span></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Petugas Input:</span> <strong class="text-slate-800">${escapeHtml(p.petugas || '-')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Kurir Pengantar:</span> <strong class="text-sky-700">${escapeHtml(p.courier || 'Belum Ditugaskan')}</strong></div>
                         <div class="break-words"><span class="text-slate-400 font-semibold">Waktu Masuk:</span> <span>${escapeHtml(p.timestamp || '-')}</span></div>
@@ -2830,7 +3017,7 @@
                             </div>
                         </div>
                         <div class="flex items-center space-x-1.5 shrink-0 self-end sm:self-center">
-                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" title="Foto Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                             <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-2.5 py-1.5 rounded-xl text-[9px]" title="Hubungi WA"><i class="fa-brands fa-whatsapp"></i></button>
                             <button type="button" onclick="window.takePackage('${safeId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-[9px] shadow">Ambil & Antar</button>
                         </div>
@@ -2855,7 +3042,7 @@
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
-                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" title="Foto Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                             <button type="button" onclick="window.sendWhatsAppNotification('${safeId}')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-2.5 py-1.5 rounded-xl text-[9px]" title="Hubungi WA"><i class="fa-brands fa-whatsapp"></i></button>
                             <button type="button" onclick="window.openExceptionModal('${safeId}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-2.5 py-1.5 rounded-xl text-[8.5px]">Kendala / Titip Pos</button>
                             <button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-[9px] shadow">Selesaikan</button>
@@ -2877,9 +3064,9 @@
                         ${buildCourierMetaHtml(p)}
                     </div>
                     <div class="flex items-center space-x-1.5 shrink-0">
-                        ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Fisik" class="w-8 h-8 object-cover rounded-lg border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                        ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti" class="w-8 h-8 object-cover rounded-lg border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                        ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="TTD Penerima" class="w-8 h-8 object-contain bg-white rounded-lg border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" title="Foto Fisik" class="w-8 h-8 object-cover rounded-lg border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.proofPhotoUrl ? `<img src="${sanitizeImageUrl(p.proofPhotoUrl)}" title="Foto Bukti" class="w-8 h-8 object-cover rounded-lg border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.signatureDataUrl ? `<img src="${sanitizeImageUrl(p.signatureDataUrl)}" title="TTD Penerima" class="w-8 h-8 object-contain bg-white rounded-lg border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                         <button type="button" onclick="window.openInspectPackageModal('${safeId}')" class="px-2.5 py-1.5 rounded-xl bg-white border text-slate-700 font-bold text-[8.5px]"><i class="fa-solid fa-eye mr-1"></i>Detail</button>
                     </div>
                 </div>
@@ -2889,10 +3076,12 @@
         window.takePackage = async function(id) {
             const p = packages.find(item => String(item.id) === String(id));
             if (!p) return;
+            const courierName = loggedUser.name || 'Kurir';
             p.status = 'delivering';
-            p.courier = loggedUser.name || 'Kurir';
+            p.courier = courierName;
             p.takenTimestampRaw = Date.now();
             await syncPackageToFirebase(p);
+            addAuditLog(`Kurir (${courierName}) mengambil paket ${p.id} tujuan ${p.destination}`, courierName, 'KURIR');
             refreshActiveView();
             showToast(`Paket ${id} diambil untuk diantar!`);
         };
@@ -2915,6 +3104,7 @@
             p.notes = note ? `${p.notes || ''} [Kendala: ${reason} - ${note}]` : `${p.notes || ''} [Kendala: ${reason}]`;
             p.status = 'pending';
             await syncPackageToFirebase(p);
+            addAuditLog(`Kurir (${loggedUser.name || 'Kurir'}) melaporkan kendala paket ${p.id}: ${reason}`, loggedUser.name || 'Kurir', 'KURIR');
             window.closeExceptionModal();
             refreshActiveView();
             showToast('Status kendala / titip pos berhasil dicatat!');
@@ -2928,6 +3118,23 @@
             document.getElementById('confirm-receiver-name').value = p ? p.recipient : '';
             document.getElementById('proof-thumb-container')?.classList.add('hidden');
             document.getElementById('complete-modal-title').innerText = `Selesaikan Pengiriman (${id})`;
+            const pinInput = document.getElementById('confirm-pin-input');
+            const pinBadge = document.getElementById('confirm-pin-badge');
+            const pinHint = document.getElementById('confirm-pin-hint');
+            if (pinInput) pinInput.value = '';
+            if (currentRole === 'penerima' && !loggedUser.isSuperAdmin) {
+                if (pinBadge) {
+                    pinBadge.className = 'text-[7.5px] px-1.5 py-0.2 rounded bg-rose-100 text-rose-700 font-extrabold';
+                    pinBadge.innerText = 'Wajib Diisi';
+                }
+                if (pinHint) pinHint.innerText = 'Demi keamanan, ketik 4 digit PIN Paket (dari WA/Stiker QR) atau 4 angka terakhir No. WhatsApp Anda.';
+            } else {
+                if (pinBadge) {
+                    pinBadge.className = 'text-[7.5px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-bold';
+                    pinBadge.innerText = p ? `PIN Paket: ${getOrCreatePackagePin(p)}` : 'Opsional (Kurir)';
+                }
+                if (pinHint) pinHint.innerText = 'Kurir dapat memasukkan PIN dari penerima atau langsung konfirmasi dengan foto bukti / TTD.';
+            }
             window.clearSignaturePad();
             document.getElementById('complete-modal').classList.remove('hidden');
         };
@@ -2937,11 +3144,39 @@
         window.submitCompleteDelivery = async function() {
             const recName = document.getElementById('confirm-receiver-name').value.trim() || 'Penerima';
             const opt = document.getElementById('confirm-completion-option').value;
+            const enteredPin = (document.getElementById('confirm-pin-input')?.value || '').trim();
             const sigUrl = hasSignatureStroke && sigCanvas ? sigCanvas.toDataURL('image/png') : null;
             const nowMs = Date.now();
             const doneTime = formatTimestampIndo(nowMs);
+            const actorRole = currentRole === 'penerima' ? 'PENERIMA' : 'KURIR';
+            const actorName = loggedUser.name || recName;
+
+            if (!isBatchCompleting && activeCompletingId) {
+                const pCheck = packages.find(item => String(item.id) === String(activeCompletingId));
+                if (pCheck) {
+                    const expectedPin = getOrCreatePackagePin(pCheck);
+                    const phoneDigits = String(pCheck.phone || '').replace(/\D/g, '');
+                    const last4Wa = phoneDigits.length >= 4 ? phoneDigits.slice(-4) : '';
+                    const isPinMatch = enteredPin && (enteredPin === expectedPin || (last4Wa && enteredPin === last4Wa));
+
+                    if (currentRole === 'penerima' && !loggedUser.isSuperAdmin) {
+                        if (!enteredPin) {
+                            showToast('Wajib memasukkan 4 digit PIN Paket atau 4 digit akhir No. WA Anda!', 'error');
+                            return;
+                        }
+                        if (!isPinMatch) {
+                            showToast('PIN Verifikasi tidak sesuai! Cek kembali PIN pada WA/Stiker atau 4 angka akhir No. WA Anda.', 'error');
+                            return;
+                        }
+                    } else if (enteredPin && !isPinMatch) {
+                        showToast('PIN yang dimasukkan tidak cocok dengan PIN Paket maupun 4 digit akhir WA!', 'error');
+                        return;
+                    }
+                }
+            }
 
             if (isBatchCompleting) {
+                const completedIds = [];
                 for (const id of selectedCourierPkgIds) {
                     const p = packages.find(item => String(item.id) === String(id));
                     if (p) {
@@ -2952,19 +3187,25 @@
                         if (proofPhotoDataUrl) p.proofPhotoUrl = proofPhotoDataUrl;
                         if (sigUrl) p.signatureDataUrl = sigUrl;
                         await syncPackageToFirebase(p);
+                        completedIds.push(p.id);
                     }
+                }
+                if (completedIds.length > 0) {
+                    addAuditLog(`${actorRole} (${actorName}) menyelesaikan ${completedIds.length} paket sekaligus (${completedIds.join(', ')}) — Diterima oleh: ${recName}`, actorName, actorRole);
                 }
                 window.clearCourierSelection();
             } else if (activeCompletingId) {
                 const p = packages.find(item => String(item.id) === String(activeCompletingId));
                 if (p) {
+                    const verifiedTag = enteredPin ? ' [PIN Terverifikasi]' : '';
                     p.status = 'completed';
                     p.completedTimestamp = doneTime;
                     p.completedTimestampRaw = nowMs;
-                    p.completionOption = `${opt} (${recName})`;
+                    p.completionOption = `${opt} (${recName})${verifiedTag}`;
                     if (proofPhotoDataUrl) p.proofPhotoUrl = proofPhotoDataUrl;
                     if (sigUrl) p.signatureDataUrl = sigUrl;
                     await syncPackageToFirebase(p);
+                    addAuditLog(`${actorRole} (${actorName}) menyelesaikan serah terima paket ${p.id} (${opt} - ${recName})${verifiedTag}`, actorName, actorRole);
                 }
             }
             window.closeCompleteModal();
@@ -3018,9 +3259,9 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
-                        ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Paket Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                        ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti Terima" class="w-9 h-9 object-cover rounded-xl border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                        ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="TTD Penerima" class="w-9 h-9 object-contain bg-white rounded-xl border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" title="Foto Paket Fisik" class="w-9 h-9 object-cover rounded-xl border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.proofPhotoUrl ? `<img src="${sanitizeImageUrl(p.proofPhotoUrl)}" title="Foto Bukti Terima" class="w-9 h-9 object-cover rounded-xl border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                        ${p.signatureDataUrl ? `<img src="${sanitizeImageUrl(p.signatureDataUrl)}" title="TTD Penerima" class="w-9 h-9 object-contain bg-white rounded-xl border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                         ${p.status !== 'completed' ? `<button type="button" onclick="window.openCompleteModal('${safeId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-[9px] shadow">Konfirmasi Terima</button>` : `<span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-700 font-bold text-[8.5px]"><i class="fa-solid fa-check-double mr-1"></i>Sudah Diterima</span>`}
                     </div>
                 </div>`;
@@ -3150,10 +3391,10 @@
                 }
             };
 
-            createOrUpdate('source', 'chartSource', 'doughnut', ['Eksternal', 'Internal'], [extCount || 1, intCount], ['#4f46e5', '#0ea5e9']);
-            createOrUpdate('category', 'chartCategory', 'pie', ['Dokumen', 'Makanan', 'Barang'], [catMap.dokumen, catMap.makanan, catMap.barang || 1], ['#8b5cf6', '#f59e0b', '#10b981']);
-            createOrUpdate('role', 'chartRole', 'doughnut', ['Guru', 'Staf', 'Siswa'], [roleMap.Teacher || 1, roleMap.Staff, roleMap.Student], ['#ec4899', '#06b6d4', '#6366f1']);
-            createOrUpdate('dest', 'chartExpedition', 'bar', topDests.length ? topDests.map(x => x[0]) : ['Ruang Guru'], topDests.length ? topDests.map(x => x[1]) : [0], ['#4f46e5', '#7c3aed', '#0ea5e9', '#10b981', '#f59e0b']);
+            createOrUpdate('source', 'chartSource', 'doughnut', ['Eksternal', 'Internal'], [extCount, intCount], ['#4f46e5', '#0ea5e9']);
+            createOrUpdate('category', 'chartCategory', 'pie', ['Dokumen', 'Makanan', 'Barang'], [catMap.dokumen || 0, catMap.makanan || 0, catMap.barang || 0], ['#8b5cf6', '#f59e0b', '#10b981']);
+            createOrUpdate('role', 'chartRole', 'doughnut', ['Guru', 'Staf', 'Siswa'], [roleMap.Teacher || 0, roleMap.Staff || 0, roleMap.Student || 0], ['#ec4899', '#06b6d4', '#6366f1']);
+            createOrUpdate('dest', 'chartExpedition', 'bar', topDests.length ? topDests.map(x => x[0]) : ['Belum Ada Data'], topDests.length ? topDests.map(x => x[1]) : [0], ['#4f46e5', '#7c3aed', '#0ea5e9', '#10b981', '#f59e0b']);
         }
 
         window.openInspectPackageModal = function(pkgId) {
@@ -3191,22 +3432,29 @@
                 <div class="bg-slate-50 p-2.5 rounded-2xl border space-y-1">
                     <div class="flex justify-between"><span>No. Resi / Sumber:</span><strong>${escapeHtml(p.resi || '-')} (${escapeHtml((p.source || 'external').toUpperCase())})</strong></div>
                     <div class="flex justify-between"><span>Pengirim / Vendor:</span><strong>${escapeHtml(p.source === 'external' ? (p.vendor + ' - ' + p.originLocation) : (p.senderInternal + ' - ' + p.roomSender))}</strong></div>
-                    <div class="flex justify-between"><span>No. WhatsApp Penerima:</span><strong>${escapeHtml(p.phone || '-')}</strong></div>
+                    <div class="flex justify-between items-center">
+                        <span>No. WhatsApp Penerima:</span>
+                        <span class="flex items-center space-x-1.5">
+                            <strong id="inspect-phone-val" class="font-mono text-emerald-700">${maskPhoneNumber(p.phone)}</strong>
+                            ${currentRole === 'admin' && p.phone && p.phone !== '-' ? `<button type="button" onclick="const el=document.getElementById('inspect-phone-val'); el.innerText = el.innerText.includes('•') ? '${escapeHtml(p.phone)}' : '${maskPhoneNumber(p.phone)}';" class="text-[8px] px-1.5 py-0.2 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold" title="Tampilkan / Sensor Nomor"><i class="fa-solid fa-eye"></i></button>` : ''}
+                        </span>
+                    </div>
+                    <div class="flex justify-between"><span>PIN Verifikasi Terima:</span><strong class="font-mono text-amber-700 bg-amber-50 px-2 rounded border border-amber-200">${escapeHtml(getOrCreatePackagePin(p))}</strong></div>
                     <div class="flex justify-between"><span>Durasi Penyelesaian:</span><strong class="text-indigo-600">${escapeHtml(durationText)}</strong></div>
                     <div class="flex justify-between"><span>Keterangan / Catatan:</span><strong>${escapeHtml(p.completionOption || p.notes || '-')}</strong></div>
                 </div>
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div class="p-2 rounded-xl border bg-slate-50">
                         <span class="text-[8px] font-bold text-slate-500 block mb-1">Foto Fisik Awal</span>
-                        ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" class="w-full h-24 object-cover rounded-lg mx-auto zoomable-img" onclick="window.openZoomModal(this.src)">` : `<div class="h-24 flex items-center justify-center text-slate-400 text-[8px]">Tidak ada foto</div>`}
+                        ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" class="w-full h-24 object-cover rounded-lg mx-auto zoomable-img" onclick="window.openZoomModal(this.src)">` : `<div class="h-24 flex items-center justify-center text-slate-400 text-[8px]">Tidak ada foto</div>`}
                     </div>
                     <div class="p-2 rounded-xl border bg-slate-50">
                         <span class="text-[8px] font-bold text-slate-500 block mb-1">Foto Bukti Kurir</span>
-                        ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" class="w-full h-24 object-cover rounded-lg mx-auto zoomable-img" onclick="window.openZoomModal(this.src)">` : `<div class="h-24 flex items-center justify-center text-slate-400 text-[8px]">Belum ada foto</div>`}
+                        ${p.proofPhotoUrl ? `<img src="${sanitizeImageUrl(p.proofPhotoUrl)}" class="w-full h-24 object-cover rounded-lg mx-auto zoomable-img" onclick="window.openZoomModal(this.src)">` : `<div class="h-24 flex items-center justify-center text-slate-400 text-[8px]">Belum ada foto</div>`}
                     </div>
                     <div class="p-2 rounded-xl border bg-white">
                         <span class="text-[8px] font-bold text-slate-500 block mb-1">Tanda Tangan</span>
-                        ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" class="w-full h-24 object-contain rounded-lg mx-auto border zoomable-img" onclick="window.openZoomModal(this.src)">` : `<div class="h-24 flex items-center justify-center text-slate-400 text-[8px]">Belum ada TTD</div>`}
+                        ${p.signatureDataUrl ? `<img src="${sanitizeImageUrl(p.signatureDataUrl)}" class="w-full h-24 object-contain rounded-lg mx-auto border zoomable-img" onclick="window.openZoomModal(this.src)">` : `<div class="h-24 flex items-center justify-center text-slate-400 text-[8px]">Belum ada TTD</div>`}
                     </div>
                 </div>
             `;
@@ -3348,7 +3596,7 @@
                     <td class="p-2 min-w-[160px]">
                         <div class="font-bold text-slate-900 break-words">${escapeHtml(p.recipient || '-')} <span class="text-slate-500 font-normal">(${escapeHtml(p.role || '-')})</span></div>
                         <div class="text-rose-600 text-[8.5px] font-bold break-words"><i class="fa-solid fa-location-dot mr-0.5"></i>${escapeHtml(p.destination || '-')}</div>
-                        <div class="text-emerald-700 text-[8px] font-mono break-words"><i class="fa-brands fa-whatsapp mr-0.5"></i>${escapeHtml(p.phone || '-')}</div>
+                        <div class="text-emerald-700 text-[8px] font-mono break-words"><i class="fa-brands fa-whatsapp mr-0.5"></i>${maskPhoneNumber(p.phone)} <span class="text-amber-700 font-bold ml-1">[PIN: ${escapeHtml(getOrCreatePackagePin(p))}]</span></div>
                         ${p.notes && p.notes !== '-' ? `<div class="text-[8px] text-slate-600 bg-slate-100 p-1 rounded mt-0.5 break-words"><strong>Catatan:</strong> ${escapeHtml(p.notes)}</div>` : ''}
                     </td>
                     <td class="p-2 min-w-[130px] text-[8.5px]">
@@ -3358,9 +3606,9 @@
                     </td>
                     <td class="p-2">
                         <div class="flex items-center space-x-1">
-                            ${p.physicalPhotoUrl ? `<img src="${p.physicalPhotoUrl}" title="Foto Awal" class="w-7 h-7 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                            ${p.proofPhotoUrl ? `<img src="${p.proofPhotoUrl}" title="Foto Bukti Kurir" class="w-7 h-7 object-cover rounded border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
-                            ${p.signatureDataUrl ? `<img src="${p.signatureDataUrl}" title="TTD Penerima" class="w-7 h-7 object-contain bg-white rounded border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.physicalPhotoUrl ? `<img src="${sanitizeImageUrl(p.physicalPhotoUrl)}" title="Foto Awal" class="w-7 h-7 object-cover rounded border zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.proofPhotoUrl ? `<img src="${sanitizeImageUrl(p.proofPhotoUrl)}" title="Foto Bukti Kurir" class="w-7 h-7 object-cover rounded border border-emerald-400 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
+                            ${p.signatureDataUrl ? `<img src="${sanitizeImageUrl(p.signatureDataUrl)}" title="TTD Penerima" class="w-7 h-7 object-contain bg-white rounded border border-indigo-300 zoomable-img" onclick="window.openZoomModal(this.src)">` : ''}
                         </div>
                     </td>
                     <td class="p-2 min-w-[115px]">
