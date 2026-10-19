@@ -267,7 +267,7 @@
             </form>
             <div class="bg-slate-50/80 p-2 rounded-xl border border-white text-[8.5px] text-slate-500 text-center flex justify-between items-center px-3">
                 <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cloud Firebase Aktif</span>
-                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.5.1</span>
+                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.5.2</span>
             </div>
         </div>
     </div>
@@ -880,7 +880,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[9px] text-slate-500 mt-auto">
-        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.5.1 — Super Admin Center)</p>
+        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.5.2 — Super Admin Center)</p>
     </footer>
 
     <!-- Modal 360° Package Inspector (Admin) -->
@@ -1775,7 +1775,8 @@
 
         let members = [
             { id: 'usr-superadm', name: 'Administrator', username: 'admin', email: 'admin', password: '123456', role: 'admin', status: 'Aktif' },
-            { id: 'usr-aufah', name: 'Aufah (Kurir & Petugas)', username: 'aufah', email: 'aufah', password: '123456', role: 'kurir', status: 'Aktif' }
+            { id: 'usr-aufah', name: 'Aufah (Kurir)', username: 'aufah', email: 'aufah', password: '123456', role: 'kurir', status: 'Aktif' },
+            { id: 'usr-pos3', name: 'Petugas Pos 3', username: 'pos3', email: 'pos3', password: '123456', role: 'petugas', status: 'Aktif' }
         ];
         let packages = [];
         let auditLogs = [];
@@ -2535,7 +2536,7 @@
         };
 
         window.downloadDatabaseBackup = function() {
-            const backupData = { app: 'Kurir BNS Sekolah', version: '4.5.1', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
+            const backupData = { app: 'Kurir BNS Sekolah', version: '4.5.2', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
             const a = document.createElement('a');
             a.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2)));
             a.setAttribute("download", "kurir_bns_backup_" + new Date().toISOString().slice(0,10) + ".json");
@@ -2691,11 +2692,16 @@
             }
             const resolvedUname = getMemberUsername(foundUser);
             const isSuperAdmin = resolvedUname === 'admin' || foundUser.role === 'admin';
-            const isDualStaff = foundUser.role === 'kurir' || foundUser.role === 'petugas';
-            // Kurir & Petugas bisa memilih masuk sebagai Petugas (Input Pos 3) maupun Kurir (Antar Paket)
-            const activeRole = isSuperAdmin ? role : (isDualStaff && (role === 'petugas' || role === 'kurir') ? role : foundUser.role);
+            const isCourierDual = foundUser.role === 'kurir';
+            // Jika akun adalah Petugas, kunci khusus di Pos 3 (tidak bisa masuk ke role Kurir)
+            if (foundUser.role === 'petugas' && role === 'kurir') {
+                showToast('Akun Petugas dikhususkan untuk Pos 3, dialihkan ke halaman Petugas Pos 3.', 'info');
+            }
+            const activeRole = isSuperAdmin
+                ? role
+                : (isCourierDual && (role === 'petugas' || role === 'kurir') ? role : foundUser.role);
             loggedUser = {
-                name: foundUser.name, username: resolvedUname, email: resolvedUname, role: activeRole, memberRole: foundUser.role, isSuperAdmin, isDualStaff,
+                name: foundUser.name, username: resolvedUname, email: resolvedUname, role: activeRole, memberRole: foundUser.role, isSuperAdmin, isDualStaff: isCourierDual,
                 avatar: foundUser.avatar || `https://placehold.co/100x100/4338ca/ffffff?text=${encodeURIComponent(foundUser.name.slice(0,2).toUpperCase())}`
             };
             localStorage.setItem('kurir_bns_logged_user', JSON.stringify(loggedUser));
@@ -2710,18 +2716,27 @@
         };
 
         window.switchRole = function(role) {
+            const isCourierAccount = !loggedUser.isSuperAdmin && (loggedUser.memberRole === 'kurir' || (loggedUser.isDualStaff && loggedUser.memberRole !== 'petugas'));
+            const isPetugasOnly = !loggedUser.isSuperAdmin && !isCourierAccount && (loggedUser.memberRole === 'petugas' || loggedUser.role === 'petugas');
+
+            // Proteksi Ketat: Akun Petugas khusus Pos 3 tidak diizinkan membuka tampilan Kurir
+            if (isPetugasOnly && role === 'kurir') {
+                role = 'petugas';
+                showToast('Akses dibatasi: Petugas khusus bertugas di Pos 3 (tidak dapat mengambil peran Kurir).', 'error');
+            }
+
             currentRole = role;
             const desktopNav = document.getElementById('desktop-role-nav');
             const mobileNav = document.getElementById('mobile-role-nav');
-            const canDualSwitch = loggedUser.isDualStaff || loggedUser.memberRole === 'kurir' || loggedUser.memberRole === 'petugas' || loggedUser.role === 'kurir' || loggedUser.role === 'petugas';
+
             if (loggedUser.isSuperAdmin) {
                 const html = ['petugas', 'kurir', 'penerima', 'admin'].map(r => `<button onclick="window.switchRole('${r}')" class="px-2.5 py-1 rounded-lg transition ${r===role?'bg-white text-indigo-800 font-bold':'text-indigo-100'}">${r.toUpperCase()}</button>`).join('');
                 if (desktopNav) desktopNav.innerHTML = html;
                 if (mobileNav) mobileNav.innerHTML = html;
-            } else if (canDualSwitch && loggedUser.role !== 'penerima') {
-                // Kurir & Petugas memiliki akses penuh untuk berpindah antara Input Pos 3 (Petugas) & Pengantaran (Kurir)
+            } else if (isCourierAccount) {
+                // Khusus Kurir: Bisa menginput paket saat standby di Pos 3 / Panggilan Teacher & kembali ke Antar Paket
                 const dualRoles = [
-                    { key: 'petugas', label: 'INPUT POS 3 / MONITOR' },
+                    { key: 'petugas', label: 'INPUT POS 3 / PANGGILAN' },
                     { key: 'kurir', label: 'ANTAR PAKET (KURIR)' }
                 ];
                 const htmlDesktop = dualRoles.map(r => `<button onclick="window.switchRole('${r.key}')" class="px-2.5 py-1 rounded-lg transition ${r.key===role?'bg-white text-indigo-800 font-bold shadow-sm':'text-indigo-100 hover:bg-white/10'}">${r.label}</button>`).join('');
@@ -2729,14 +2744,15 @@
                 if (desktopNav) desktopNav.innerHTML = htmlDesktop;
                 if (mobileNav) mobileNav.innerHTML = htmlMobile;
             } else {
-                if (desktopNav) desktopNav.innerHTML = `<span class="px-3 py-1 rounded-lg bg-white text-indigo-800 font-bold">${role.toUpperCase()}</span>`;
-                if (mobileNav) mobileNav.innerHTML = `<span class="text-white font-bold text-center col-span-4">${role.toUpperCase()}</span>`;
+                const badgeLabel = isPetugasOnly ? 'PETUGAS KHUSUS POS 3' : role.toUpperCase();
+                if (desktopNav) desktopNav.innerHTML = `<span class="px-3 py-1 rounded-lg bg-white text-indigo-800 font-bold">${badgeLabel}</span>`;
+                if (mobileNav) mobileNav.innerHTML = `<span class="text-white font-bold text-center col-span-4">${badgeLabel}</span>`;
             }
 
             const backKurirBtn = document.getElementById('btn-back-to-kurir');
             if (backKurirBtn) {
-                backKurirBtn.classList.toggle('hidden', !(canDualSwitch || loggedUser.isSuperAdmin));
-                backKurirBtn.classList.toggle('flex', (canDualSwitch || loggedUser.isSuperAdmin));
+                backKurirBtn.classList.toggle('hidden', !(isCourierAccount || loggedUser.isSuperAdmin));
+                backKurirBtn.classList.toggle('flex', (isCourierAccount || loggedUser.isSuperAdmin));
             }
 
             ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
@@ -3186,7 +3202,9 @@
             packages.unshift(pkg);
             window.closeSummaryModal();
             await syncPackageToFirebase(pkg);
-            addAuditLog(`Petugas (${loggedUser.name}) menginput paket baru ${pkg.id} untuk ${pkg.recipient}`, loggedUser.name, 'PETUGAS');
+            const inputActorRole = (loggedUser.memberRole === 'kurir') ? 'KURIR' : 'PETUGAS';
+            const inputActorLabel = (inputActorRole === 'KURIR') ? `Kurir Standby Pos 3 (${loggedUser.name})` : `Petugas Pos 3 (${loggedUser.name})`;
+            addAuditLog(`${inputActorLabel} menginput paket baru ${pkg.id} untuk ${pkg.recipient}`, loggedUser.name, inputActorRole);
             physicalPhotoDataUrl = null;
             document.getElementById('physical-photo-preview-wrap')?.classList.add('hidden');
             const badge = document.getElementById('photo-status-badge');
