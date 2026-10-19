@@ -267,7 +267,7 @@
             </form>
             <div class="bg-slate-50/80 p-2 rounded-xl border border-white text-[8.5px] text-slate-500 text-center flex justify-between items-center px-3">
                 <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cloud Firebase Aktif</span>
-                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.4.9</span>
+                <span class="font-mono text-[8px] text-indigo-600 font-bold">Smart Logistics v4.5.0</span>
             </div>
         </div>
     </div>
@@ -356,13 +356,32 @@
                                 <p class="text-[8.5px] text-slate-500">Pilih sumber paket Eksternal / Vendor atau Internal / Antar Ruangan</p>
                             </div>
                         </div>
-                        <div class="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/50">
-                            <button type="button" onclick="window.switchSourceType('external')" id="btn-src-ext" class="px-3 py-1 rounded-lg text-[9px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-truck-fast"></i><span>Eksternal</span></button>
-                            <button type="button" onclick="window.switchSourceType('internal')" id="btn-src-int" class="px-3 py-1 rounded-lg text-[9px] font-bold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1"><i class="fa-solid fa-building"></i><span>Internal</span></button>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <button type="button" id="btn-back-to-kurir" onclick="window.switchRole('kurir')" class="hidden px-2.5 py-1 rounded-xl text-[8.5px] font-extrabold bg-sky-100 hover:bg-sky-200 text-sky-800 border border-sky-300 transition items-center space-x-1 shadow-sm">
+                                <i class="fa-solid fa-motorcycle"></i><span>Kembali ke Daftar Antar Kurir</span>
+                            </button>
+                            <div class="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/50">
+                                <button type="button" onclick="window.switchSourceType('external')" id="btn-src-ext" class="px-2.5 py-1 rounded-lg text-[8.5px] font-bold transition bg-indigo-600 text-white shadow flex items-center space-x-1"><i class="fa-solid fa-truck-fast"></i><span>Eksternal (Pos 3)</span></button>
+                                <button type="button" onclick="window.switchSourceType('internal')" id="btn-src-int" class="px-2.5 py-1 rounded-lg text-[8.5px] font-bold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1"><i class="fa-solid fa-building"></i><span>Internal / Panggilan Teacher</span></button>
+                            </div>
                         </div>
                     </div>
 
                     <form id="package-form" onsubmit="window.handlePreparePackageSummary(event)" class="space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-[9px]">
+                            <div class="flex items-center space-x-1.5 font-bold text-indigo-900">
+                                <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i>
+                                <span>Mode Cepat Input (Standby Pos 3 & Panggilan Teacher):</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <button type="button" onclick="window.applyInputQuickPreset('pos3')" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[8.5px] shadow-sm transition flex items-center space-x-1">
+                                    <i class="fa-solid fa-tent"></i><span>Standby Pos 3 (Paket Masuk)</span>
+                                </button>
+                                <button type="button" onclick="window.applyInputQuickPreset('teacher-call')" class="px-2.5 py-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-[8.5px] shadow-sm transition flex items-center space-x-1">
+                                    <i class="fa-solid fa-headset"></i><span>Panggilan Teacher (Jemput / Antar Guru)</span>
+                                </button>
+                            </div>
+                        </div>
                         <div id="source-fields-container" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 p-3 bg-slate-50 rounded-2xl border border-white"></div>
 
                         <div class="p-3 bg-gradient-to-r from-indigo-50/70 via-white/80 to-purple-50/70 rounded-2xl border border-indigo-100/80 flex flex-wrap items-center justify-between gap-2 shadow-sm">
@@ -545,8 +564,10 @@
                         <i class="fa-solid fa-circle-check text-emerald-400"></i><span>Selesai (<span id="count-completed-badge">0</span>)</span>
                     </button>
                 </div>
-                <div class="flex items-center space-x-1 shrink-0">
-                    <button type="button" onclick="window.openBarcodeModal('courier')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded-xl text-[8.5px] font-bold shadow transition flex items-center space-x-1 whitespace-nowrap btn-glow" title="Scan Stiker QR / Barcode Paket untuk Ambil atau Selesaikan"><i class="fa-solid fa-qrcode"></i><span>Scan QR Paket</span></button>
+                <div class="flex items-center space-x-1 shrink-0 flex-wrap gap-y-1">
+                    <button type="button" onclick="window.openCourierQuickInput('pos3')" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-2.5 py-1 rounded-xl text-[8.5px] font-extrabold shadow transition flex items-center space-x-1 whitespace-nowrap btn-glow" title="Input Paket Baru saat Kurir Standby di Pos 3"><i class="fa-solid fa-plus-circle"></i><span>Input Pos 3</span></button>
+                    <button type="button" onclick="window.openCourierQuickInput('teacher-call')" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-2.5 py-1 rounded-xl text-[8.5px] font-extrabold shadow transition flex items-center space-x-1 whitespace-nowrap" title="Input Jemput Paket / Panggilan dari Teacher (Guru)"><i class="fa-solid fa-headset"></i><span>Panggilan Teacher</span></button>
+                    <button type="button" onclick="window.openBarcodeModal('courier')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded-xl text-[8.5px] font-bold shadow transition flex items-center space-x-1 whitespace-nowrap" title="Scan Stiker QR / Barcode Paket untuk Ambil atau Selesaikan"><i class="fa-solid fa-qrcode"></i><span class="hidden sm:inline">Scan QR</span></button>
                     <button type="button" onclick="window.openManifestModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-2.5 py-1 rounded-xl text-[8.5px] font-bold shadow transition flex items-center space-x-1 whitespace-nowrap" title="Cetak Surat Jalan / Manifest Pengantaran"><i class="fa-solid fa-print"></i><span class="hidden sm:inline">Surat Jalan</span></button>
                     <button type="button" onclick="window.exportCourierReport('all')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-xl text-[8.5px] font-bold shadow transition flex items-center space-x-1 whitespace-nowrap"><i class="fa-solid fa-file-excel"></i><span class="hidden sm:inline">CSV</span></button>
                 </div>
@@ -851,7 +872,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[9px] text-slate-500 mt-auto">
-        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.4.9 — Super Admin Center)</p>
+        <p>© 2026 Aufah Tech. All Rights Reserved. (PWA & Smart School Logistics v4.5.0 — Super Admin Center)</p>
     </footer>
 
     <!-- Modal 360° Package Inspector (Admin) -->
@@ -2506,7 +2527,7 @@
         };
 
         window.downloadDatabaseBackup = function() {
-            const backupData = { app: 'Kurir BNS Sekolah', version: '4.4.9', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
+            const backupData = { app: 'Kurir BNS Sekolah', version: '4.5.0', exportedAt: new Date().toISOString(), packages, members, schoolDirectory, resetRequests, auditLogs };
             const a = document.createElement('a');
             a.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2)));
             a.setAttribute("download", "kurir_bns_backup_" + new Date().toISOString().slice(0,10) + ".json");
@@ -2662,9 +2683,11 @@
             }
             const resolvedUname = getMemberUsername(foundUser);
             const isSuperAdmin = resolvedUname === 'admin' || foundUser.role === 'admin';
-            const activeRole = isSuperAdmin ? role : foundUser.role;
+            const isDualStaff = foundUser.role === 'kurir' || foundUser.role === 'petugas';
+            // Kurir & Petugas bisa memilih masuk sebagai Petugas (Input Pos 3) maupun Kurir (Antar Paket)
+            const activeRole = isSuperAdmin ? role : (isDualStaff && (role === 'petugas' || role === 'kurir') ? role : foundUser.role);
             loggedUser = {
-                name: foundUser.name, username: resolvedUname, email: resolvedUname, role: activeRole, isSuperAdmin,
+                name: foundUser.name, username: resolvedUname, email: resolvedUname, role: activeRole, memberRole: foundUser.role, isSuperAdmin, isDualStaff,
                 avatar: foundUser.avatar || `https://placehold.co/100x100/4338ca/ffffff?text=${encodeURIComponent(foundUser.name.slice(0,2).toUpperCase())}`
             };
             localStorage.setItem('kurir_bns_logged_user', JSON.stringify(loggedUser));
@@ -2682,18 +2705,44 @@
             currentRole = role;
             const desktopNav = document.getElementById('desktop-role-nav');
             const mobileNav = document.getElementById('mobile-role-nav');
+            const canDualSwitch = loggedUser.isDualStaff || loggedUser.memberRole === 'kurir' || loggedUser.memberRole === 'petugas' || loggedUser.role === 'kurir' || loggedUser.role === 'petugas';
             if (loggedUser.isSuperAdmin) {
                 const html = ['petugas', 'kurir', 'penerima', 'admin'].map(r => `<button onclick="window.switchRole('${r}')" class="px-2.5 py-1 rounded-lg transition ${r===role?'bg-white text-indigo-800 font-bold':'text-indigo-100'}">${r.toUpperCase()}</button>`).join('');
                 if (desktopNav) desktopNav.innerHTML = html;
                 if (mobileNav) mobileNav.innerHTML = html;
+            } else if (canDualSwitch && loggedUser.role !== 'penerima') {
+                // Kurir & Petugas memiliki akses penuh untuk berpindah antara Input Pos 3 (Petugas) & Pengantaran (Kurir)
+                const dualRoles = [
+                    { key: 'petugas', label: 'INPUT POS 3 / MONITOR' },
+                    { key: 'kurir', label: 'ANTAR PAKET (KURIR)' }
+                ];
+                const htmlDesktop = dualRoles.map(r => `<button onclick="window.switchRole('${r.key}')" class="px-2.5 py-1 rounded-lg transition ${r.key===role?'bg-white text-indigo-800 font-bold shadow-sm':'text-indigo-100 hover:bg-white/10'}">${r.label}</button>`).join('');
+                const htmlMobile = dualRoles.map(r => `<button onclick="window.switchRole('${r.key}')" class="col-span-2 py-1 px-2 rounded-lg transition text-[10px] ${r.key===role?'bg-white text-indigo-800 font-extrabold shadow':'text-indigo-100 border border-white/20'}">${r.label}</button>`).join('');
+                if (desktopNav) desktopNav.innerHTML = htmlDesktop;
+                if (mobileNav) mobileNav.innerHTML = htmlMobile;
             } else {
                 if (desktopNav) desktopNav.innerHTML = `<span class="px-3 py-1 rounded-lg bg-white text-indigo-800 font-bold">${role.toUpperCase()}</span>`;
                 if (mobileNav) mobileNav.innerHTML = `<span class="text-white font-bold text-center col-span-4">${role.toUpperCase()}</span>`;
             }
+
+            const backKurirBtn = document.getElementById('btn-back-to-kurir');
+            if (backKurirBtn) {
+                backKurirBtn.classList.toggle('hidden', !(canDualSwitch || loggedUser.isSuperAdmin));
+                backKurirBtn.classList.toggle('flex', (canDualSwitch || loggedUser.isSuperAdmin));
+            }
+
             ['petugas', 'kurir', 'penerima', 'admin'].forEach(r => {
                 document.getElementById(`view-${r}`)?.classList.toggle('active', r === role);
             });
-            if (role === 'petugas') { window.switchPetugasTab('input'); window.renderPetugasForm(); }
+            if (role === 'petugas') {
+                window.switchPetugasTab('input');
+                window.renderPetugasForm();
+                // Jika yang sedang login adalah Kurir, otomatis set dropdown "Tugaskan Kurir" ke namanya sendiri agar langsung diantar
+                const assignEl = document.getElementById('input-assign-courier');
+                if (assignEl && loggedUser.name && [...assignEl.options].some(o => o.value === loggedUser.name)) {
+                    assignEl.value = loggedUser.name;
+                }
+            }
             if (role === 'kurir') { window.switchCourierSubTab('pending'); window.renderCourierView(); }
             if (role === 'penerima') {
                 const recInput = document.getElementById('receiver-session-name');
@@ -2716,6 +2765,37 @@
                 }
             });
             if (tab === 'status') window.renderPetugasStatusView();
+        };
+
+        window.applyInputQuickPreset = function(presetType) {
+            if (presetType === 'teacher-call') {
+                window.switchSourceType('internal');
+                const roleEl = document.getElementById('input-recipient-role');
+                if (roleEl) roleEl.value = 'Teacher';
+                const slaEl = document.getElementById('input-sla');
+                if (slaEl) slaEl.value = '30 menit (cepat)';
+                const roomSenderEl = document.getElementById('input-room-sender');
+                if (roomSenderEl && !roomSenderEl.value) roomSenderEl.value = 'Ruang Guru / Panggilan Teacher';
+                const notesEl = document.getElementById('input-notes');
+                if (notesEl && (!notesEl.value || notesEl.value === '-')) notesEl.value = 'Panggilan Teacher (Jemput / Antar Paket)';
+                showToast('📞 Mode Panggilan Teacher aktif: Sumber diset ke Internal & Prioritas 30 Menit!', 'info');
+            } else {
+                window.switchSourceType('external');
+                const originEl = document.getElementById('input-origin');
+                if (originEl) originEl.value = 'POS 3';
+                showToast('⛺ Mode Standby Pos 3 aktif: Siap input paket masuk di Pos 3!', 'info');
+            }
+            // Otomatis pilih kurir yang sedang login agar paket langsung masuk ke daftar antarnya
+            const assignEl = document.getElementById('input-assign-courier');
+            if (assignEl && loggedUser.name && [...assignEl.options].some(o => o.value === loggedUser.name)) {
+                assignEl.value = loggedUser.name;
+            }
+        };
+
+        window.openCourierQuickInput = function(presetType = 'pos3') {
+            window.switchRole('petugas');
+            window.switchPetugasTab('input');
+            window.applyInputQuickPreset(presetType);
         };
 
         window.togglePetugasFullscreen = function() {
@@ -2783,9 +2863,9 @@
             } else {
                 container.innerHTML = `
                     <div><label class="block text-[8.5px] font-semibold mb-0.5">ID Transaksi (Auto)</label><input type="text" id="input-trx" value="${trxId}" readonly class="w-full px-2 py-1 rounded border text-[9.5px] font-mono font-bold bg-slate-100"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">No Referensi</label><input type="text" id="input-resi" oninput="window.saveFormDraft()" value="INT-${trxId.replace('TRX-', '')}" required class="w-full px-2 py-1 rounded border text-[9.5px] font-mono"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Pengirim Internal</label><input type="text" id="input-sender-internal" oninput="window.saveFormDraft()" required placeholder="Nama Pengirim" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
-                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Ruang Pengirim</label><input type="text" id="input-room-sender" oninput="window.saveFormDraft()" required placeholder="Ruang Guru / TU" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">No Referensi / Panggilan</label><input type="text" id="input-resi" oninput="window.saveFormDraft()" value="INT-${trxId.replace('TRX-', '')}" required class="w-full px-2 py-1 rounded border text-[9.5px] font-mono"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Nama Teacher / Pengirim Internal</label><input type="text" id="input-sender-internal" list="school-recipient-directory" oninput="window.saveFormDraft()" required placeholder="Ketik nama Teacher / Pengirim..." class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
+                    <div><label class="block text-[8.5px] font-semibold mb-0.5">Lokasi Jemput / Ruang Pengirim</label><input type="text" id="input-room-sender" list="school-room-directory" oninput="window.saveFormDraft()" required placeholder="Cth: Ruang Guru / Pos 3 / TU" class="w-full px-2 py-1 rounded border text-[9.5px]"></div>
                 `;
             }
             window.loadFormDraft();
